@@ -52,7 +52,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/gps-server
           tags: |
             type=ref,event=tag
-            type=semever,pattern={{version}}
+            type=semver,pattern={{version}}
             type=raw,value=latest
 
       - name: Build and push gps-server
