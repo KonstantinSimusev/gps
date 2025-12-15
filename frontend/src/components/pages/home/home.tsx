@@ -2,6 +2,7 @@ import styles from './home.module.css';
 
 import { useEffect } from 'react';
 
+import { Spinner } from '../../spinner/spinner';
 import { Layout } from '../../ui/layout/layout';
 import { InfoBlock } from '../../ui/info-block/info-block';
 import { ResidueChart } from '../../charts/residue-chart/residue-chart';
@@ -15,12 +16,18 @@ import { useDispatch, useSelector } from '../../../services/store';
 import {
   selectActiveShift,
   selectFinishedShift,
+  selectIsLoadingActiveShift,
+  selectIsLoadingFinishedShift,
+  selectIsLoadingShift,
 } from '../../../services/slices/shift/slice';
 
 import {
   getActiveShift,
   getFinishedShift,
 } from '../../../services/slices/shift/actions';
+
+import { selectIsLoadingResidues } from '../../../services/slices/residue/slice';
+import { selectIsLoadingProfessions } from '../../../services/slices/user/slice';
 
 import { TShiftStatus } from '../../../utils/types';
 
@@ -33,10 +40,31 @@ export const Home = () => {
   const active: TShiftStatus = 'активная';
   const finished: TShiftStatus = 'завершённая';
 
+  const isLoadingResidue = useSelector(selectIsLoadingResidues);
+  const isLoadingActiveShift = useSelector(selectIsLoadingActiveShift);
+  const isLoadingFinishedShift = useSelector(selectIsLoadingFinishedShift);
+  const isLoadingProfessions = useSelector(selectIsLoadingProfessions);
+  const isLoadingLastTeamsShifts = useSelector(selectIsLoadingShift);
+
+  const isLoading =
+    isLoadingResidue &&
+    isLoadingActiveShift &&
+    isLoadingFinishedShift &&
+    isLoadingProfessions &&
+    isLoadingLastTeamsShifts;
+
   useEffect(() => {
     dispatch(getActiveShift());
     dispatch(getFinishedShift());
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className={styles.spinner}>
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <Layout>
@@ -48,7 +76,6 @@ export const Home = () => {
       {finishedShift && (
         <ResidueChart shiftId={finishedShift.id ?? ''} shiftStatus={finished} />
       )}
-      {/* {activeShift && <ResidueChart shiftId={activeShift.id ?? ''} />} */}
       {!activeShift ? (
         <EmptyCard type={active} text={'Идет планирование...'} />
       ) : (
