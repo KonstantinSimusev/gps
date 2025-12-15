@@ -37,6 +37,7 @@
   display: flex;
   justify-content: space-between;
   margin-right: 4px;
+  font-size: 14px;
 }
 
 .worker__title {
