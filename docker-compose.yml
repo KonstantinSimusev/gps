@@ -27,7 +27,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    image: 'ghcr.io/${OWNER}/gps-backend:v3.0.0'
+    image: 'ghcr.io/${OWNER}/gps/gps-backend:latest'
     container_name: gps-backend
     restart: always
     environment:
@@ -50,7 +50,7 @@ services:
     build:
       context: .
       dockerfile: nginx/Dockerfile
-    image: 'ghcr.io/${OWNER}/gps-server:v3.0.0'
+    image: 'ghcr.io/${OWNER}/gps/gps-server:latest'
     container_name: gps-server
     restart: always
     environment:

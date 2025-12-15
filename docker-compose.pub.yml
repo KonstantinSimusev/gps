@@ -24,7 +24,7 @@ services:
       retries: 5
 
   backend:
-    image: 'ghcr.io/${OWNER}/gps-backend:v3.0.0'
+    image: 'ghcr.io/${OWNER}/gps/gps-backend:latest'
     container_name: gps-backend
     restart: always
     environment:
@@ -44,7 +44,7 @@ services:
         condition: service_healthy
 
   server:
-    image: 'ghcr.io/${OWNER}/gps-server:v3.0.0'
+    image: 'ghcr.io/${OWNER}/gps/gps-server:latest'
     container_name: gps-server
     restart: always
     environment:
