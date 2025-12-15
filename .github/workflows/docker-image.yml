@@ -6,7 +6,7 @@ on:
       - '**'
 
 env:
-  REPO: ${{ github.repository_owner }}
+  REPO: ''
 
 jobs:
   build:
