@@ -45,7 +45,7 @@ jobs:
         with:
           context: './backend'
           push: true
-          tags: ghcr.io/${{ env.REPO }}/gps-backend:v3.0.0
+          tags: ghcr.io/${{ github.repository_owner }}/gps-backend:v3.0.0
 
       - name: Build and push gps-server
         uses: docker/build-push-action@v6
@@ -53,4 +53,4 @@ jobs:
           context: '.'
           file: 'nginx/Dockerfile'
           push: true
-          tags: ghcr.io/${{ env.REPO }}/gps-server:v3.0.0
+          tags: ghcr.io/${{ github.repository_owner }}/gps-server:v3.0.0
