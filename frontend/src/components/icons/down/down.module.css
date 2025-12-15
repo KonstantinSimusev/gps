@@ -1,0 +1,11 @@
+.icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  fill: var(--color-default);
+  opacity: 0.4;
+  pointer-events: none; /* Ключевое свойство */
+}

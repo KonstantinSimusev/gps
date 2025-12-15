@@ -1,0 +1,18 @@
+@import url('./normalize.css');
+@import url('./fonts/Montserrat.css');
+@import url('./fonts/Arvo.css');
+@import url('./fonts/DancingScript.css');
+@import url('./fonts/Raleway.css');
+@import url('./themes.css');
+@import url('./global.css');
+
+body {
+  min-width: 320px;
+  max-width: 1920px;
+  margin: 0 auto;
+  color: var(--color-default);
+  font-family: var(--font-family-default);
+  font-size: 18px;
+  background-color: var(--bg-color-default);
+  transition: background-color 0.2s ease;
+}

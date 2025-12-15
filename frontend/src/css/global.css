@@ -1,0 +1,100 @@
+/* Глобальные стили для проекта */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+ul,
+ol,
+li,
+a,
+button,
+table,
+img,
+video,
+audio,
+form,
+fieldset,
+legend,
+label,
+input,
+textarea,
+select,
+div,
+section,
+article,
+aside,
+footer,
+header,
+main,
+nav,
+figure,
+figcaption,
+details,
+summary,
+q,
+cite,
+dfn,
+details summary,
+picture {
+  margin: 0;
+  padding: 0;
+}
+
+ul,
+ol,
+li {
+  list-style: none;
+}
+
+a,
+button {
+  text-decoration: none;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+img,
+video,
+audio {
+  max-width: 100%;
+  height: auto;
+}
+
+form,
+fieldset,
+legend,
+label,
+input,
+textarea,
+select,
+a,
+button {
+  border: none;
+  background: transparent;
+}
+
+details summary {
+  list-style: none;
+}
+
+button,
+input,
+a {
+  color: currentcolor;
+  font-family: inherit;
+  font-size: inherit;
+}

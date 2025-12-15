@@ -1,0 +1,80 @@
+services:
+  database:
+    image: postgres:latest
+    container_name: gps-database
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    volumes:
+      - db_data:/var/lib/postgresql
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: 'ghcr.io/${OWNER}/gps-backend:v3.0.0'
+    container_name: gps-backend
+    restart: always
+    environment:
+      DB_ADDRESS: ${DB_ADDRESS}
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
+      REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
+      ACCESS_TOKEN_EXPIRATION: ${ACCESS_TOKEN_EXPIRATION}
+      REFRESH_TOKEN_EXPIRATION: ${REFRESH_TOKEN_EXPIRATION}
+    volumes:
+      - backend_dist:/app/dist
+    ports:
+      - 3001:3000
+    networks:
+      - backend-network
+    depends_on:
+      database:
+        condition: service_healthy
+
+  server:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    image: 'ghcr.io/${OWNER}/gps-server:v3.0.0'
+    container_name: gps-server
+    restart: always
+    environment:
+      VITE_API_URL: ${VITE_API_URL}
+      VITE_CDN_URL: ${VITE_CDN_URL}
+    volumes:
+      - frontend_dist:/usr/share/nginx/html
+      - backend_dist:/var/www/backend
+    ports:
+      - 81:80
+    networks:
+      - frontend-network
+      - backend-network
+    depends_on:
+      database:
+        condition: service_healthy
+      backend:
+        condition: service_started
+
+volumes:
+  db_data:
+  backend_dist:
+  frontend_dist:
+
+networks:
+  backend-network:
+  frontend-network:

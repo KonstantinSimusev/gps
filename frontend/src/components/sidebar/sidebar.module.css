@@ -1,0 +1,70 @@
+.container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-rows: 18px auto auto;
+  gap: 20px;
+  align-self: start;
+  min-width: 320px;
+  height: 100vh;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-left: 1px solid rgba(234 234 234 / 0.4);
+  padding: 30px;
+  overflow-y: auto;
+  background-color: var(--bg-color-default);
+  transition: transform 0.2s ease;
+  transform: translateX(100%);
+  font-size: 16px;
+}
+
+.menu__open {
+  transition: transform 0.2s ease-in-out;
+  transform: translateX(0);
+}
+
+/* крестик справа */
+.container > :nth-child(1) {
+  margin-left: auto;
+}
+
+.navigation__list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: var(--color-sidebar);
+}
+
+/* .navigation__list > :nth-child(1),
+.navigation__list > :nth-child(2),
+.navigation__list > :nth-child(4) {
+  margin-bottom: 50px;
+}
+
+.navigation__list > :last-child {
+  margin-top: 60px;
+} */
+
+.link {
+  width: fit-content;
+}
+
+.link__active {
+  color: var(--color-link);
+  border-bottom: 1px solid var(--bg-color-link);
+}
+
+.link:hover {
+  cursor: pointer;
+}
+
+.link:active {
+  opacity: 0.6;
+  transition: opacity 0.4s ease;
+}
+
+.top {
+  margin-top: 20px;
+}

@@ -1,0 +1,6 @@
+.container {
+  width: 100%;
+  height: 1px;
+  background-color: var(--bg-color-column);
+  opacity: 0.4;
+}

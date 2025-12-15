@@ -1,0 +1,7 @@
+.icon {
+  /* width: 36px;
+  height: 36px; */
+  stroke: var(--color-button-default);
+  stroke-width: 1.4;
+  fill: transparent;
+}

@@ -1,0 +1,68 @@
+.container {
+  display: grid;
+  align-items: end;
+  height: clamp(9.375rem, 0.7543rem + 43.1034vw, 25rem);
+  padding: clamp(1.25rem, 0.5603rem + 3.4483vw, 2.5rem);
+  border: 1px solid var(--color-cover);
+  border-radius: clamp(1.25rem, 0.5603rem + 3.4483vw, 2.5rem);
+  box-shadow: 0 2px 8px 1px var(--color-shadow);
+  background-image:
+    linear-gradient(200deg, rgba(104 104 104 / 0.8), rgba(0 0 0)),
+    url('../../assets/cover_4.jpg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  transition:
+    border 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.3125rem, 0.1401rem + 0.8621vw, 0.625rem);
+  font-size: clamp(1.25rem, -0.1293rem + 6.8966vw, 3.75rem);
+  letter-spacing: clamp(0.0625rem, 0.028rem + 0.1724vw, 0.125rem);
+}
+
+.text__top,
+.text__bottom {
+  display: block;
+  color: transparent;
+  background-image: linear-gradient(
+    to right,
+    #eaeaea 0%,
+    #333740 53%,
+    #333740 54%,
+    #eaeaea 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+}
+
+.text__top {
+  animation: text-move-top 4s linear infinite;
+}
+
+.text__bottom {
+  animation: text-move-bottom 4s linear infinite;
+  animation-delay: 2s;
+}
+
+/* @keyframes text-move-top {
+  0% {
+    background-position: 0%;
+  }
+  100% {
+    background-position: -200%;
+  }
+}
+
+background-position: 0%;
+@keyframes text-move-bottom {
+  0% {
+  }
+  100% {
+    background-position: -200%;
+  }
+} */

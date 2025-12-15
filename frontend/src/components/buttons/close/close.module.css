@@ -1,0 +1,8 @@
+.container {
+  width: 18px;
+  cursor: pointer;
+}
+
+.container:focus {
+  outline: none;
+}

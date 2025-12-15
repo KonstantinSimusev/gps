@@ -1,0 +1,27 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 30px clamp(1.875rem, -8.406rem + 38.255vw, 37.5rem) 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo:active {
+  transition: transform 0.2s ease;
+  transform: scale(0.9);
+}
+
+.title {
+  font-family: var(--font-family-logo);
+  display: flex;
+  justify-content: start;
+  align-items: end;
+  margin-left: 10px;
+  margin-right: auto;
+  font-size: 16px;
+  font-weight: 400;
+}

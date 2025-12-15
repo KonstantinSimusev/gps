@@ -1,0 +1,28 @@
+.container {
+  display: flex;
+  padding: 20px clamp(1.875rem, -8.406rem + 38.255vw, 37.5rem);
+  background-image: linear-gradient(to left, #fffafa, #1c1c1c);
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-family-banner);
+  font-family: 'Dancing Script', arial, helvetica, sans-serif;
+  gap: clamp(0.3125rem, 0.1401rem + 0.8621vw, 0.625rem);
+  font-size: clamp(1.25rem, -0.1293rem + 6.8966vw, 3.75rem);
+}
+
+.text__top,
+.text__bottom {
+  display: block;
+  color: var(--color-banner);
+}
+
+.text__top {
+  padding-left: 16%;
+}
+
+.text__bottom {
+  padding-left: 46%;
+}

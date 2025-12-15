@@ -1,0 +1,26 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 12px 0;
+  max-width: 310px;
+  border-radius: 16px;
+  color: var(--color-button);
+  background-color: var(--bg-color-button);
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.container:focus {
+  outline: none;
+}
+
+.container:hover {
+  opacity: 0.8;
+}
+
+.container:active {
+  transition: transform 0.2s ease;
+}

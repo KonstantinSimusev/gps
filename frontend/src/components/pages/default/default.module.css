@@ -1,0 +1,40 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.title__politic {
+  margin-top: 40px;
+}
+
+.list__politic {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.items li::before {
+  content: '•'; /* Добавляем символ точки */
+  display: inline-block;
+  width: 14px;
+  margin-left: 4px;
+  color: var(--color-default); /* Цвет маркера */
+}
+
+.title {
+  margin-bottom: 10px;
+}
+
+.wrapper__button {
+  display: flex;
+  /* justify-content: center; */
+  width: 100%;
+  margin-top: 60px;
+}

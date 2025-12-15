@@ -1,0 +1,107 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  background-color: var(--bg-color-shift);
+  padding: 30px;
+  border-radius: 30px;
+  font-size: 16px;
+}
+
+.wrapper__info {
+  display: flex;
+  flex-direction: column;
+}
+
+.header__title {
+  font-size: 18px;
+  letter-spacing: 0.4px;
+}
+
+/* нужен */
+.wrapper {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.wrapper__text {
+  display: flex;
+  gap: 10px;
+}
+
+.wrapper__success {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+}
+
+.wrapper__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.title__wrapper {
+  display: flex;
+  justify-content: space-between;
+  margin-right: 4px;
+  font-size: 14px;
+}
+
+.worker__title {
+  opacity: 0.6;
+}
+
+.wrapper__button {
+  display: flex;
+  justify-content: end;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.total__employees {
+  display: flex;
+  justify-content: end;
+}
+
+.total {
+  margin: 0 12px 0 18px;
+}
+
+.border__top {
+  margin-top: 4px;
+}
+
+.text {
+  margin-left: 10px;
+}
+
+.count {
+  margin-right: 12px;
+}
+
+.empty {
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+.opacity {
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+.wrapper__reason {
+  display: flex;
+  gap: 18px;
+}
+
+.text__width {
+  width: 40px;
+  text-align: end;
+}
+
+.count__width {
+  min-width: 10px;
+  text-align: end;
+}

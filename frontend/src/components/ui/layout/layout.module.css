@@ -1,0 +1,8 @@
+.container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin: 0 clamp(1.875rem, -8.406rem + 38.255vw, 37.5rem);
+  flex-grow: 1;
+}

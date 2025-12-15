@@ -1,0 +1,155 @@
+.container {
+  display: grid;
+  justify-content: center;
+}
+
+.title {
+  margin: 20px 0;
+  font-weight: 400;
+  text-align: center;
+}
+
+.form__shift {
+  display: grid;
+  margin-top: 40px;
+  gap: 10px;
+}
+
+.shift {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+  cursor: pointer;
+}
+
+.input__name {
+  font-size: 14px;
+  position: relative;
+  padding: 0 10px 10px;
+}
+
+.input__name::after {
+  content: '*';
+  position: absolute;
+  top: 0;
+  left: 2px;
+  opacity: 0.5;
+}
+
+.input__date {
+  width: 100%;
+  padding: 10px 16px;
+  margin: 6px 0 40px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  outline: none;
+  cursor: pointer;
+}
+
+.input__date:focus {
+  outline: none;
+}
+
+.input__date::placeholder {
+  font-size: 16px;
+}
+
+.input__custom {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  border: 1px solid var(--color-default);
+  vertical-align: middle;
+  border-radius: 50%;
+  transition: opacity 0.6s ease;
+}
+
+.input__custom::before {
+  content: '';
+  position: absolute; /* Добавляем абсолютное позиционирование */
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.6s ease;
+}
+
+.input__custom,
+.input__text {
+  opacity: 0.4;
+}
+
+.input__text {
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.6s ease;
+}
+
+input[type='radio']:checked ~ .input__custom,
+input[type='radio']:checked ~ .input__text,
+input[type='radio']:checked ~ .input__custom::before {
+  opacity: 0.9;
+}
+
+input[type='radio']:checked ~ .input__custom::before {
+  background-color: var(--color-default);
+}
+
+.errors {
+  height: 40px;
+  line-height: 0.8;
+}
+
+.error,
+.errors__server {
+  color: #bc1818;
+  font-size: 12px;
+}
+
+.errors__server {
+  height: 24px;
+  text-align: center;
+}
+
+.spinner {
+  position: relative;
+  justify-self: center;
+  margin-top: 10px;
+  width: 40px;
+  height: 40px;
+}
+
+.button__shift {
+  margin: 0 0 40px;
+  border-radius: 16px;
+  padding: 12px 0;
+  color: var(--color-button);
+  font-weight: 400;
+  background-color: var(--bg-color-button);
+  cursor: pointer;
+  transition: opacity 0.5s ease;
+}
+
+.button__shift:active {
+  transition: transform 0.2s ease;
+  /* transform: scale(0.97); */
+}
+
+.visually__hidden {
+  position: absolute;
+  clip-path: inset(50%);
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(50%);
+  cursor: pointer;
+}

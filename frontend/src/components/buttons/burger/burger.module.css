@@ -1,0 +1,15 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.container:focus {
+  outline: none;
+}
+
+.container:active {
+  transition: transform 0.2s ease;
+  transform: scale(0.9);
+}
