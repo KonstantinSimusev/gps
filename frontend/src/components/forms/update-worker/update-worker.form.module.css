@@ -43,8 +43,8 @@
   border-radius: 16px;
   outline: none;
   font-size: 16px;
-  color: var(--color-default);
   opacity: 0.9;
+  color: var(--color-default);
 }
 
 .input__worker:focus {
@@ -62,7 +62,7 @@
 
 .errors {
   height: 30px;
-  margin-top: 10px;
+  /* margin-top: 4px; */
 }
 
 .error,

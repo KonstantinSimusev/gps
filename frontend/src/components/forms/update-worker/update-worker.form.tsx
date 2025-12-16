@@ -70,8 +70,27 @@ export const UpdateWorkerForm = () => {
   const attendance: TWorkStatus = 'Явка';
   const offline: TWorkPlace = 'Не работает';
   const empty: TWorkPlace = 'Не выбрано';
+  const position_1: TWorkPlace = '1 очередь';
+  const position_2: TWorkPlace = '2 очередь';
+  const position_3: TWorkPlace = '3 очередь';
+  const team: TWorkPlace = 'Бригада по реквизитам';
+  const lum: TWorkPlace = 'ЛУМ';
+
+  const validPackerQueues: TWorkPlace[] = [position_1, position_2, position_3];
+  const validStackerQueues: TWorkPlace[] = [position_1, position_2, position_3];
+  const validOperatorQueues: TWorkPlace[] = [lum];
+  const validLumPackerQueues: TWorkPlace[] = [lum];
+  const validBrigadirQueues: TWorkPlace[] = [team];
+  const validDriverQuestions: TWorkPlace[] = [team];
+  const validCutterQuestions: TWorkPlace[] = [team];
+
+  const packer: TProfession = 'Укладчик-упаковщик';
+  const stacker: TProfession = 'Штабелировщик металла';
   const operator: TProfession = 'Оператор ПУ';
   const lumPacker: TProfession = 'Укладчик-упаковщик ЛУМ';
+  const brigadir: TProfession = 'Бригадир ОСП';
+  const driver: TProfession = 'Водитель погрузчика';
+  const cutter: TProfession = 'Резчик холодного металла';
 
   // Состояние для хранения значений полей формы
   const [formData, setFormData] = useState<IFormData>({
@@ -207,6 +226,20 @@ export const UpdateWorkerForm = () => {
     (formData.workStatus === attendance && Number(formData.workHours) === 0) ||
     (formData.workStatus !== attendance && formData.workPlace !== offline) ||
     (formData.workPlace === offline && Number(formData.workHours) !== 0) ||
+    (formData.shiftProfession === packer &&
+      !validPackerQueues.includes(formData.workPlace as TWorkPlace)) ||
+    (formData.shiftProfession === stacker &&
+      !validStackerQueues.includes(formData.workPlace as TWorkPlace)) ||
+    (formData.shiftProfession === operator &&
+      !validOperatorQueues.includes(formData.workPlace as TWorkPlace)) ||
+    (formData.shiftProfession === lumPacker &&
+      !validLumPackerQueues.includes(formData.workPlace as TWorkPlace)) ||
+    (formData.shiftProfession === brigadir &&
+      !validBrigadirQueues.includes(formData.workPlace as TWorkPlace)) ||
+    (formData.shiftProfession === driver &&
+      !validDriverQuestions.includes(formData.workPlace as TWorkPlace)) ||
+    (formData.shiftProfession === cutter &&
+      !validCutterQuestions.includes(formData.workPlace as TWorkPlace)) ||
     (formData.shiftProfession !== operator &&
       formData.shiftProfession !== lumPacker &&
       Number(formData.workHours) > 11.5);
