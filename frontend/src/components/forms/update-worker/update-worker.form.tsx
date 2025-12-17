@@ -219,30 +219,63 @@ export const UpdateWorkerForm = () => {
     }
   };
 
+  // const isButtonDisabled =
+  //   isLoading ||
+  //   formData.workPlace === empty ||
+  //   (formData.workStatus === attendance && formData.workPlace === offline) ||
+  //   (formData.workStatus === attendance && Number(formData.workHours) === 0) ||
+  //   (formData.workStatus !== attendance && formData.workPlace !== offline) ||
+  //   (formData.workPlace === offline && Number(formData.workHours) !== 0) ||
+  // (formData.shiftProfession === packer &&
+  //   !validPackerQueues.includes(formData.workPlace as TWorkPlace)) ||
+  // (formData.shiftProfession === stacker &&
+  //   !validStackerQueues.includes(formData.workPlace as TWorkPlace)) ||
+  // (formData.shiftProfession === operator &&
+  //   !validOperatorQueues.includes(formData.workPlace as TWorkPlace)) ||
+  // (formData.shiftProfession === lumPacker &&
+  //   !validLumPackerQueues.includes(formData.workPlace as TWorkPlace)) ||
+  // (formData.shiftProfession === brigadir &&
+  //   !validBrigadirQueues.includes(formData.workPlace as TWorkPlace)) ||
+  // (formData.shiftProfession === driver &&
+  //   !validDriverQuestions.includes(formData.workPlace as TWorkPlace)) ||
+  // (formData.shiftProfession === cutter &&
+  //   !validCutterQuestions.includes(formData.workPlace as TWorkPlace)) ||
+  // (formData.shiftProfession !== operator &&
+  //   formData.shiftProfession !== lumPacker &&
+  //   Number(formData.workHours) > 11.5);
+
   const isButtonDisabled =
     isLoading ||
-    formData.workPlace === empty ||
-    (formData.workStatus === attendance && formData.workPlace === offline) ||
-    (formData.workStatus === attendance && Number(formData.workHours) === 0) ||
-    (formData.workStatus !== attendance && formData.workPlace !== offline) ||
-    (formData.workPlace === offline && Number(formData.workHours) !== 0) ||
-    (formData.shiftProfession === packer &&
-      !validPackerQueues.includes(formData.workPlace as TWorkPlace)) ||
-    (formData.shiftProfession === stacker &&
-      !validStackerQueues.includes(formData.workPlace as TWorkPlace)) ||
-    (formData.shiftProfession === operator &&
-      !validOperatorQueues.includes(formData.workPlace as TWorkPlace)) ||
-    (formData.shiftProfession === lumPacker &&
-      !validLumPackerQueues.includes(formData.workPlace as TWorkPlace)) ||
-    (formData.shiftProfession === brigadir &&
-      !validBrigadirQueues.includes(formData.workPlace as TWorkPlace)) ||
-    (formData.shiftProfession === driver &&
-      !validDriverQuestions.includes(formData.workPlace as TWorkPlace)) ||
-    (formData.shiftProfession === cutter &&
-      !validCutterQuestions.includes(formData.workPlace as TWorkPlace)) ||
-    (formData.shiftProfession !== operator &&
-      formData.shiftProfession !== lumPacker &&
-      Number(formData.workHours) > 11.5);
+    // Общие ошибки валидации
+    Object.keys(errors).some((key) => errors[key] !== '') ||
+    // Правила для НЕ-явки (любой статус ≠ "Явка")
+    (formData.workStatus !== attendance
+      ? // Для не‑явки:
+        formData.workPlace !== offline || // должно быть "Не работает"
+        Number(formData.workHours) !== 0 // часы должны быть 0
+      : // Правила для "Явки" (статус === "Явка"):
+        formData.workPlace === empty || // место не выбрано
+        formData.workPlace === offline || // при явке место не может быть "Не работает"
+        Number(formData.workHours) === 0 || // часы не могут быть 0 при явке
+        // Проверки соответствия профессии и места
+        (formData.shiftProfession === packer &&
+          !validPackerQueues.includes(formData.workPlace as TWorkPlace)) ||
+        (formData.shiftProfession === stacker &&
+          !validStackerQueues.includes(formData.workPlace as TWorkPlace)) ||
+        (formData.shiftProfession === operator &&
+          !validOperatorQueues.includes(formData.workPlace as TWorkPlace)) ||
+        (formData.shiftProfession === lumPacker &&
+          !validLumPackerQueues.includes(formData.workPlace as TWorkPlace)) ||
+        (formData.shiftProfession === brigadir &&
+          !validBrigadirQueues.includes(formData.workPlace as TWorkPlace)) ||
+        (formData.shiftProfession === driver &&
+          !validDriverQuestions.includes(formData.workPlace as TWorkPlace)) ||
+        (formData.shiftProfession === cutter &&
+          !validCutterQuestions.includes(formData.workPlace as TWorkPlace)) ||
+        // Проверка часов для профессий
+        (formData.shiftProfession !== operator &&
+          formData.shiftProfession !== lumPacker &&
+          Number(formData.workHours) > 11.5));
 
   return (
     <div className={styles.container}>

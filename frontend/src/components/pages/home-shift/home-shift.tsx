@@ -8,7 +8,7 @@ import { useSelector } from '../../../services/store';
 import {
   selectActiveShift,
   selectFinishedShift,
-  selectIsLoadingShift,
+  // selectIsLoadingShift,
 } from '../../../services/slices/shift/slice';
 import { Error } from '../../ui/error/error';
 import { Layout } from '../../ui/layout/layout';
@@ -20,11 +20,14 @@ import { PackChart } from '../../charts/pack-chart/pack-chart';
 import { FixChart } from '../../charts/fix-chart/fix-chart';
 import { ResidueChart } from '../../charts/residue-chart/residue-chart';
 import { EmptyShift } from '../../ui/empty-blocks/empty-shift/empty-shift';
-// import { EmptyContainer } from '../../ui/empty-blocks/empty-container/empty-container';
+import { useToggleAfterDelay } from '../../../utils/utils';
+import { EmptyContainer } from '../../ui/empty-blocks/empty-container/empty-container';
 
 export const HomeShift = () => {
   const { shiftId } = useParams();
-  const isLoading = useSelector(selectIsLoadingShift);
+  // const isLoadingShift = useSelector(selectIsLoadingShift);
+
+  const isLoading = useToggleAfterDelay(1000);
 
   useEffect(() => {
     // Скролим страницу наверх
@@ -53,55 +56,59 @@ export const HomeShift = () => {
         <BackButton actionType="home" />
       </div>
 
-      {/* <EmptyContainer height={'605.48'} /> */}
-
       {isLoading ? (
         <EmptyShift />
       ) : (
         <>
           {currentShift && (
+            <ShiftInfo
+              date={currentShift.date}
+              shiftNumber={currentShift.shiftNumber}
+              teamNumber={currentShift.teamNumber}
+            />
+          )}
+        </>
+      )}
+
+      {isLoading ? (
+        <EmptyContainer />
+      ) : (
+        <>
+          {currentShift?.usersShifts && (
             <>
-              <ShiftInfo
-                date={currentShift.date}
-                shiftNumber={currentShift.shiftNumber}
+              <TeamProfessionList
+                type={currentStatus}
+                list={currentShift?.usersShifts}
                 teamNumber={currentShift.teamNumber}
               />
 
-              {currentShift?.usersShifts && (
-                <>
-                  <TeamProfessionList
-                    type={currentStatus}
-                    list={currentShift?.usersShifts}
-                    teamNumber={currentShift.teamNumber}
-                  />
+              <ProductionChart
+                shiftId={shiftId}
+                list={currentShift?.usersShifts}
+                shiftStatus={currentStatus}
+              />
 
-                  <ProductionChart
-                    shiftId={shiftId}
-                    list={currentShift?.usersShifts}
-                    shiftStatus={currentStatus}
-                  />
+              <PackChart
+                shiftId={shiftId}
+                list={currentShift?.usersShifts}
+                shiftStatus={currentStatus}
+              />
 
-                  <PackChart
-                    shiftId={shiftId}
-                    list={currentShift?.usersShifts}
-                    shiftStatus={currentStatus}
-                  />
-
-                  <ResidueChart shiftId={shiftId} shiftStatus={currentStatus} />
-
-                  <ShipmentChart
-                    shiftId={shiftId}
-                    list={currentShift?.usersShifts}
-                    shiftStatus={currentStatus}
-                  />
-
-                  <FixChart
-                    shiftId={shiftId}
-                    list={currentShift?.usersShifts}
-                    shiftStatus={currentStatus}
-                  />
-                </>
+              {currentStatus === finishedStatusShift && (
+                <ResidueChart shiftId={shiftId} shiftStatus={currentStatus} />
               )}
+
+              <ShipmentChart
+                shiftId={shiftId}
+                list={currentShift?.usersShifts}
+                shiftStatus={currentStatus}
+              />
+
+              <FixChart
+                shiftId={shiftId}
+                list={currentShift?.usersShifts}
+                shiftStatus={currentStatus}
+              />
             </>
           )}
         </>

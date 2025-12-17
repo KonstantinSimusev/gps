@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { IPack, IResidue, IShift, IUserShift } from './api.interface';
 import {
   TProfession,
@@ -7,7 +8,6 @@ import {
   WORK_STATUS_OPTIONS,
 } from './types';
 
-// Функция для форматирования даты
 export const formatDate = (date: Date) => {
   const parsedDate = new Date(date);
   return parsedDate.toLocaleDateString('ru-RU', {
@@ -128,7 +128,6 @@ export function countProfessionsByAttendance(
   return result.sort((a, b) => a.sortOrder - b.sortOrder);
 }
 
-// Проверяем, нужно ли показывать смену
 export const isShowShift = (lastShift: IShift) => {
   if (!lastShift || !lastShift.date) return false;
 
@@ -578,7 +577,6 @@ export function filterAndSortProfessions(
     });
 }
 
-// Функция для извлечения числа из строки вида «Тупик X»
 export function extractNumber(railway: string) {
   const match = railway.match(/Тупик\s+(\d+)/);
   return match ? parseInt(match[1], 10) : 0;
@@ -627,4 +625,18 @@ export function countProfessionsBySickLeave(
     profession,
     count: counts[profession],
   }));
+}
+
+export function useToggleAfterDelay(delay = 1000) {
+  const [value, setValue] = useState(true); // Изначально true
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setValue(false); // Через delay мс меняем на false
+    }, delay);
+
+    return () => clearTimeout(timer); // Очистка при удалении компонента
+  }, [delay]); // Перезапускаем эффект при изменении delay
+
+  return value;
 }

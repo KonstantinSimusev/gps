@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { Border } from '../../ui/border/border';
+// import { Border } from '../../ui/border/border';
 
 import { useDispatch, useSelector } from '../../../services/store';
 
@@ -13,6 +13,9 @@ import { selectResidues } from '../../../services/slices/residue/slice';
 import { getResidues } from '../../../services/slices/residue/actions';
 
 import { getCount } from '../../../utils/utils';
+import { Chart } from '../../ui/chart/chart';
+import { Total } from '../../ui/total/total';
+import { Location } from '../../ui/location/location';
 
 interface IChartProps {
   shiftId: string;
@@ -31,9 +34,6 @@ export const ResidueChart = ({ shiftId }: IChartProps) => {
 
   const residues = useSelector(selectResidues);
 
-  // Фиксированная максимальная высота столбца — 300px
-  const FIXED_MAX_HEIGHT = 60;
-
   useEffect(() => {
     if (shiftId) {
       dispatch(getResidues(shiftId));
@@ -45,7 +45,7 @@ export const ResidueChart = ({ shiftId }: IChartProps) => {
       {isHome && (
         <div className={styles.container}>
           <div className={styles.wrapper__header}>
-            <span className={styles.location}>ОСТАТКИ</span>
+            <Location title={'ОСТАТКИ'} />
             <span
               className={clsx(
                 styles.wrapper__status,
@@ -55,39 +55,8 @@ export const ResidueChart = ({ shiftId }: IChartProps) => {
               {currentShiftStatus}
             </span>
           </div>
-          <ul className={styles.chart}>
-            {residues.map((item) => {
-              // Если максимальное значение в данных равно 0, все столбцы будут нулевыми
-              const maxDataValue =
-                Math.max(...residues.map((r) => r.count)) || 1;
-
-              // Вычисляем высоту столбца в процентах от 300px
-              const percentage = (item.count / maxDataValue) * 100;
-
-              // Переводим процент в пиксели (от 0 до 300)
-              const heightInPx = (percentage / 100) * FIXED_MAX_HEIGHT;
-
-              return (
-                <li key={item.id} className={styles.column}>
-                  <span
-                    style={{ height: `${heightInPx}px` }}
-                    className={styles.column__height}
-                  >
-                    <span className={styles.count}>
-                      {item.count > 0 ? item.count : ''}
-                    </span>
-                  </span>
-                  <Border />
-                  <span className={styles.title}>{item.location}</span>
-                </li>
-              );
-            })}
-          </ul>
-
-          <div className={styles.wrapper__footer}>
-            <span className={styles.total__size}>Итого:</span>
-            <span className={styles.total__size}>{getCount(residues)} рул</span>
-          </div>
+          <Chart list={residues} />
+          <Total count={getCount(residues)} />
         </div>
       )}
     </>
