@@ -46,7 +46,7 @@ export const ResidueChart = ({ shiftId, shiftStatus }: IChartProps) => {
 
   return (
     <>
-      {shiftStatus !== finishedStatusShift && (
+      {shiftStatus === finishedStatusShift && (
         <div className={styles.container}>
           {!shiftId || residues.length === 0 ? (
             <Error />
