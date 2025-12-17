@@ -41,7 +41,7 @@ export const ResidueChart = ({ shiftId }: IChartProps) => {
   }, [shiftId]);
 
   return (
-    <>
+    <div className={styles.container}>
       <div className={styles.wrapper__header}>
         <span className={styles.location}>ОСТАТКИ</span>
         <span
@@ -85,6 +85,6 @@ export const ResidueChart = ({ shiftId }: IChartProps) => {
         <span className={styles.total__size}>Итого:</span>
         <span className={styles.total__size}>{getCount(residues)} рул</span>
       </div>
-    </>
+    </div>
   );
 };
