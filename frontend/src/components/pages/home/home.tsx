@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { Layout } from '../../ui/layout/layout';
 import { InfoBlock } from '../../ui/info-block/info-block';
 import { ResidueChart } from '../../charts/residue-chart/residue-chart';
-import { EmptyCard } from '../../ui/empty-card/empty-card';
+import { EmptyCard } from '../../ui/empty-blocks/empty-card/empty-card';
 import { ShiftCard } from '../../ui/shift-card/shift-card';
 import { SickInfo } from '../../sick-info/sick-info';
 import { ProfessionInfo } from '../../profession-info/profession-info';
@@ -30,7 +30,7 @@ import {
 // import { selectIsLoadingProfessions } from '../../../services/slices/user/slice';
 
 import { TShiftStatus } from '../../../utils/types';
-import { EmptyChart } from '../../ui/empty-chart/empty-chart';
+import { EmptyChart } from '../../ui/empty-blocks/empty-chart/empty-chart';
 
 export const Home = () => {
   const dispatch = useDispatch();

@@ -2,7 +2,7 @@ import styles from './empty-card.module.css';
 
 import clsx from 'clsx';
 
-import { TShiftStatus } from '../../../utils/types';
+import { TShiftStatus } from '../../../../utils/types';
 
 interface ICardProps {
   text: string;
