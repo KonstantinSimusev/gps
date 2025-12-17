@@ -20,7 +20,7 @@ import { PackChart } from '../../charts/pack-chart/pack-chart';
 import { FixChart } from '../../charts/fix-chart/fix-chart';
 import { ResidueChart } from '../../charts/residue-chart/residue-chart';
 import { EmptyShift } from '../../ui/empty-blocks/empty-shift/empty-shift';
-import { EmptyContainer } from '../../ui/empty-blocks/empty-container/empty-container';
+// import { EmptyContainer } from '../../ui/empty-blocks/empty-container/empty-container';
 
 export const HomeShift = () => {
   const { shiftId } = useParams();
@@ -53,51 +53,55 @@ export const HomeShift = () => {
         <BackButton actionType="home" />
       </div>
 
-      {isLoading && <EmptyShift />}
+      {/* <EmptyContainer height={'605.48'} /> */}
 
-      {isLoading && <EmptyContainer height={'205.48'} />}
-
-      {!isLoading && currentShift && (
+      {isLoading ? (
+        <EmptyShift />
+      ) : (
         <>
-          <ShiftInfo
-            date={currentShift.date}
-            shiftNumber={currentShift.shiftNumber}
-            teamNumber={currentShift.teamNumber}
-          />
-
-          {currentShift?.usersShifts && (
+          {currentShift && (
             <>
-              <TeamProfessionList
-                type={currentStatus}
-                list={currentShift?.usersShifts}
+              <ShiftInfo
+                date={currentShift.date}
+                shiftNumber={currentShift.shiftNumber}
                 teamNumber={currentShift.teamNumber}
               />
 
-              <ProductionChart
-                shiftId={shiftId}
-                list={currentShift?.usersShifts}
-                shiftStatus={currentStatus}
-              />
+              {currentShift?.usersShifts && (
+                <>
+                  <TeamProfessionList
+                    type={currentStatus}
+                    list={currentShift?.usersShifts}
+                    teamNumber={currentShift.teamNumber}
+                  />
 
-              <PackChart
-                shiftId={shiftId}
-                list={currentShift?.usersShifts}
-                shiftStatus={currentStatus}
-              />
+                  <ProductionChart
+                    shiftId={shiftId}
+                    list={currentShift?.usersShifts}
+                    shiftStatus={currentStatus}
+                  />
 
-              <ResidueChart shiftId={shiftId} shiftStatus={currentStatus} />
+                  <PackChart
+                    shiftId={shiftId}
+                    list={currentShift?.usersShifts}
+                    shiftStatus={currentStatus}
+                  />
 
-              <ShipmentChart
-                shiftId={shiftId}
-                list={currentShift?.usersShifts}
-                shiftStatus={currentStatus}
-              />
+                  <ResidueChart shiftId={shiftId} shiftStatus={currentStatus} />
 
-              <FixChart
-                shiftId={shiftId}
-                list={currentShift?.usersShifts}
-                shiftStatus={currentStatus}
-              />
+                  <ShipmentChart
+                    shiftId={shiftId}
+                    list={currentShift?.usersShifts}
+                    shiftStatus={currentStatus}
+                  />
+
+                  <FixChart
+                    shiftId={shiftId}
+                    list={currentShift?.usersShifts}
+                    shiftStatus={currentStatus}
+                  />
+                </>
+              )}
             </>
           )}
         </>
