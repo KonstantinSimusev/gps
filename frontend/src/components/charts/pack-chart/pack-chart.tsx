@@ -46,12 +46,8 @@ export const PackChart = ({ shiftId, list, shiftStatus }: IChartProps) => {
   const attendanceProfessions = countProfessionsByAttendance(workersShifts);
   const filterArrayByLum = filterAndSortProfessions(attendanceProfessions);
 
-  const getMaxCount = () => {
-    if (packs.length === 0) return 0; // или null, в зависимости от логики
-    return Math.max(...packs.map((item) => item.count));
-  };
-
-  const MAX_VALUE = getMaxCount() + 50;
+  // Фиксированная максимальная высота столбца — 300px
+  const FIXED_MAX_HEIGHT = 60;
 
   useEffect(() => {
     if (shiftId) {
@@ -75,11 +71,20 @@ export const PackChart = ({ shiftId, list, shiftStatus }: IChartProps) => {
               </div>
               <ul className={styles.chart}>
                 {transformArray.map((item) => {
-                  const percentage = Math.round((item.count / MAX_VALUE) * 100);
+                  // Если максимальное значение в данных равно 0, все столбцы будут нулевыми
+                  const maxDataValue =
+                    Math.max(...transformArray.map((r) => r.count)) || 1;
+
+                  // Вычисляем высоту столбца в процентах от 300px
+                  const percentage = (item.count / maxDataValue) * 100;
+
+                  // Переводим процент в пиксели (от 0 до 300)
+                  const heightInPx = (percentage / 100) * FIXED_MAX_HEIGHT;
+
                   return (
                     <li key={item.id} className={styles.column}>
                       <span
-                        style={{ height: `${percentage}px` }}
+                        style={{ height: `${heightInPx}px` }}
                         className={styles.column__height}
                       >
                         <span className={styles.count}>

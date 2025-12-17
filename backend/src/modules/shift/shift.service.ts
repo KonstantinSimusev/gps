@@ -23,7 +23,11 @@ import { ResidueService } from '../residue/residue.service';
 import { CreateShiftDTO } from './dto/create-shift.dto';
 
 import { IList, IShift, ISuccess } from '../../shared/interfaces/api.interface';
-import { compareShifts, getNextShift, getProfessionCounts } from '../../shared/utils/utils';
+import {
+  compareShifts,
+  getNextShift,
+  getProfessionCounts,
+} from '../../shared/utils/utils';
 
 @Injectable()
 export class ShiftService {
@@ -109,12 +113,12 @@ export class ShiftService {
       const shift = await this.shiftRepository.create(newShift);
 
       // Получаем пользователей бригады
-      const users = await this.userRepository.findUsersByTeam(
+      const usersOfLPC11 = await this.userRepository.findUsersByTeamLPC11(
         newShift.teamNumber,
       );
 
       // Создаем связь с userShift
-      await this.userShiftService.createUsersShifts(shift, users);
+      await this.userShiftService.createUsersShifts(shift, usersOfLPC11);
 
       // Создаем связь с production
       await this.productionService.createProductions(shift);

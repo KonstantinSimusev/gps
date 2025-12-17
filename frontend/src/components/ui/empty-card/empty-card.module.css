@@ -28,7 +28,6 @@
 
 .text__end {
   font-size: 14px;
-  /* opacity: 0.6; */
   color: #007dff;
 }
 
@@ -50,8 +49,9 @@
 }
 
 .text {
-  font-size: 16px;
+  font-size: 14px;
   margin-left: 1px;
+  opacity: 0.6;
 }
 
 .title {

@@ -43,9 +43,19 @@ export class UserRepository {
     });
   }
 
-  async findUsersByTeam(teamNumber: number): Promise<User[]> {
+  async findUsersByTeamLPC11(teamNumber: number): Promise<User[]> {
     const teamUsers = await this.userRepository.find({
-      where: [{ teamNumber: teamNumber }, { currentTeamNumber: teamNumber }],
+      // where: [{ teamNumber: teamNumber }, { currentTeamNumber: teamNumber }],
+      where: [
+      { 
+        teamNumber: teamNumber,
+        workshopCode: 'ЛПЦ-11'
+      },
+      {
+        currentTeamNumber: teamNumber,
+        workshopCode: 'ЛПЦ-11'
+      }
+    ],
     });
     return teamUsers;
   }

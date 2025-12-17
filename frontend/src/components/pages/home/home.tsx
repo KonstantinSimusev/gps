@@ -30,6 +30,7 @@ import {
 // import { selectIsLoadingProfessions } from '../../../services/slices/user/slice';
 
 import { TShiftStatus } from '../../../utils/types';
+import { EmptyChart } from '../../ui/empty-chart/empty-chart';
 
 export const Home = () => {
   const dispatch = useDispatch();
@@ -73,9 +74,13 @@ export const Home = () => {
         title={'Структурное подразделение'}
         text={'ЛПЦ-11 ПАО ММК'}
       />
-      {finishedShift && (
+
+      {!finishedShift ? (
+        <EmptyChart />
+      ) : (
         <ResidueChart shiftId={finishedShift.id ?? ''} shiftStatus={finished} />
       )}
+
       {!activeShift ? (
         <EmptyCard type={active} text={'Идет планирование...'} />
       ) : (

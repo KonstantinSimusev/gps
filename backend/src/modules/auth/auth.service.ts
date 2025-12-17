@@ -81,7 +81,7 @@ export class AuthService {
       const apiUser = this.transformUser(user);
 
       return apiUser;
-    } catch {
+    } catch (error) {
       throw new InternalServerErrorException(
         'Произошла ошибка при авторизации',
       );

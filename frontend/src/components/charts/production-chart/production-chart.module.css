@@ -34,8 +34,7 @@
 .chart {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(30px, 1fr));
-  grid-template-rows: auto 1px auto;
-  /* padding: 0 30px; */
+  grid-template-rows: 80px 1px auto;
   align-items: end;
 }
 
