@@ -1,6 +1,6 @@
 import styles from './singlton.module.css';
 
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 interface IProps {
   width?: number;
@@ -10,9 +10,25 @@ interface IProps {
 }
 
 export const Singlton = ({ width, height, isLoading, element }: IProps) => {
+  // Флаг: true → ждём 1 сек, false → показываем реальный isLoading
+  const [isDelayed, setIsDelayed] = useState(true);
+
+  useEffect(() => {
+    // Запускаем таймер на 1000 мс
+    const timer = setTimeout(() => {
+      setIsDelayed(false);
+    }, 1000);
+
+    // Очистка таймера при удалении компонента
+    return () => clearTimeout(timer);
+  }, []); // Пустой массив → эффект срабатывает только при монтировании
+
+  // Если идёт задержка (isDelayed === true) → показываем заглушку
+  // Иначе → показываем то, что пришло в пропсе isLoading
+  const finalIsLoading = isDelayed ? true : isLoading;
   return (
     <>
-      {isLoading ? (
+      {finalIsLoading ? (
         <div
           className={styles.container}
           style={{

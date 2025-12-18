@@ -16,7 +16,7 @@ interface IProps {
 
 export const Chart = ({ list }: IProps) => {
   // Фиксированная максимальная высота столбца — 300px
-  const FIXED_MAX_HEIGHT = 60;
+  const FIXED_MAX_HEIGHT = 50;
 
   return (
     <ul className={styles.container}>

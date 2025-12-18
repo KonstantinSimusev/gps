@@ -53,30 +53,29 @@ export const ResidueChart = ({
   return (
     <ChartLayout>
       <div className={styles.header__wrapper}>
-        <div className={styles.wrapper}>
-          <Singlton
-            width={184.38}
-            height={56.79}
-            isLoading={isLoadingResidue}
-            element={
-              <div className={styles.wrapper}>
-                <Location title={'ОСТАТКИ'} />
-                <ShiftStatus isStart={isHome} />
-              </div>
-            }
-          />
-        </div>
-
         <Singlton
-          width={61.52}
-          height={31.6}
+          width={180}
+          height={13.8}
           isLoading={isLoadingResidue}
           element={
-            <ShiftDate
-              date={date}
-              shiftNumber={shiftNumber}
-              teamNumber={teamNumber}
-            />
+            shiftNumber > 0 && (
+              <ShiftDate
+                date={date}
+                shiftNumber={shiftNumber}
+                teamNumber={teamNumber}
+              />
+            )
+          }
+        />
+        <Singlton
+          width={184.38}
+          height={40.79}
+          isLoading={isLoadingResidue}
+          element={
+            <div className={styles.wrapper}>
+              <Location title={'ОСТАТКИ'} />
+              <ShiftStatus isStart={isHome} />
+            </div>
           }
         />
       </div>
