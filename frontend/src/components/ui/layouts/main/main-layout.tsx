@@ -1,4 +1,5 @@
-import styles from './layout.module.css';
+import styles from './main-layout.module.css';
+
 import clsx from 'clsx';
 
 interface ILayoutProps {
@@ -6,6 +7,6 @@ interface ILayoutProps {
   className?: string;
 }
 
-export const Layout = ({ children, className = '' }: ILayoutProps) => {
+export const MainLayout = ({ children, className = '' }: ILayoutProps) => {
   return <div className={clsx(styles.container, className)}>{children}</div>;
 };

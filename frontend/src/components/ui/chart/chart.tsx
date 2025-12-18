@@ -2,7 +2,7 @@ import styles from './chart.module.css';
 
 import { Border } from '../border/border';
 
-interface IChartProps {
+interface IProps {
   list: {
     id: string;
     location?: string;
@@ -14,7 +14,7 @@ interface IChartProps {
   }[];
 }
 
-export const Chart = ({ list }: IChartProps) => {
+export const Chart = ({ list }: IProps) => {
   // Фиксированная максимальная высота столбца — 300px
   const FIXED_MAX_HEIGHT = 60;
 

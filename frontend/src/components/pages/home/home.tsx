@@ -3,11 +3,11 @@ import styles from './home.module.css';
 import { useEffect } from 'react';
 
 // import { Spinner } from '../../spinner/spinner';
-import { Layout } from '../../ui/layout/layout';
+import { MainLayout } from '../../ui/layouts/main/main-layout';
 import { InfoBlock } from '../../ui/info-block/info-block';
 import { ResidueChart } from '../../charts/residue-chart/residue-chart';
 import { EmptyCard } from '../../ui/empty-blocks/empty-card/empty-card';
-import { ShiftCard } from '../../ui/shift-card/shift-card';
+import { ShiftCard } from '../../shift-card/shift-card';
 import { SickInfo } from '../../sick-info/sick-info';
 import { ProfessionInfo } from '../../profession-info/profession-info';
 
@@ -16,8 +16,8 @@ import { useDispatch, useSelector } from '../../../services/store';
 import {
   selectActiveShift,
   selectFinishedShift,
-  // selectIsLoadingActiveShift,
-  // selectIsLoadingFinishedShift,
+  selectIsLoadingActiveShift,
+  selectIsLoadingFinishedShift,
   // selectIsLoadingShift,
 } from '../../../services/slices/shift/slice';
 
@@ -26,11 +26,11 @@ import {
   getFinishedShift,
 } from '../../../services/slices/shift/actions';
 
-// import { selectIsLoadingResidues } from '../../../services/slices/residue/slice';
+import { selectIsLoadingResidues } from '../../../services/slices/residue/slice';
 // import { selectIsLoadingProfessions } from '../../../services/slices/user/slice';
 
 import { TShiftStatus } from '../../../utils/types';
-import { EmptyChart } from '../../ui/empty-blocks/empty-chart/empty-chart';
+import { Singlton } from '../../ui/singlton/singlton';
 
 export const Home = () => {
   const dispatch = useDispatch();
@@ -41,9 +41,9 @@ export const Home = () => {
   const active: TShiftStatus = 'активная';
   const finished: TShiftStatus = 'завершённая';
 
-  // const isLoadingResidue = useSelector(selectIsLoadingResidues);
-  // const isLoadingActiveShift = useSelector(selectIsLoadingActiveShift);
-  // const isLoadingFinishedShift = useSelector(selectIsLoadingFinishedShift);
+  const isLoadingResidue = useSelector(selectIsLoadingResidues);
+  const isLoadingActiveShift = useSelector(selectIsLoadingActiveShift);
+  const isLoadingFinishedShift = useSelector(selectIsLoadingFinishedShift);
   // const isLoadingProfessions = useSelector(selectIsLoadingProfessions);
   // const isLoadingLastTeamsShifts = useSelector(selectIsLoadingShift);
 
@@ -59,27 +59,28 @@ export const Home = () => {
     dispatch(getFinishedShift());
   }, []);
 
-  // if (isLoading) {
-  //   return (
-  //     <div className={styles.spinner}>
-  //       <Spinner />
-  //     </div>
-  //   );
-  // }
-
   return (
-    <Layout>
-      <InfoBlock
-        className={styles.title__bottom}
-        title={'Структурное подразделение'}
-        text={'ЛПЦ-11 ПАО ММК'}
+    <MainLayout>
+      <Singlton
+        width={220}
+        height={42.49}
+        isLoading={isLoadingResidue}
+        element={
+          <InfoBlock
+            className={styles.title__bottom}
+            title={'Структурное подразделение'}
+            text={'ЛПЦ-11 ПАО ММК'}
+          />
+        }
       />
 
-      {!finishedShift ? (
-        <EmptyChart />
-      ) : (
-        <ResidueChart shiftId={finishedShift.id ?? ''} shiftStatus={finished} />
-      )}
+      <ResidueChart
+        shiftId={finishedShift?.id ?? ''}
+        shiftStatus={finished}
+        date={activeShift?.date ?? new Date()}
+        shiftNumber={activeShift?.shiftNumber ?? 0}
+        teamNumber={activeShift?.teamNumber ?? 0}
+      />
 
       {!activeShift ? (
         <EmptyCard type={active} text={'Идет планирование...'} />
@@ -90,6 +91,7 @@ export const Home = () => {
           shiftNumber={activeShift.shiftNumber}
           teamNumber={activeShift.teamNumber}
           type={active}
+          isLoading={isLoadingActiveShift}
         />
       )}
 
@@ -102,11 +104,12 @@ export const Home = () => {
           shiftNumber={finishedShift.shiftNumber}
           teamNumber={finishedShift.teamNumber}
           type={finished}
+          isLoading={isLoadingFinishedShift}
         />
       )}
 
       <ProfessionInfo />
       <SickInfo />
-    </Layout>
+    </MainLayout>
   );
 };

@@ -3,13 +3,13 @@ import styles from './default.module.css';
 import { useContext } from 'react';
 import { LayerContext } from '../../../contexts/layer/layerContext';
 import { Button } from '../../ui/button/button';
-import { Layout } from '../../ui/layout/layout';
+import { MainLayout } from '../../ui/layouts/main/main-layout';
 
 export const DefaultPage = () => {
   const { isCookie, setIsCookie } = useContext(LayerContext);
 
   return (
-    <Layout>
+    <MainLayout>
       {isCookie && <p className={styles.text}>Пожалуйста, авторизуйтесь...</p>}
       {!isCookie && (
         <>
@@ -101,6 +101,6 @@ export const DefaultPage = () => {
           </div>
         </>
       )}
-    </Layout>
+    </MainLayout>
   );
 };

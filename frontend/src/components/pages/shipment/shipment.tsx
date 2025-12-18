@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 
-import { Layout } from '../../ui/layout/layout';
+import { MainLayout } from '../../ui/layouts/main/main-layout';
 import { PageTitle } from '../../ui/page-title/page-title';
 import { ShiftInfo } from '../../shift-info/shift-info';
 import { ShipmentList } from '../../lists/shipment-list/shipment-list';
@@ -26,7 +26,7 @@ export const Shipment = () => {
   }, []);
 
   return (
-    <Layout>
+    <MainLayout>
       <PageTitle title="ОТГРУЗКА" />
       {currentShiftId && lastShift && isShowShift(lastShift) ? (
         <>
@@ -40,6 +40,6 @@ export const Shipment = () => {
       ) : (
         <Error />
       )}
-    </Layout>
+    </MainLayout>
   );
 };

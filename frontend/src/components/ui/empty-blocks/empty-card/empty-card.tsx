@@ -15,9 +15,7 @@ export const EmptyCard = ({ text, type }: ICardProps) => {
 
   return (
     <li className={styles.item}>
-      <div className={styles.wrapper__shift}>
-        <span className={styles.text}>{text}</span>
-      </div>
+      <span className={styles.text}>{text}</span>
       <span
         className={clsx(
           type === active && styles.text__current,

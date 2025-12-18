@@ -1,0 +1,27 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wrapper {
+  position: relative;
+  display: flex;
+  width: 100%;
+}
+
+.date,
+.team,
+.shift {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.date {
+  position: relative;
+  right: -2px;
+}
+
+.shift {
+  margin-left: 4px;
+}

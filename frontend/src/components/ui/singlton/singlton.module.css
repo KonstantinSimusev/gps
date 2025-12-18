@@ -1,0 +1,21 @@
+.container {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  background-color: var(--bg-color-singlton); /* Светлый серый фон */
+  overflow: hidden; /* Скрываем выходящие за границы полосы */
+  animation: fade-pulse 0.8s ease-in-out infinite; /* Новая анимация */
+}
+
+@keyframes fade-pulse {
+  0%,
+  100% {
+    opacity: 0.3; /* Тусклое состояние */
+  }
+
+  50% {
+    opacity: 1; /* Яркое состояние */
+  }
+}

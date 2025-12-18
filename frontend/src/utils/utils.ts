@@ -17,6 +17,20 @@ export const formatDate = (date: Date) => {
   });
 };
 
+export const formatShortDate = (date: string | Date): string => {
+  const parsedDate = new Date(date);
+
+  if (isNaN(parsedDate.getTime())) {
+    throw new Error('Invalid Date');
+  }
+
+  const day = String(parsedDate.getDate()).padStart(2, '0');
+  const month = String(parsedDate.getMonth() + 1).padStart(2, '0'); // Месяц от 0 до 11 → +1
+  const year = parsedDate.getFullYear();
+
+  return `${day}-${month}-${year}`;
+};
+
 export const delay = (ms: number = 1000): Promise<void> =>
   new Promise((resolve) => {
     const timeoutId = setTimeout(() => {

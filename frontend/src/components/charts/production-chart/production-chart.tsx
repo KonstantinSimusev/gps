@@ -1,7 +1,5 @@
 import styles from './production-chart.module.css';
 
-import clsx from 'clsx';
-
 import { useEffect } from 'react';
 
 import { Error } from '../../ui/error/error';
@@ -9,10 +7,13 @@ import { Border } from '../../ui/border/border';
 
 import { useDispatch, useSelector } from '../../../services/store';
 
+import { ShiftStatus } from '../../ui/shift-status/shift-status';
+
 import { selectProductions } from '../../../services/slices/production/slice';
 import { getProductions } from '../../../services/slices/production/actions';
 
 import { IUserShift } from '../../../utils/api.interface';
+
 import { TShiftStatus } from '../../../utils/types';
 
 import {
@@ -22,17 +23,24 @@ import {
   getCount,
   getPackerStats,
 } from '../../../utils/utils';
+import { ShiftDate } from '../../ui/shift-date/shift-date';
 
 interface IChartProps {
   shiftId: string;
   list: IUserShift[];
   shiftStatus: string;
+  date: Date;
+  shiftNumber: number;
+  teamNumber: number;
 }
 
 export const ProductionChart = ({
   shiftId,
   list,
   shiftStatus,
+  date,
+  shiftNumber,
+  teamNumber,
 }: IChartProps) => {
   const dispatch = useDispatch();
 
@@ -44,11 +52,6 @@ export const ProductionChart = ({
   const packerLocations = getPackerStats(workersShifts);
   const attendanceProfessions = countProfessionsByAttendance(workersShifts);
   const filterArrayByLum = filterAndSortProfessions(attendanceProfessions);
-
-  const currentShiftStatus =
-    shiftStatus === activeStatusShift
-      ? 'данные на начало смены'
-      : 'данные на конец смены';
 
   const productionTotal = productions
     .filter((item) => item.location === '2 ОЧЕРЕДЬ')
@@ -71,17 +74,14 @@ export const ProductionChart = ({
         <>
           <div className={styles.wrapper__header}>
             <span className={styles.location}>ПРОИЗВОДСТВО</span>
-            <span
-              className={clsx(
-                styles.wrapper__status,
-                shiftStatus === activeStatusShift
-                  ? styles.status__start
-                  : styles.status__end,
-              )}
-            >
-              {currentShiftStatus}
-            </span>
+            <ShiftStatus isStart={shiftStatus === activeStatusShift} />
+            <ShiftDate
+              date={date}
+              shiftNumber={shiftNumber}
+              teamNumber={teamNumber}
+            />
           </div>
+
           <ul className={styles.chart}>
             {productions.map((item) => {
               // Если максимальное значение в данных равно 0, все столбцы будут нулевыми
@@ -93,7 +93,7 @@ export const ProductionChart = ({
 
               // Переводим процент в пиксели (от 0 до 300)
               const heightInPx = (percentage / 100) * FIXED_MAX_HEIGHT;
-              
+
               return (
                 <li key={item.id} className={styles.column}>
                   <span

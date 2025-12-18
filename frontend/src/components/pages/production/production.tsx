@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 
-import { Layout } from '../../ui/layout/layout';
+import { MainLayout } from '../../ui/layouts/main/main-layout';
 import { PageTitle } from '../../ui/page-title/page-title';
 import { ShiftInfo } from '../../shift-info/shift-info';
 
@@ -26,7 +26,7 @@ export const Production = () => {
   }, []);
 
   return (
-    <Layout>
+    <MainLayout>
       <PageTitle title="ПРОИЗВОДСТВО" />
       {currentShiftId && lastShift && isShowShift(lastShift) ? (
         <>
@@ -40,6 +40,6 @@ export const Production = () => {
       ) : (
         <Error />
       )}
-    </Layout>
+    </MainLayout>
   );
 };

@@ -2,7 +2,7 @@ import styles from './timesheet.module.css';
 
 import { useEffect } from 'react';
 
-import { Layout } from '../../ui/layout/layout';
+import { MainLayout } from '../../ui/layouts/main/main-layout';
 import { PageTitle } from '../../ui/page-title/page-title';
 import { ShiftInfo } from '../../shift-info/shift-info';
 import { TeamProfessionList } from '../../lists/profession-list/profession-list';
@@ -29,7 +29,7 @@ export const Timesheet = () => {
   }, []);
 
   return (
-    <Layout>
+    <MainLayout>
       <PageTitle title="ТАБЕЛЬ" />
 
       {currentShiftId && lastShift && isShowShift(lastShift) ? (
@@ -39,7 +39,10 @@ export const Timesheet = () => {
             shiftNumber={lastShift.shiftNumber}
             teamNumber={lastShift.teamNumber}
           />
-          <TeamProfessionList list={usersShifts} teamNumber={lastShift.teamNumber} />
+          <TeamProfessionList
+            list={usersShifts}
+            teamNumber={lastShift.teamNumber}
+          />
           <UserShiftList shiftId={currentShiftId} />
         </>
       ) : (
@@ -47,6 +50,6 @@ export const Timesheet = () => {
           <AddButton label="Создать смену" actionType="shift" />
         </div>
       )}
-    </Layout>
+    </MainLayout>
   );
 };

@@ -1,0 +1,11 @@
+.container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 30px;
+  background-color: var(--bg-color-shift);
+  opacity: 0.9;
+  color: var(--color-shift);
+  border-radius: 30px;
+}

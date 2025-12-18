@@ -8,10 +8,10 @@ import { useSelector } from '../../../services/store';
 import {
   selectActiveShift,
   selectFinishedShift,
-  // selectIsLoadingShift,
+  selectIsLoadingShift,
 } from '../../../services/slices/shift/slice';
 import { Error } from '../../ui/error/error';
-import { Layout } from '../../ui/layout/layout';
+import { MainLayout } from '../../ui/layouts/main/main-layout';
 import { TeamProfessionList } from '../../lists/profession-list/profession-list';
 import { useEffect } from 'react';
 import { TShiftStatus } from '../../../utils/types';
@@ -20,14 +20,14 @@ import { PackChart } from '../../charts/pack-chart/pack-chart';
 import { FixChart } from '../../charts/fix-chart/fix-chart';
 import { ResidueChart } from '../../charts/residue-chart/residue-chart';
 import { EmptyShift } from '../../ui/empty-blocks/empty-shift/empty-shift';
-import { useToggleAfterDelay } from '../../../utils/utils';
+// import { useToggleAfterDelay } from '../../../utils/utils';
 import { EmptyContainer } from '../../ui/empty-blocks/empty-container/empty-container';
 
 export const HomeShift = () => {
   const { shiftId } = useParams();
-  // const isLoadingShift = useSelector(selectIsLoadingShift);
+  const isLoadingShift = useSelector(selectIsLoadingShift);
 
-  const isLoading = useToggleAfterDelay(1000);
+  // const isLoading = useToggleAfterDelay(1000);
 
   useEffect(() => {
     // Скролим страницу наверх
@@ -51,12 +51,12 @@ export const HomeShift = () => {
     currentShift === activeShift ? activeStatusShift : finishedStatusShift;
 
   return (
-    <Layout>
+    <MainLayout>
       <div className={styles.wrapper__button}>
         <BackButton actionType="home" />
       </div>
 
-      {isLoading ? (
+      {isLoadingShift ? (
         <EmptyShift />
       ) : (
         <>
@@ -70,7 +70,7 @@ export const HomeShift = () => {
         </>
       )}
 
-      {isLoading ? (
+      {isLoadingShift ? (
         <EmptyContainer />
       ) : (
         <>
@@ -86,6 +86,9 @@ export const HomeShift = () => {
                 shiftId={shiftId}
                 list={currentShift?.usersShifts}
                 shiftStatus={currentStatus}
+                date={currentShift.date}
+                shiftNumber={currentShift.shiftNumber}
+                teamNumber={currentShift.teamNumber}
               />
 
               <PackChart
@@ -95,7 +98,13 @@ export const HomeShift = () => {
               />
 
               {currentStatus === finishedStatusShift && (
-                <ResidueChart shiftId={shiftId} shiftStatus={currentStatus} />
+                <ResidueChart
+                  shiftId={shiftId}
+                  shiftStatus={currentStatus}
+                  date={currentShift.date}
+                  shiftNumber={currentShift.shiftNumber}
+                  teamNumber={currentShift.teamNumber}
+                />
               )}
 
               <ShipmentChart
@@ -113,6 +122,6 @@ export const HomeShift = () => {
           )}
         </>
       )}
-    </Layout>
+    </MainLayout>
   );
 };

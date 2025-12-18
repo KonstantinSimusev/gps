@@ -1,0 +1,29 @@
+.container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 30px;
+  background-color: var(--bg-color-shift);
+  opacity: 0.9;
+  color: var(--color-shift);
+  border-radius: 30px;
+}
+
+.wrapper__header {
+  display: flex;
+  flex-direction: column;
+}
+
+.wrapper__status {
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+.status__start {
+  color: #1e9146;
+}
+
+.status__end {
+  color: #007dff;
+}

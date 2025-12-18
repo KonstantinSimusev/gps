@@ -4,7 +4,7 @@
   justify-content: center;
   margin: 0 clamp(0rem, -6.375rem + 31.875vw, 31.875rem);
   flex-grow: 1;
-  text-align: center;
   color: var(--color-not-found);
+  text-align: center;
   font-size: 16px;
 }
