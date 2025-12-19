@@ -27,10 +27,19 @@ export const ResidueChart = () => {
   const dispatch = useDispatch();
   const finishedShift = useSelector(selectFinishedShift);
   const isLoadingFinishedShift = useSelector(selectIsLoadingFinishedShift);
-
+  
   // Отображаем только на главной странице
   const { pathname } = useLocation();
   const isHome = pathname === '/home';
+
+  const sortedArray = finishedShift?.residues
+    ? finishedShift.residues.slice().sort((a, b) => {
+        const aOrder = a.sortOrder ?? 0; // если undefined → берём 0
+        const bOrder = b.sortOrder ?? 0;
+        return aOrder - bOrder;
+      })
+    : [];
+
 
   const finished: TShiftStatus = 'завершённая';
 
@@ -69,10 +78,7 @@ export const ResidueChart = () => {
             <Singlton height={81} />
           ) : (
             finishedShift && (
-              <Chart
-                list={finishedShift.residues ?? []}
-                titleField={'location'}
-              />
+              <Chart list={sortedArray ?? []} titleField={'location'} />
             )
           )}
 
@@ -82,7 +88,7 @@ export const ResidueChart = () => {
             </div>
           ) : (
             finishedShift && (
-              <Total count={getCount(finishedShift.residues ?? [])} />
+              <Total count={getCount(sortedArray)} />
             )
           )}
         </ChartLayout>
