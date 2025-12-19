@@ -26,6 +26,7 @@ import { ShiftStatus } from '../../ui/shift-status/shift-status';
 import { ColumnWrapper } from '../../ui/wrappers/column/column';
 import { HeaderWrapper } from '../../ui/wrappers/header/header';
 import { Location } from '../../ui/location/location';
+import { Chart } from '../../ui/chart/chart';
 
 interface IChartProps {
   shiftId: string;
@@ -61,9 +62,6 @@ export const PackChart = ({
   const attendanceProfessions = countProfessionsByAttendance(workersShifts);
   const filterArrayByLum = filterAndSortProfessions(attendanceProfessions);
 
-  // Фиксированная максимальная высота столбца — 300px
-  const FIXED_MAX_HEIGHT = 60;
-
   useEffect(() => {
     if (shiftId) {
       dispatch(getPacks(shiftId));
@@ -89,35 +87,8 @@ export const PackChart = ({
                   <ShiftStatus status={shiftStatus} />
                 </ColumnWrapper>
               </HeaderWrapper>
-             
-              <ul className={styles.chart}>
-                {transformArray.map((item) => {
-                  // Если максимальное значение в данных равно 0, все столбцы будут нулевыми
-                  const maxDataValue =
-                    Math.max(...transformArray.map((r) => r.count)) || 1;
 
-                  // Вычисляем высоту столбца в процентах от 300px
-                  const percentage = (item.count / maxDataValue) * 100;
-
-                  // Переводим процент в пиксели (от 0 до 300)
-                  const heightInPx = (percentage / 100) * FIXED_MAX_HEIGHT;
-
-                  return (
-                    <li key={item.id} className={styles.column}>
-                      <span
-                        style={{ height: `${heightInPx}px` }}
-                        className={styles.column__height}
-                      >
-                        <span className={styles.count}>
-                          {item.count > 0 ? item.count : ''}
-                        </span>
-                      </span>
-                      <Border />
-                      <span className={styles.title}>{item.location}</span>
-                    </li>
-                  );
-                })}
-              </ul>
+              <Chart list={transformArray} titleField={'location'} />
 
               <div className={styles.wrapper__count}>
                 <div className={styles.wrapper__footer}>

@@ -29,6 +29,8 @@ import { HeaderWrapper } from '../../ui/wrappers/header/header';
 import { ColumnWrapper } from '../../ui/wrappers/column/column';
 import { Chart } from '../../ui/chart/chart';
 import { ShiftStatus } from '../../ui/shift-status/shift-status';
+import { Total } from '../../ui/total/total';
+import { CountWrapper } from '../../ui/wrappers/count-wrapper/count-wrapper';
 
 interface IChartProps {
   shiftId: string;
@@ -91,19 +93,18 @@ export const ProductionChart = ({
 
           <Chart list={productions} titleField={'unit'} />
 
-          <div className={styles.wrapper__count}>
-            <div className={styles.wrapper__footer}>
-              <span className={styles.total__size}>АНГЦ + АНО + АИ:</span>
-              <span className={styles.total__size}>{productionTotal} рул</span>
-            </div>
-
-            <div className={styles.wrapper__footer}>
-              <span className={styles.total__size}>Итого за смену:</span>
-              <span className={styles.total__size}>
-                {getCount(productions)} рул
-              </span>
-            </div>
-          </div>
+          <CountWrapper>
+            <Total
+              text={'АНГЦ + АНО + АИ:'}
+              count={productionTotal}
+              unit={'рул'}
+            />
+            <Total
+              text={'Итого за смену:'}
+              count={getCount(productions)}
+              unit={'рул'}
+            />
+          </CountWrapper>
 
           {shiftStatus === activeStatusShift && (
             <>
