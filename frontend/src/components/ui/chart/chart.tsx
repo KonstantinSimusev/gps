@@ -12,9 +12,11 @@ interface IProps {
     count: number;
     sortOrder?: number;
   }[];
+  // Пропс для выбора поля, которое будет отображаться в title
+  titleField?: 'location' | 'unit' | 'railway' | 'area';
 }
 
-export const Chart = ({ list }: IProps) => {
+export const Chart = ({ list, titleField }: IProps) => {
   // Фиксированная максимальная высота столбца — 300px
   const FIXED_MAX_HEIGHT = 50;
 
@@ -30,6 +32,9 @@ export const Chart = ({ list }: IProps) => {
         // Переводим процент в пиксели (от 0 до 60)
         const columnHeight = (percentage / 100) * FIXED_MAX_HEIGHT;
 
+        // Определяем, какое поле выводить в title
+        const titleValue = titleField ? item[titleField] : '';
+
         return (
           <li key={item.id} className={styles.item}>
             <span
@@ -41,7 +46,7 @@ export const Chart = ({ list }: IProps) => {
               </span>
             </span>
             <Border />
-            <span className={styles.title}>{item.location}</span>
+            <span className={styles.title}>{titleValue}</span>
           </li>
         );
       })}

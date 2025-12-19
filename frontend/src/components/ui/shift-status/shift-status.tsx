@@ -3,22 +3,23 @@ import styles from './shift-status.module.css';
 import clsx from 'clsx';
 
 interface IProps {
-  isStart: boolean;
+  status: 'активная' | 'завершённая';
 }
 
-export const ShiftStatus = ({ isStart }: IProps) => {
-  const currentShiftStatus = isStart
-    ? 'данные на начало смены'
-    : 'данные на конец смены';
+export const ShiftStatus = ({ status }: IProps) => {
+  const startData = 'данные на начало смены';
+  const endDate = 'данные на конец смены';
 
   return (
     <span
       className={clsx(
         styles.wrapper__status,
-        isStart ? styles.status__start : styles.status__end,
+        status === 'активная' && styles.status__start,
+        status === 'завершённая' && styles.status__end,
       )}
     >
-      {currentShiftStatus}
+      {status === 'активная' && startData}
+      {status === 'завершённая' && endDate}
     </span>
   );
 };

@@ -6,6 +6,7 @@ import {
 } from '../../../utils/api/residue.api';
 
 import { IList, IResidue, ISuccess } from '../../../utils/api.interface';
+
 import { delay } from '../../../utils/utils';
 
 export const getResidues = createAsyncThunk(
@@ -15,7 +16,7 @@ export const getResidues = createAsyncThunk(
       const response = await getResiduesApi(shiftId);
 
       // Добавляем задержку кода
-      // await delay();
+      await delay();
 
       if (!response) {
         throw new Error();
@@ -49,7 +50,7 @@ export const updateResidue = createAsyncThunk(
       return response;
     } catch (error) {
       // Добавляем задержку кода
-      await delay();
+      // await delay();
 
       throw error;
     }

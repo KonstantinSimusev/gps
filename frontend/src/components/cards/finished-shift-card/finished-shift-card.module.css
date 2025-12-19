@@ -1,17 +1,18 @@
 .item {
   display: flex;
   justify-content: space-between;
-  height: 123.2px;
   padding: 30px;
+  min-height: 123px;
   background-color: var(--bg-color-shift);
   color: var(--color-shift);
   border-radius: 30px;
   cursor: pointer;
 }
 
-.text {
-  font-size: 14px;
-  opacity: 0.6;
+.wrapper__shift {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .text__current {
@@ -22,4 +23,14 @@
 .text__end {
   font-size: 14px;
   color: #007dff;
+}
+
+.text {
+  font-size: 16px;
+  margin-left: 1px;
+}
+
+.emprty {
+  font-size: 14px;
+  opacity: 0.6;
 }

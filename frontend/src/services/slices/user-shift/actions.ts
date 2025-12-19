@@ -33,7 +33,7 @@ export const createUserShift = createAsyncThunk(
       return response;
     } catch (error) {
       // Добавляем задержку кода
-      await delay();
+      // await delay();
 
       throw error;
     }
@@ -47,7 +47,7 @@ export const getUsersShifts = createAsyncThunk(
       const response = await getUsersShiftsApi(shiftId);
 
       // Добавляем задержку кода
-      // await delay();
+      await delay();
 
       if (!response) {
         throw new Error();
@@ -81,7 +81,7 @@ export const updateUserShift = createAsyncThunk(
       return response;
     } catch (error) {
       // Добавляем задержку кода
-      await delay();
+      // await delay();
 
       throw error;
     }
@@ -104,7 +104,7 @@ export const deleteUserShift = createAsyncThunk(
       return response;
     } catch (error) {
       // Добавляем задержку кода
-      await delay();
+      // await delay();
 
       // Пойдет в rejected
       throw error;

@@ -38,10 +38,6 @@ import { Fix } from '../pages/fix/fix';
 import { ProductionForm } from '../forms/production/production.form';
 import { ShipmentForm } from '../forms/shipment/shipment.form';
 import { Production } from '../pages/production/production';
-import {
-  getActiveShift,
-  getFinishedShift,
-} from '../../services/slices/shift/actions';
 import { PackForm } from '../forms/pack/pack.form';
 import { FixForm } from '../forms/fix/fix.form';
 import { ResidueForm } from '../forms/residue/residue.form';
@@ -94,8 +90,6 @@ const App = () => {
   useEffect(() => {
     console.log('✅ App смонтирован');
     dispatch(checkAccessToken());
-    dispatch(getActiveShift());
-    dispatch(getFinishedShift());
   }, []);
 
   console.log('🔁 App отрендерен');

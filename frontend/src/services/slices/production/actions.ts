@@ -1,6 +1,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { getProductionsApi, updateProductionApi } from '../../../utils/api/production.api';
+import {
+  getProductionsApi,
+  updateProductionApi,
+} from '../../../utils/api/production.api';
 
 import { IList, IProduction, ISuccess } from '../../../utils/api.interface';
 
@@ -13,7 +16,7 @@ export const getProductions = createAsyncThunk(
       const response = await getProductionsApi(shiftId);
 
       // Добавляем задержку кода
-      // await delay();
+      await delay();
 
       if (!response) {
         throw new Error();
@@ -47,7 +50,7 @@ export const updateProduction = createAsyncThunk(
       return response;
     } catch (error) {
       // Добавляем задержку кода
-      await delay();
+      // await delay();
 
       throw error;
     }

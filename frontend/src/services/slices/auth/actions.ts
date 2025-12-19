@@ -1,11 +1,14 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+
 import {
   checkAccessTokenApi,
   loginUserApi,
   logoutUserApi,
 } from '../../../utils/api/auth.api';
-import { delay } from '../../../utils/utils';
+
 import { ILoginData, IUser } from '../../../utils/api.interface';
+
+import { delay } from '../../../utils/utils';
 
 export const loginUser = createAsyncThunk(
   'auth/login',
@@ -20,7 +23,7 @@ export const loginUser = createAsyncThunk(
       return response;
     } catch (error) {
       // Добавляем задержку кода
-      await delay();
+      // await delay();
 
       throw new Error('Неверный логин или пароль');
     }
@@ -65,7 +68,7 @@ export const logoutUser = createAsyncThunk('auth/logout', async () => {
     return response;
   } catch (error) {
     // Добавляем задержку кода
-    await delay();
+    // await delay();
 
     throw error;
   }

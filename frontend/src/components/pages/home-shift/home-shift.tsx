@@ -4,7 +4,7 @@ import { BackButton } from '../../buttons/back/back';
 import { ProductionChart } from '../../charts/production-chart/production-chart';
 import { useParams } from 'react-router-dom';
 import { ShiftInfo } from '../../shift-info/shift-info';
-import { useSelector } from '../../../services/store';
+import { useDispatch, useSelector } from '../../../services/store';
 import {
   selectActiveShift,
   selectFinishedShift,
@@ -18,20 +18,21 @@ import { TShiftStatus } from '../../../utils/types';
 import { ShipmentChart } from '../../charts/shipment-chart/shipment-chart';
 import { PackChart } from '../../charts/pack-chart/pack-chart';
 import { FixChart } from '../../charts/fix-chart/fix-chart';
-import { ResidueChart } from '../../charts/residue-chart/residue-chart';
 import { EmptyShift } from '../../ui/empty-blocks/empty-shift/empty-shift';
-// import { useToggleAfterDelay } from '../../../utils/utils';
 import { EmptyContainer } from '../../ui/empty-blocks/empty-container/empty-container';
+import { getActiveShift, getFinishedShift } from '../../../services/slices/shift/actions';
 
 export const HomeShift = () => {
+  const dispatch = useDispatch();
+  
   const { shiftId } = useParams();
   const isLoadingShift = useSelector(selectIsLoadingShift);
-
-  // const isLoading = useToggleAfterDelay(1000);
 
   useEffect(() => {
     // Скролим страницу наверх
     window.scrollTo(0, 0);
+    dispatch(getActiveShift());
+    dispatch(getFinishedShift());
   }, []);
 
   if (!shiftId) {
@@ -76,12 +77,6 @@ export const HomeShift = () => {
         <>
           {currentShift?.usersShifts && (
             <>
-              <TeamProfessionList
-                type={currentStatus}
-                list={currentShift?.usersShifts}
-                teamNumber={currentShift.teamNumber}
-              />
-
               <ProductionChart
                 shiftId={shiftId}
                 list={currentShift?.usersShifts}
@@ -95,28 +90,33 @@ export const HomeShift = () => {
                 shiftId={shiftId}
                 list={currentShift?.usersShifts}
                 shiftStatus={currentStatus}
+                date={currentShift.date}
+                shiftNumber={currentShift.shiftNumber}
+                teamNumber={currentShift.teamNumber}
               />
-
-              {currentStatus === finishedStatusShift && (
-                <ResidueChart
-                  shiftId={shiftId}
-                  shiftStatus={currentStatus}
-                  date={currentShift.date}
-                  shiftNumber={currentShift.shiftNumber}
-                  teamNumber={currentShift.teamNumber}
-                />
-              )}
 
               <ShipmentChart
                 shiftId={shiftId}
                 list={currentShift?.usersShifts}
                 shiftStatus={currentStatus}
+                date={currentShift.date}
+                shiftNumber={currentShift.shiftNumber}
+                teamNumber={currentShift.teamNumber}
               />
 
               <FixChart
                 shiftId={shiftId}
                 list={currentShift?.usersShifts}
                 shiftStatus={currentStatus}
+                date={currentShift.date}
+                shiftNumber={currentShift.shiftNumber}
+                teamNumber={currentShift.teamNumber}
+              />
+
+              <TeamProfessionList
+                type={currentStatus}
+                list={currentShift?.usersShifts}
+                teamNumber={currentShift.teamNumber}
               />
             </>
           )}

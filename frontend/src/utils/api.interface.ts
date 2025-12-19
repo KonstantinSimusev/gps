@@ -34,6 +34,7 @@ export interface IShift {
   endShift?: Date;
   usersShifts?: IUserShift[];
   productions?: IProduction[];
+  residues?: IResidue[];
 }
 
 export interface IUserShift {

@@ -31,7 +31,6 @@ export const Timesheet = () => {
   return (
     <MainLayout>
       <PageTitle title="ТАБЕЛЬ" />
-
       {currentShiftId && lastShift && isShowShift(lastShift) ? (
         <>
           <ShiftInfo

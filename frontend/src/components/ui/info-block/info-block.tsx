@@ -1,5 +1,6 @@
-import clsx from 'clsx';
 import styles from './info-block.module.css';
+
+import clsx from 'clsx';
 
 interface IInfoBlockProps {
   className?: string;

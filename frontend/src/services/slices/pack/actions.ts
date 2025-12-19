@@ -3,6 +3,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getPacksApi, updatePackApi } from '../../../utils/api/pack.api';
 
 import { IList, IPack, ISuccess } from '../../../utils/api.interface';
+
 import { delay } from '../../../utils/utils';
 
 export const getPacks = createAsyncThunk(
@@ -12,7 +13,7 @@ export const getPacks = createAsyncThunk(
       const response = await getPacksApi(shiftId);
 
       // Добавляем задержку кода
-      // await delay();
+      await delay();
 
       if (!response) {
         throw new Error();
@@ -46,7 +47,7 @@ export const updatePack = createAsyncThunk(
       return response;
     } catch (error) {
       // Добавляем задержку кода
-      await delay();
+      // await delay();
 
       throw error;
     }

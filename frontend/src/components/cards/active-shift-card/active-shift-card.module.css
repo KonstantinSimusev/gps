@@ -29,3 +29,8 @@
   font-size: 16px;
   margin-left: 1px;
 }
+
+.emprty {
+  font-size: 14px;
+  opacity: 0.6;
+}

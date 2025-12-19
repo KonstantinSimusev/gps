@@ -1,6 +1,5 @@
 import styles from './residue-chart.module.css';
 
-import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { ChartLayout } from '../../ui/layouts/chart/chart';
@@ -8,92 +7,86 @@ import { Chart } from '../../ui/chart/chart';
 import { Total } from '../../ui/total/total';
 import { Location } from '../../ui/location/location';
 import { ShiftStatus } from '../../ui/shift-status/shift-status';
-
-import { useDispatch, useSelector } from '../../../services/store';
-
-import {
-  selectIsLoadingResidues,
-  selectResidues,
-} from '../../../services/slices/residue/slice';
-import { getResidues } from '../../../services/slices/residue/actions';
-
-import { getCount } from '../../../utils/utils';
 import { ShiftDate } from '../../ui/shift-date/shift-date';
 import { Singlton } from '../../ui/singlton/singlton';
+import { HeaderWrapper } from '../../ui/wrappers/header/header';
+import { ColumnWrapper } from '../../ui/wrappers/column/column';
 
-interface IProps {
-  shiftId: string;
-  shiftStatus?: string;
-  date: Date;
-  shiftNumber: number;
-  teamNumber: number;
-}
+import { getFinishedShift } from '../../../services/slices/shift/actions';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from '../../../services/store';
+import {
+  selectFinishedShift,
+  selectIsLoadingFinishedShift,
+} from '../../../services/slices/shift/slice';
 
-export const ResidueChart = ({
-  shiftId,
-  date,
-  shiftNumber,
-  teamNumber,
-}: IProps) => {
+import { getCount } from '../../../utils/utils';
+import { TShiftStatus } from '../../../utils/types';
+
+export const ResidueChart = () => {
   const dispatch = useDispatch();
+  const finishedShift = useSelector(selectFinishedShift);
+  const isLoadingFinishedShift = useSelector(selectIsLoadingFinishedShift);
 
-  const isLoadingResidue = useSelector(selectIsLoadingResidues);
-
+  // Отображаем только на главной странице
   const { pathname } = useLocation();
   const isHome = pathname === '/home';
 
-  const residues = useSelector(selectResidues);
+  const finished: TShiftStatus = 'завершённая';
 
   useEffect(() => {
-    if (shiftId) {
-      dispatch(getResidues(shiftId));
-    }
-  }, [shiftId]);
+    dispatch(getFinishedShift());
+  }, []);
 
   return (
-    <ChartLayout>
-      <div className={styles.header__wrapper}>
-        <Singlton
-          width={180}
-          height={13.8}
-          isLoading={isLoadingResidue}
-          element={
-            shiftNumber > 0 && (
-              <ShiftDate
-                date={date}
-                shiftNumber={shiftNumber}
-                teamNumber={teamNumber}
+    <>
+      {isHome && (
+        <ChartLayout>
+          <HeaderWrapper>
+            {isLoadingFinishedShift ? (
+              <Singlton width={206} height={16.09} />
+            ) : (
+              finishedShift && (
+                <ShiftDate
+                  date={finishedShift.date}
+                  shiftNumber={finishedShift.shiftNumber}
+                  teamNumber={finishedShift.teamNumber}
+                />
+              )
+            )}
+
+            {isLoadingFinishedShift ? (
+              <Singlton width={190} height={40.79} />
+            ) : (
+              <ColumnWrapper>
+                <Location title={'ОСТАТКИ'} />
+                <ShiftStatus status={finished} />
+              </ColumnWrapper>
+            )}
+          </HeaderWrapper>
+
+          {isLoadingFinishedShift ? (
+            <Singlton height={81} />
+          ) : (
+            finishedShift && (
+              <Chart
+                list={finishedShift.residues ?? []}
+                titleField={'location'}
               />
             )
-          }
-        />
-        <Singlton
-          width={184.38}
-          height={40.79}
-          isLoading={isLoadingResidue}
-          element={
-            <div className={styles.wrapper}>
-              <Location title={'ОСТАТКИ'} />
-              <ShiftStatus isStart={isHome} />
+          )}
+
+          {isLoadingFinishedShift ? (
+            <div className={styles.total__wrapper}>
+              <Singlton width={135} height={18.4} />
             </div>
-          }
-        />
-      </div>
-
-      <Singlton
-        height={81}
-        isLoading={isLoadingResidue}
-        element={<Chart list={residues} />}
-      />
-
-      <div className={styles.total__wrapper}>
-        <Singlton
-          width={124.55}
-          height={18.4}
-          isLoading={isLoadingResidue}
-          element={<Total count={getCount(residues)} />}
-        />
-      </div>
-    </ChartLayout>
+          ) : (
+            finishedShift && (
+              <Total count={getCount(finishedShift.residues ?? [])} />
+            )
+          )}
+        </ChartLayout>
+      )}
+    </>
   );
 };

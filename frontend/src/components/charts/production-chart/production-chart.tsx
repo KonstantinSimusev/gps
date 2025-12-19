@@ -7,7 +7,7 @@ import { Border } from '../../ui/border/border';
 
 import { useDispatch, useSelector } from '../../../services/store';
 
-import { ShiftStatus } from '../../ui/shift-status/shift-status';
+// import { ShiftStatus } from '../../ui/shift-status/shift-status';
 
 import { selectProductions } from '../../../services/slices/production/slice';
 import { getProductions } from '../../../services/slices/production/actions';
@@ -24,11 +24,16 @@ import {
   getPackerStats,
 } from '../../../utils/utils';
 import { ShiftDate } from '../../ui/shift-date/shift-date';
+import { Location } from '../../ui/location/location';
+import { HeaderWrapper } from '../../ui/wrappers/header/header';
+import { ColumnWrapper } from '../../ui/wrappers/column/column';
+import { Chart } from '../../ui/chart/chart';
+import { ShiftStatus } from '../../ui/shift-status/shift-status';
 
 interface IChartProps {
   shiftId: string;
   list: IUserShift[];
-  shiftStatus: string;
+  shiftStatus: 'активная' | 'завершённая';
   date: Date;
   shiftNumber: number;
   teamNumber: number;
@@ -58,7 +63,7 @@ export const ProductionChart = ({
     .reduce((sum, item) => sum + item.count, 0);
 
   // Фиксированная максимальная высота столбца — 300px
-  const FIXED_MAX_HEIGHT = 60;
+  // const FIXED_MAX_HEIGHT = 60;
 
   useEffect(() => {
     if (shiftId) {
@@ -72,44 +77,19 @@ export const ProductionChart = ({
         <Error />
       ) : (
         <>
-          <div className={styles.wrapper__header}>
-            <span className={styles.location}>ПРОИЗВОДСТВО</span>
-            <ShiftStatus isStart={shiftStatus === activeStatusShift} />
+          <HeaderWrapper>
             <ShiftDate
               date={date}
               shiftNumber={shiftNumber}
               teamNumber={teamNumber}
             />
-          </div>
+            <ColumnWrapper>
+              <Location title={'ПРОИЗВОДСТВО'} />
+              <ShiftStatus status={shiftStatus} />
+            </ColumnWrapper>
+          </HeaderWrapper>
 
-          <ul className={styles.chart}>
-            {productions.map((item) => {
-              // Если максимальное значение в данных равно 0, все столбцы будут нулевыми
-              const maxDataValue =
-                Math.max(...productions.map((r) => r.count)) || 1;
-
-              // Вычисляем высоту столбца в процентах от 300px
-              const percentage = (item.count / maxDataValue) * 100;
-
-              // Переводим процент в пиксели (от 0 до 300)
-              const heightInPx = (percentage / 100) * FIXED_MAX_HEIGHT;
-
-              return (
-                <li key={item.id} className={styles.column}>
-                  <span
-                    style={{ height: `${heightInPx}px` }}
-                    className={styles.column__height}
-                  >
-                    <span className={styles.count}>
-                      {item.count > 0 ? item.count : ''}
-                    </span>
-                  </span>
-                  <Border />
-                  <span className={styles.title}>{item.unit}</span>
-                </li>
-              );
-            })}
-          </ul>
+          <Chart list={productions} titleField={'unit'} />
 
           <div className={styles.wrapper__count}>
             <div className={styles.wrapper__footer}>

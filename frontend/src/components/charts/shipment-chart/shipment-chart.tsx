@@ -1,7 +1,5 @@
 import styles from './shipment-chart.module.css';
 
-import clsx from 'clsx';
-
 import { useEffect } from 'react';
 
 import { Error } from '../../ui/error/error';
@@ -20,14 +18,29 @@ import {
   getCount,
   getShipmentStats,
 } from '../../../utils/utils';
+import { HeaderWrapper } from '../../ui/wrappers/header/header';
+import { ShiftDate } from '../../ui/shift-date/shift-date';
+import { ColumnWrapper } from '../../ui/wrappers/column/column';
+import { ShiftStatus } from '../../ui/shift-status/shift-status';
+import { Location } from '../../ui/location/location';
 
 interface IChartProps {
   shiftId: string;
   list: IUserShift[];
-  shiftStatus: string;
+  shiftStatus: 'активная' | 'завершённая';
+  date: Date;
+  shiftNumber: number;
+  teamNumber: number;
 }
 
-export const ShipmentChart = ({ shiftId, list, shiftStatus }: IChartProps) => {
+export const ShipmentChart = ({
+  shiftId,
+  list,
+  shiftStatus,
+  date,
+  shiftNumber,
+  teamNumber,
+}: IChartProps) => {
   const dispatch = useDispatch();
 
   const shipments = useSelector(selectShipments);
@@ -37,11 +50,6 @@ export const ShipmentChart = ({ shiftId, list, shiftStatus }: IChartProps) => {
   const total = shipments
     .filter((item) => item.location === '2 ОЧЕРЕДЬ')
     .reduce((sum, item) => sum + item.count, 0);
-
-  const currentShiftStatus =
-    shiftStatus === activeStatusShift
-      ? 'данные на начало смены'
-      : 'данные на конец смены';
 
   // Фиксированная максимальная высота столбца — 300px
   const FIXED_MAX_HEIGHT = 60;
@@ -68,19 +76,18 @@ export const ShipmentChart = ({ shiftId, list, shiftStatus }: IChartProps) => {
         <Error />
       ) : (
         <>
-          <div className={styles.wrapper__header}>
-            <span className={styles.location}>ОТГРУЗКА</span>
-            <span
-              className={clsx(
-                styles.wrapper__status,
-                shiftStatus === activeStatusShift
-                  ? styles.status__start
-                  : styles.status__end,
-              )}
-            >
-              {currentShiftStatus}
-            </span>
-          </div>
+          <HeaderWrapper>
+            <ShiftDate
+              date={date}
+              shiftNumber={shiftNumber}
+              teamNumber={teamNumber}
+            />
+            <ColumnWrapper>
+              <Location title={'ОТГРУЗКА'} />
+              <ShiftStatus status={shiftStatus} />
+            </ColumnWrapper>
+          </HeaderWrapper>
+
           <ul className={styles.chart}>
             {sortedArray.map((item) => {
               // Если максимальное значение в данных равно 0, все столбцы будут нулевыми

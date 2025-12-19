@@ -17,7 +17,7 @@ export const ProtectedRoute = memo(() => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const checking = useSelector(selectIsChecking);
   const location = useLocation();
-  
+
   useEffect(() => {
     setIsCookie(true);
   }, []);
@@ -26,7 +26,7 @@ export const ProtectedRoute = memo(() => {
   if (checking) {
     return (
       <div className={styles.spinner}>
-        <Spinner />
+        {checking && <Spinner />}
       </div>
     );
   }

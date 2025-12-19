@@ -21,14 +21,29 @@ import {
   transformLocations,
 } from '../../../utils/utils';
 import { TShiftStatus } from '../../../utils/types';
+import { ShiftDate } from '../../ui/shift-date/shift-date';
+import { ShiftStatus } from '../../ui/shift-status/shift-status';
+import { ColumnWrapper } from '../../ui/wrappers/column/column';
+import { HeaderWrapper } from '../../ui/wrappers/header/header';
+import { Location } from '../../ui/location/location';
 
 interface IChartProps {
   shiftId: string;
   list: IUserShift[];
-  shiftStatus: string;
+  shiftStatus: 'активная' | 'завершённая';
+  date: Date;
+  shiftNumber: number;
+  teamNumber: number;
 }
 
-export const PackChart = ({ shiftId, list, shiftStatus }: IChartProps) => {
+export const PackChart = ({
+  shiftId,
+  list,
+  shiftStatus,
+  date,
+  shiftNumber,
+  teamNumber,
+}: IChartProps) => {
   const dispatch = useDispatch();
 
   const packs = useSelector(selectPacks);
@@ -63,12 +78,18 @@ export const PackChart = ({ shiftId, list, shiftStatus }: IChartProps) => {
             <Error />
           ) : (
             <>
-              <div className={styles.wrapper__header}>
-                <span className={styles.location}>УПАКОВКА</span>
-                <span className={styles.wrapper__status}>
-                  данные на конец смены
-                </span>
-              </div>
+              <HeaderWrapper>
+                <ShiftDate
+                  date={date}
+                  shiftNumber={shiftNumber}
+                  teamNumber={teamNumber}
+                />
+                <ColumnWrapper>
+                  <Location title={'УПАКОВКА'} />
+                  <ShiftStatus status={shiftStatus} />
+                </ColumnWrapper>
+              </HeaderWrapper>
+             
               <ul className={styles.chart}>
                 {transformArray.map((item) => {
                   // Если максимальное значение в данных равно 0, все столбцы будут нулевыми
