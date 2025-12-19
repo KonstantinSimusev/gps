@@ -23,6 +23,7 @@ import { ShiftDate } from '../../ui/shift-date/shift-date';
 import { ColumnWrapper } from '../../ui/wrappers/column/column';
 import { ShiftStatus } from '../../ui/shift-status/shift-status';
 import { Location } from '../../ui/location/location';
+import { Chart } from '../../ui/chart/chart';
 
 interface IChartProps {
   shiftId: string;
@@ -50,9 +51,6 @@ export const ShipmentChart = ({
   const total = shipments
     .filter((item) => item.location === '2 ОЧЕРЕДЬ')
     .reduce((sum, item) => sum + item.count, 0);
-
-  // Фиксированная максимальная высота столбца — 300px
-  const FIXED_MAX_HEIGHT = 60;
 
   // Сортировка исходного массива
   const sortedArray = [...shipments].sort((a, b) => {
@@ -88,33 +86,7 @@ export const ShipmentChart = ({
             </ColumnWrapper>
           </HeaderWrapper>
 
-          <ul className={styles.chart}>
-            {sortedArray.map((item) => {
-              // Если максимальное значение в данных равно 0, все столбцы будут нулевыми
-              const maxDataValue =
-                Math.max(...sortedArray.map((r) => r.count)) || 1;
-
-              // Вычисляем высоту столбца в процентах от 300px
-              const percentage = (item.count / maxDataValue) * 100;
-
-              // Переводим процент в пиксели (от 0 до 300)
-              const heightInPx = (percentage / 100) * FIXED_MAX_HEIGHT;
-              return (
-                <li key={item.id} className={styles.column}>
-                  <span
-                    style={{ height: `${heightInPx}px` }}
-                    className={styles.column__height}
-                  >
-                    <span className={styles.count}>
-                      {item.count > 0 ? item.count : ''}
-                    </span>
-                  </span>
-                  <Border />
-                  <span className={styles.title}>{item.railway}</span>
-                </li>
-              );
-            })}
-          </ul>
+          <Chart list={sortedArray} titleField={'railway'} />
 
           <div className={styles.wrapper__count}>
             <div className={styles.wrapper__footer}>
