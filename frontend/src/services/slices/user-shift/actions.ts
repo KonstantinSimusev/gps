@@ -47,7 +47,7 @@ export const getUsersShifts = createAsyncThunk(
       const response = await getUsersShiftsApi(shiftId);
 
       // Добавляем задержку кода
-      await delay();
+      // await delay();
 
       if (!response) {
         throw new Error();

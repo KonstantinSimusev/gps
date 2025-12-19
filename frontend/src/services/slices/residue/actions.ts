@@ -16,7 +16,7 @@ export const getResidues = createAsyncThunk(
       const response = await getResiduesApi(shiftId);
 
       // Добавляем задержку кода
-      await delay();
+      // await delay();
 
       if (!response) {
         throw new Error();

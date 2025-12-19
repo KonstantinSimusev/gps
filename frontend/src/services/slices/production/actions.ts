@@ -16,7 +16,7 @@ export const getProductions = createAsyncThunk(
       const response = await getProductionsApi(shiftId);
 
       // Добавляем задержку кода
-      await delay();
+      // await delay();
 
       if (!response) {
         throw new Error();

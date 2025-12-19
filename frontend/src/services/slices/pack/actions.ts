@@ -13,7 +13,7 @@ export const getPacks = createAsyncThunk(
       const response = await getPacksApi(shiftId);
 
       // Добавляем задержку кода
-      await delay();
+      // await delay();
 
       if (!response) {
         throw new Error();

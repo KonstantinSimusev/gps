@@ -39,9 +39,9 @@ export const createShift = createAsyncThunk(
 export const getActiveShift = createAsyncThunk('shift/active', async () => {
   try {
     const response = await getActiveShiftApi();
-    
+
     // Добавляем задержку кода
-    await delay();
+    // await delay();
     
     if (!response) {
       throw new Error();
@@ -62,7 +62,7 @@ export const getFinishedShift = createAsyncThunk('shift/finished', async () => {
     const response = await getFinishedShiftApi();
 
     // Добавляем задержку кода
-    await delay();
+    // await delay();
 
     if (!response) {
       throw new Error();
@@ -85,7 +85,7 @@ export const getLastTeamShift = createAsyncThunk(
       const response = await getLastTeamShiftApi();
 
       // Добавляем задержку кода
-      await delay();
+      // await delay();
 
       if (!response) {
         throw new Error();
@@ -109,7 +109,7 @@ export const getLastShiftsTeams = createAsyncThunk(
       const response = await getLastShiftsTeamsApi();
 
       // Добавляем задержку кода
-      await delay();
+      // await delay();
 
       if (!response) {
         throw new Error();
