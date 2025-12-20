@@ -9,6 +9,7 @@ import { InfoBlock } from '../../ui/info-block/info-block';
 import { useDispatch, useSelector } from '../../../services/store';
 import { selectResidues } from '../../../services/slices/residue/slice';
 import { getResidues } from '../../../services/slices/residue/actions';
+import { Loader } from '../../ui/loader/loader';
 
 interface IListProps {
   shiftId?: string;
@@ -53,7 +54,7 @@ export const ResidueList = ({ shiftId }: IListProps) => {
           </li>
         ))
       ) : (
-        <Error />
+        <Loader />
       )}
     </ul>
   );

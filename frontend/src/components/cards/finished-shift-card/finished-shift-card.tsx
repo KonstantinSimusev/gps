@@ -47,13 +47,13 @@ export const FinishedShiftCard = () => {
           <span className={styles.text}>Смена {finishedShift.shiftNumber}</span>
         </div>
       ) : (
-        <span className={styles.emprty}>Смена не создана...</span>
+        <span className={styles.emprty}>Нет данных</span>
       )}
 
       {isLoadingFinishedShift ? (
         <Singlton width={99.6} height={16} />
       ) : (
-        finishedShift && <span className={styles.text__end}>завершённая</span>
+        <span className={styles.text__end}>завершённая</span>
       )}
     </li>
   );

@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 import { MainLayout } from '../../ui/layouts/main/main-layout';
 import { PageTitle } from '../../ui/page-title/page-title';
 import { ShiftInfo } from '../../shift-info/shift-info';
-import { Error } from '../../ui/error/error';
 
 import { useDispatch, useSelector } from '../../../services/store';
 import {
@@ -15,6 +14,7 @@ import {
 import { getLastTeamShift } from '../../../services/slices/shift/actions';
 import { isShowShift } from '../../../utils/utils';
 import { PackList } from '../../lists/pack-list/pack-list';
+import { Loader } from '../../ui/loader/loader';
 
 export const Pack = () => {
   const dispatch = useDispatch();
@@ -38,7 +38,7 @@ export const Pack = () => {
           <PackList shiftId={currentShiftId} />
         </>
       ) : (
-        <Error />
+        <Loader />
       )}
     </MainLayout>
   );

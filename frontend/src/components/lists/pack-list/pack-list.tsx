@@ -9,6 +9,7 @@ import { InfoBlock } from '../../ui/info-block/info-block';
 import { useDispatch, useSelector } from '../../../services/store';
 import { selectPacks } from '../../../services/slices/pack/slice';
 import { getPacks } from '../../../services/slices/pack/actions';
+import { Loader } from '../../ui/loader/loader';
 
 interface IListProps {
   shiftId?: string;
@@ -52,7 +53,7 @@ export const PackList = ({ shiftId }: IListProps) => {
           </li>
         ))
       ) : (
-        <Error />
+        <Loader />
       )}
     </ul>
   );

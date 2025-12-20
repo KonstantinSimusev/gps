@@ -1,0 +1,28 @@
+.container {
+  font-size: 16px;
+  opacity: 0.6;
+}
+
+.container::after {
+  content: '.';
+  animation: dots 0.8s linear infinite;
+  margin-left: 4px;
+}
+
+@keyframes dots {
+  0% {
+    content: '.';
+  }
+
+  33% {
+    content: '. .';
+  }
+
+  66% {
+    content: '. . .';
+  }
+
+  100% {
+    content: '.'; /* возвращаемся к одной точке */
+  }
+}

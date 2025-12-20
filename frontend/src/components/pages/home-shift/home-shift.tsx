@@ -10,7 +10,6 @@ import {
   selectFinishedShift,
   selectIsLoadingShift,
 } from '../../../services/slices/shift/slice';
-import { Error } from '../../ui/error/error';
 import { MainLayout } from '../../ui/layouts/main/main-layout';
 import { TeamProfessionList } from '../../lists/profession-list/profession-list';
 import { useEffect } from 'react';
@@ -22,6 +21,7 @@ import {
   getActiveShift,
   getFinishedShift,
 } from '../../../services/slices/shift/actions';
+import { Loader } from '../../ui/loader/loader';
 
 export const HomeShift = () => {
   const dispatch = useDispatch();
@@ -41,7 +41,7 @@ export const HomeShift = () => {
 
   // 1. Сначала проверяем shiftId
   if (!shiftId) {
-    return <Error />;
+    return <Loader />;
   }
 
   // 2. Затем проверяем загрузку
@@ -51,7 +51,7 @@ export const HomeShift = () => {
         <div className={styles.wrapper__button}>
           <BackButton actionType="home" />
         </div>
-        <Error />
+        <Loader />
       </MainLayout>
     );
   }
@@ -67,7 +67,7 @@ export const HomeShift = () => {
         <div className={styles.wrapper__button}>
           <BackButton actionType="home" />
         </div>
-        <Error />
+        <Loader />
       </MainLayout>
     );
   }

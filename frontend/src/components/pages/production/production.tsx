@@ -12,9 +12,9 @@ import {
   selectCurrentShiftId,
 } from '../../../services/slices/shift/slice';
 import { getLastTeamShift } from '../../../services/slices/shift/actions';
-import { Error } from '../../ui/error/error';
 import { ProductionList } from '../../lists/production-list/production-list';
 import { isShowShift } from '../../../utils/utils';
+import { Loader } from '../../ui/loader/loader';
 
 export const Production = () => {
   const dispatch = useDispatch();
@@ -38,7 +38,7 @@ export const Production = () => {
           <ProductionList shiftId={currentShiftId} />
         </>
       ) : (
-        <Error />
+        <Loader />
       )}
     </MainLayout>
   );

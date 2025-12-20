@@ -6,7 +6,6 @@ import { MainLayout } from '../../ui/layouts/main/main-layout';
 import { PageTitle } from '../../ui/page-title/page-title';
 import { ShiftInfo } from '../../shift-info/shift-info';
 import { ShipmentList } from '../../lists/shipment-list/shipment-list';
-import { Error } from '../../ui/error/error';
 
 import { useDispatch, useSelector } from '../../../services/store';
 import {
@@ -15,6 +14,7 @@ import {
 } from '../../../services/slices/shift/slice';
 import { getLastTeamShift } from '../../../services/slices/shift/actions';
 import { isShowShift } from '../../../utils/utils';
+import { Loader } from '../../ui/loader/loader';
 
 export const Shipment = () => {
   const dispatch = useDispatch();
@@ -38,7 +38,7 @@ export const Shipment = () => {
           <ShipmentList shiftId={currentShiftId} />
         </>
       ) : (
-        <Error />
+        <Loader />
       )}
     </MainLayout>
   );

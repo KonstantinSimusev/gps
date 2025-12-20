@@ -17,6 +17,7 @@ import {
 import { getLastTeamShift } from '../../../services/slices/shift/actions';
 import { selectUsersShifts } from '../../../services/slices/user-shift/slice';
 import { isShowShift } from '../../../utils/utils';
+import { Loader } from '../../ui/loader/loader';
 
 export const Timesheet = () => {
   const dispatch = useDispatch();
@@ -44,7 +45,7 @@ export const Timesheet = () => {
     return (
       <MainLayout>
         <PageTitle title="ТАБЕЛЬ" />
-        <div className={styles.loader}>Загрузка...</div>
+        <Loader />
       </MainLayout>
     );
   }

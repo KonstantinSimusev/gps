@@ -64,9 +64,6 @@ export const ProductionChart = ({
     .filter((item) => item.location === '2 ОЧЕРЕДЬ')
     .reduce((sum, item) => sum + item.count, 0);
 
-  // Фиксированная максимальная высота столбца — 300px
-  // const FIXED_MAX_HEIGHT = 60;
-
   useEffect(() => {
     if (shiftId) {
       dispatch(getProductions(shiftId));

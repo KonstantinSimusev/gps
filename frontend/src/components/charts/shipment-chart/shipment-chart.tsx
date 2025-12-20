@@ -68,7 +68,8 @@ export const ShipmentChart = ({
     }
   }, [shiftId]);
 
-  return (
+  return (<>
+    {shiftStatus === activeStatusShift && (
     <div className={styles.container}>
       {!shiftId ? (
         <Error />
@@ -134,6 +135,6 @@ export const ShipmentChart = ({
           )}
         </>
       )}
-    </div>
-  );
+    </div>)}
+  </>);
 };

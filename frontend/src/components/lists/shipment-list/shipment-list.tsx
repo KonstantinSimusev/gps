@@ -9,6 +9,7 @@ import { InfoBlock } from '../../ui/info-block/info-block';
 import { useDispatch, useSelector } from '../../../services/store';
 import { selectShipments } from '../../../services/slices/shipment/slice';
 import { getShipments } from '../../../services/slices/shipment/actions';
+import { Loader } from '../../ui/loader/loader';
 
 interface IListProps {
   shiftId?: string;
@@ -52,7 +53,7 @@ export const ShipmentList = ({ shiftId }: IListProps) => {
           </li>
         ))
       ) : (
-        <Error />
+        <Loader />
       )}
     </ul>
   );

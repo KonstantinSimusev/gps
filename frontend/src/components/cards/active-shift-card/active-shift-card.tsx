@@ -45,7 +45,7 @@ export const ActiveShiftCard = () => {
           <span className={styles.text}>Смена {activeShift.shiftNumber}</span>
         </div>
       ) : (
-        <span className={styles.emprty}>Смена не создана...</span>
+        <span className={styles.emprty}>Смена не создана</span>
       )}
 
       {isLoadingActiveShift ? (

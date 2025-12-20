@@ -1,13 +1,14 @@
 import styles from './production-list.module.css';
 
 import { EditButton } from '../../buttons/edit/edit';
-import { Error } from '../../ui/error/error';
 import { InfoBlock } from '../../ui/info-block/info-block';
 import { useDispatch, useSelector } from '../../../services/store';
 import { selectProductions } from '../../../services/slices/production/slice';
 import { useEffect } from 'react';
 import { getProductions } from '../../../services/slices/production/actions';
 import { formatProductionUnit } from '../../../utils/utils';
+import { Loader } from '../../ui/loader/loader';
+import { Error } from '../../error/error';
 
 interface IProductionProps {
   shiftId?: string;
@@ -51,7 +52,7 @@ export const ProductionList = ({ shiftId }: IProductionProps) => {
           </li>
         ))
       ) : (
-        <Error />
+        <Loader />
       )}
     </ul>
   );
