@@ -1,10 +1,16 @@
 .container {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: opacity 0.3s ease;
   font-size: 16px;
+}
+
+.wrapper {
+  position: relative;
+  left: -12px;
 }
 
 .container:focus {
@@ -21,5 +27,8 @@
 }
 
 .text {
+  position: relative;
+  left: -4px;
+  bottom: 8px;
   color: var(--color-button-default);
 }

@@ -27,8 +27,10 @@ export const BackButton = ({ actionType }: IBackButtonProps) => {
 
   return (
     <button className={styles.container} type="button" onClick={handleClick}>
-      <BackIcon />
+      <div className={styles.wrapper}>
+        <BackIcon />
       <span className={styles.text}>Назад</span>
+      </div>
     </button>
   );
 };
