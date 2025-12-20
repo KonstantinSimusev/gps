@@ -104,7 +104,7 @@ export const deleteUserShift = createAsyncThunk(
       return response;
     } catch (error) {
       // Добавляем задержку кода
-      // await delay();
+      await delay();
 
       // Пойдет в rejected
       throw error;

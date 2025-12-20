@@ -23,7 +23,7 @@ export const loginUser = createAsyncThunk(
       return response;
     } catch (error) {
       // Добавляем задержку кода
-      // await delay();
+      await delay();
 
       throw new Error('Неверный логин или пароль');
     }
@@ -46,7 +46,7 @@ export const checkAccessToken = createAsyncThunk(
       return response;
     } catch (error) {
       // Добавляем задержку кода
-      // await delay();
+      await delay();
 
       // Пойдет в checkAccessToken.rejected в authSlice
       throw error;
@@ -68,7 +68,7 @@ export const logoutUser = createAsyncThunk('auth/logout', async () => {
     return response;
   } catch (error) {
     // Добавляем задержку кода
-    // await delay();
+    await delay();
 
     throw error;
   }

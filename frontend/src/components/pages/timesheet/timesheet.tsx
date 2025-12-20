@@ -1,6 +1,6 @@
 import styles from './timesheet.module.css';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { MainLayout } from '../../ui/layouts/main/main-layout';
 import { PageTitle } from '../../ui/page-title/page-title';
@@ -24,14 +24,41 @@ export const Timesheet = () => {
   const usersShifts = useSelector(selectUsersShifts);
   const currentShiftId = useSelector(selectCurrentShiftId);
 
+  // Состояние загрузки
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    dispatch(getLastTeamShift());
+    // Перед запросом устанавливаем загрузку
+    setIsLoading(true);
+    dispatch(getLastTeamShift())
+      .unwrap()
+      .catch(() => {
+        // Даже если ошибка — снимаем загрузку
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, []);
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <PageTitle title="ТАБЕЛЬ" />
+        <div className={styles.loader}>Загрузка...</div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
       <PageTitle title="ТАБЕЛЬ" />
-      {currentShiftId && lastShift && isShowShift(lastShift) ? (
+      {(!lastShift || !isShowShift(lastShift)) && (
+        <div className={styles.wrapper__button}>
+          <AddButton label="Создать смену" actionType="shift" />
+        </div>
+      )}
+
+      {currentShiftId && lastShift && isShowShift(lastShift) && (
         <>
           <ShiftInfo
             date={lastShift.date}
@@ -44,10 +71,6 @@ export const Timesheet = () => {
           />
           <UserShiftList shiftId={currentShiftId} />
         </>
-      ) : (
-        <div className={styles.wrapper__button}>
-          <AddButton label="Создать смену" actionType="shift" />
-        </div>
       )}
     </MainLayout>
   );

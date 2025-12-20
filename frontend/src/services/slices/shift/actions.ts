@@ -29,7 +29,7 @@ export const createShift = createAsyncThunk(
       return response;
     } catch (error) {
       // Добавляем задержку кода
-      // await delay();
+      await delay();
 
       throw error;
     }
@@ -41,7 +41,7 @@ export const getActiveShift = createAsyncThunk('shift/active', async () => {
     const response = await getActiveShiftApi();
 
     // Добавляем задержку кода
-    // await delay();
+    await delay();
     
     if (!response) {
       throw new Error();
@@ -50,7 +50,7 @@ export const getActiveShift = createAsyncThunk('shift/active', async () => {
     return response;
   } catch (error) {
     // Добавляем задержку кода
-    // await delay();
+    await delay();
 
     // Пойдет в rejected
     throw error;
@@ -62,7 +62,7 @@ export const getFinishedShift = createAsyncThunk('shift/finished', async () => {
     const response = await getFinishedShiftApi();
 
     // Добавляем задержку кода
-    // await delay();
+    await delay();
 
     if (!response) {
       throw new Error();
@@ -71,7 +71,7 @@ export const getFinishedShift = createAsyncThunk('shift/finished', async () => {
     return response;
   } catch (error) {
     // Добавляем задержку кода
-    // await delay();
+    await delay();
 
     // Пойдет в rejected
     throw error;
@@ -85,7 +85,7 @@ export const getLastTeamShift = createAsyncThunk(
       const response = await getLastTeamShiftApi();
 
       // Добавляем задержку кода
-      // await delay();
+      await delay();
 
       if (!response) {
         throw new Error();
@@ -94,7 +94,7 @@ export const getLastTeamShift = createAsyncThunk(
       return response;
     } catch (error) {
       // Добавляем задержку кода
-      // await delay();
+      await delay();
 
       // Пойдет в rejected
       throw error;
@@ -109,7 +109,7 @@ export const getLastShiftsTeams = createAsyncThunk(
       const response = await getLastShiftsTeamsApi();
 
       // Добавляем задержку кода
-      // await delay();
+      await delay();
 
       if (!response) {
         throw new Error();
@@ -118,7 +118,7 @@ export const getLastShiftsTeams = createAsyncThunk(
       return response;
     } catch (error) {
       // Добавляем задержку кода
-      // await delay();
+      await delay();
 
       // Пойдет в rejected
       throw error;

@@ -16,7 +16,7 @@ export const getShipments = createAsyncThunk(
       const response = await getShipmentsApi(shiftId);
 
       // Добавляем задержку кода
-      // await delay();
+      await delay();
 
       if (!response) {
         throw new Error();
@@ -25,7 +25,7 @@ export const getShipments = createAsyncThunk(
       return response;
     } catch (error) {
       // Добавляем задержку кода
-      // await delay();
+      await delay();
 
       // Пойдет в rejected
       throw error;
@@ -50,7 +50,7 @@ export const updateShipment = createAsyncThunk(
       return response;
     } catch (error) {
       // Добавляем задержку кода
-      // await delay();
+      await delay();
 
       throw error;
     }

@@ -18,14 +18,18 @@ import { TShiftStatus } from '../../../utils/types';
 import { ShipmentChart } from '../../charts/shipment-chart/shipment-chart';
 import { PackChart } from '../../charts/pack-chart/pack-chart';
 import { FixChart } from '../../charts/fix-chart/fix-chart';
-import { EmptyShift } from '../../ui/empty-blocks/empty-shift/empty-shift';
-import { EmptyContainer } from '../../ui/empty-blocks/empty-container/empty-container';
-import { getActiveShift, getFinishedShift } from '../../../services/slices/shift/actions';
+import {
+  getActiveShift,
+  getFinishedShift,
+} from '../../../services/slices/shift/actions';
 
 export const HomeShift = () => {
   const dispatch = useDispatch();
-  
+
   const { shiftId } = useParams();
+
+  const activeShift = useSelector(selectActiveShift);
+  const finishedShift = useSelector(selectFinishedShift);
   const isLoadingShift = useSelector(selectIsLoadingShift);
 
   useEffect(() => {
@@ -35,18 +39,41 @@ export const HomeShift = () => {
     dispatch(getFinishedShift());
   }, []);
 
+  // 1. Сначала проверяем shiftId
   if (!shiftId) {
     return <Error />;
   }
 
-  const activeShift = useSelector(selectActiveShift);
-  const finishedShift = useSelector(selectFinishedShift);
+  // 2. Затем проверяем загрузку
+  if (isLoadingShift) {
+    return (
+      <MainLayout>
+        <div className={styles.wrapper__button}>
+          <BackButton actionType="home" />
+        </div>
+        <Error />
+      </MainLayout>
+    );
+  }
+
+  // 3. Ищем нужную смену
+  const currentShift =
+    activeShift?.id === shiftId ? activeShift : finishedShift;
+
+  // 4. Если смены нет после загрузки — показываем пустой контейнер
+  if (!currentShift) {
+    return (
+      <MainLayout>
+        <div className={styles.wrapper__button}>
+          <BackButton actionType="home" />
+        </div>
+        <Error />
+      </MainLayout>
+    );
+  }
 
   const activeStatusShift: TShiftStatus = 'активная';
   const finishedStatusShift: TShiftStatus = 'завершённая';
-
-  const currentShift =
-    activeShift?.id === shiftId ? activeShift : finishedShift;
 
   const currentStatus =
     currentShift === activeShift ? activeStatusShift : finishedStatusShift;
@@ -57,69 +84,57 @@ export const HomeShift = () => {
         <BackButton actionType="home" />
       </div>
 
-      {isLoadingShift ? (
-        <EmptyShift />
-      ) : (
-        <>
-          {currentShift && (
-            <ShiftInfo
-              date={currentShift.date}
-              shiftNumber={currentShift.shiftNumber}
-              teamNumber={currentShift.teamNumber}
-            />
-          )}
-        </>
+      {currentShift && (
+        <ShiftInfo
+          date={currentShift.date}
+          shiftNumber={currentShift.shiftNumber}
+          teamNumber={currentShift.teamNumber}
+        />
       )}
 
-      {isLoadingShift ? (
-        <EmptyContainer />
-      ) : (
+      {currentShift?.usersShifts && (
         <>
-          {currentShift?.usersShifts && (
-            <>
-              <ProductionChart
-                shiftId={shiftId}
-                list={currentShift?.usersShifts}
-                shiftStatus={currentStatus}
-                date={currentShift.date}
-                shiftNumber={currentShift.shiftNumber}
-                teamNumber={currentShift.teamNumber}
-              />
+          <ProductionChart
+            shiftId={shiftId}
+            list={currentShift?.usersShifts}
+            shiftStatus={currentStatus}
+            date={currentShift.date}
+            shiftNumber={currentShift.shiftNumber}
+            teamNumber={currentShift.teamNumber}
+          />
 
-              <PackChart
-                shiftId={shiftId}
-                list={currentShift?.usersShifts}
-                shiftStatus={currentStatus}
-                date={currentShift.date}
-                shiftNumber={currentShift.shiftNumber}
-                teamNumber={currentShift.teamNumber}
-              />
+          <PackChart
+            shiftId={shiftId}
+            list={currentShift?.usersShifts}
+            shiftStatus={currentStatus}
+            date={currentShift.date}
+            shiftNumber={currentShift.shiftNumber}
+            teamNumber={currentShift.teamNumber}
+          />
 
-              <ShipmentChart
-                shiftId={shiftId}
-                list={currentShift?.usersShifts}
-                shiftStatus={currentStatus}
-                date={currentShift.date}
-                shiftNumber={currentShift.shiftNumber}
-                teamNumber={currentShift.teamNumber}
-              />
+          <ShipmentChart
+            shiftId={shiftId}
+            list={currentShift?.usersShifts}
+            shiftStatus={currentStatus}
+            date={currentShift.date}
+            shiftNumber={currentShift.shiftNumber}
+            teamNumber={currentShift.teamNumber}
+          />
 
-              <FixChart
-                shiftId={shiftId}
-                list={currentShift?.usersShifts}
-                shiftStatus={currentStatus}
-                date={currentShift.date}
-                shiftNumber={currentShift.shiftNumber}
-                teamNumber={currentShift.teamNumber}
-              />
+          <FixChart
+            shiftId={shiftId}
+            list={currentShift?.usersShifts}
+            shiftStatus={currentStatus}
+            date={currentShift.date}
+            shiftNumber={currentShift.shiftNumber}
+            teamNumber={currentShift.teamNumber}
+          />
 
-              <TeamProfessionList
-                type={currentStatus}
-                list={currentShift?.usersShifts}
-                teamNumber={currentShift.teamNumber}
-              />
-            </>
-          )}
+          <TeamProfessionList
+            type={currentStatus}
+            list={currentShift?.usersShifts}
+            teamNumber={currentShift.teamNumber}
+          />
         </>
       )}
     </MainLayout>
