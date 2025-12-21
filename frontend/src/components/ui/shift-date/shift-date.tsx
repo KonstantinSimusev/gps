@@ -1,6 +1,6 @@
 import styles from './shift-date.module.css';
 
-import { formatDate } from '../../../utils/utils';
+import { formatShortDate } from '../../../utils/utils';
 
 interface IProps {
   date: Date;
@@ -11,9 +11,9 @@ interface IProps {
 export const ShiftDate = ({ date, shiftNumber, teamNumber }: IProps) => {
   return (
     <div className={styles.container}>
-      <span className={styles.date}>{formatDate(date)}</span>
-      <span className={styles.team}>Бр-{teamNumber}</span>
-      <span className={styles.shift}>См-{shiftNumber}</span>
+      <span className={styles.date}>{formatShortDate(date)}</span>
+      <span className={styles.shift}>см-{shiftNumber}</span>
+      <span className={styles.team}>бр-{teamNumber}</span>
     </div>
   );
 };

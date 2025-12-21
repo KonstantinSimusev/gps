@@ -3,7 +3,6 @@ import styles from './home-shift.module.css';
 import { BackButton } from '../../buttons/back/back';
 import { ProductionChart } from '../../charts/production-chart/production-chart';
 import { useParams } from 'react-router-dom';
-import { ShiftInfo } from '../../shift-info/shift-info';
 import { useDispatch, useSelector } from '../../../services/store';
 import {
   selectActiveShift,
@@ -84,14 +83,6 @@ export const HomeShift = () => {
         <BackButton actionType="home" />
       </div>
 
-      {currentShift && (
-        <ShiftInfo
-          date={currentShift.date}
-          shiftNumber={currentShift.shiftNumber}
-          teamNumber={currentShift.teamNumber}
-        />
-      )}
-
       {currentShift?.usersShifts && (
         <>
           <ProductionChart
@@ -134,6 +125,7 @@ export const HomeShift = () => {
             type={currentStatus}
             list={currentShift?.usersShifts}
             teamNumber={currentShift.teamNumber}
+            shift={currentShift}
           />
         </>
       )}

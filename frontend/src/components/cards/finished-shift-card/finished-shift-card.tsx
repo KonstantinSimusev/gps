@@ -41,10 +41,10 @@ export const FinishedShiftCard = () => {
       ) : finishedShift ? (
         <div className={styles.wrapper__shift}>
           <span className={styles.text}>{formatDate(finishedShift.date)}</span>
+          <span className={styles.text}>Смена {finishedShift.shiftNumber}</span>
           <span className={styles.text}>
             Бригада {finishedShift.teamNumber}
           </span>
-          <span className={styles.text}>Смена {finishedShift.shiftNumber}</span>
         </div>
       ) : (
         <span className={styles.emprty}>Нет данных</span>

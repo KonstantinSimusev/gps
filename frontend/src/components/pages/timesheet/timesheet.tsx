@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 
 import { MainLayout } from '../../ui/layouts/main/main-layout';
 import { PageTitle } from '../../ui/page-title/page-title';
-import { ShiftInfo } from '../../shift-info/shift-info';
 import { TeamProfessionList } from '../../lists/profession-list/profession-list';
 import { UserShiftList } from '../../lists/user-shift-list/user-shift-list';
 import { AddButton } from '../../buttons/add/add-button';
@@ -61,14 +60,10 @@ export const Timesheet = () => {
 
       {currentShiftId && lastShift && isShowShift(lastShift) && (
         <>
-          <ShiftInfo
-            date={lastShift.date}
-            shiftNumber={lastShift.shiftNumber}
-            teamNumber={lastShift.teamNumber}
-          />
           <TeamProfessionList
             list={usersShifts}
             teamNumber={lastShift.teamNumber}
+            shift={lastShift}
           />
           <UserShiftList shiftId={currentShiftId} />
         </>

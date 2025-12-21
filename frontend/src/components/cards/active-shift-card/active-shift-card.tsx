@@ -41,8 +41,8 @@ export const ActiveShiftCard = () => {
       ) : activeShift ? (
         <div className={styles.wrapper__shift}>
           <span className={styles.text}>{formatDate(activeShift.date)}</span>
-          <span className={styles.text}>Бригада {activeShift.teamNumber}</span>
           <span className={styles.text}>Смена {activeShift.shiftNumber}</span>
+          <span className={styles.text}>Бригада {activeShift.teamNumber}</span>
         </div>
       ) : (
         <span className={styles.emprty}>Смена не создана</span>

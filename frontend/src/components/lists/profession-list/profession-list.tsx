@@ -15,17 +15,24 @@ import {
 } from '../../../utils/utils';
 import { TShiftStatus, TWorkPlace } from '../../../utils/types';
 import { InfoBlock } from '../../ui/info-block/info-block';
-import { IUserShift } from '../../../utils/api.interface';
+import { IShift, IUserShift } from '../../../utils/api.interface';
 import { Border } from '../../ui/border/border';
 import clsx from 'clsx';
+import { ShiftDate } from '../../ui/shift-date/shift-date';
 
 interface IListProps {
   type?: string;
   list: IUserShift[];
   teamNumber: number;
+  shift: IShift;
 }
 
-export const TeamProfessionList = ({ type, list, teamNumber }: IListProps) => {
+export const TeamProfessionList = ({
+  type,
+  list,
+  teamNumber,
+  shift,
+}: IListProps) => {
   const location = useLocation();
   const isTimesheetPage = location.pathname.includes('/timesheet');
 
@@ -65,6 +72,11 @@ export const TeamProfessionList = ({ type, list, teamNumber }: IListProps) => {
 
   return (
     <div className={styles.container}>
+      <ShiftDate
+        date={shift.date}
+        shiftNumber={shift.shiftNumber}
+        teamNumber={shift.teamNumber}
+      />
       <span className={styles.header__title}>ИНФОРМАЦИЯ О БРИГАДЕ</span>
       <>
         <InfoBlock title={'Руководитель'} text={masterFullName} />
