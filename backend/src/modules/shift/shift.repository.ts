@@ -48,8 +48,13 @@ export class ShiftRepository {
         endShift: MoreThan(nowUTC), // endShift > now
       },
       order: {
-        date: 'DESC',
-        shiftNumber: 'DESC',
+        date: 'DESC', // 1. самые свежие даты
+        shiftNumber: 'DESC', // 2. наибольший номер смены
+        productions: { sortOrder: 'ASC' }, // 3. по порядку productions
+        shipments: { sortOrder: 'ASC' }, // 4. по порядку shipments
+        packs: { sortOrder: 'ASC' }, // 5. по порядку packs
+        fixs: { sortOrder: 'ASC' }, // 6. по порядку fixs
+        residues: { sortOrder: 'ASC' }, // 7. по порядку residues
       },
       relations: [
         'usersShifts',
@@ -109,8 +114,13 @@ export class ShiftRepository {
         endShift: LessThan(nowUTC), // endShift < nowUTC (смена уже закончилась)
       },
       order: {
-        date: 'DESC', // сначала самые свежие даты
-        shiftNumber: 'DESC', // затем самый большой номер смены
+        date: 'DESC', // 1. самые свежие даты
+        shiftNumber: 'DESC', // 2. наибольший номер смены
+        productions: { sortOrder: 'ASC' }, // 3. по порядку productions
+        shipments: { sortOrder: 'ASC' }, // 4. по порядку shipments
+        packs: { sortOrder: 'ASC' }, // 5. по порядку packs
+        fixs: { sortOrder: 'ASC' }, // 6. по порядку fixs
+        residues: { sortOrder: 'ASC' }, // 7. по порядку residues
       },
       relations: [
         'usersShifts',
@@ -173,6 +183,7 @@ export class ShiftRepository {
         shipments: { sortOrder: 'ASC' },
         packs: { sortOrder: 'ASC' },
         fixs: { sortOrder: 'ASC' },
+        residues: { sortOrder: 'ASC' },
         // Добавляем сортировку для usersShifts.user
         usersShifts: {
           user: {
