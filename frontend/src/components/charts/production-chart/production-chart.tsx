@@ -1,13 +1,9 @@
 import styles from './production-chart.module.css';
 
-import { useEffect } from 'react';
-
 import { Error } from '../../ui/error/error';
 import { Border } from '../../ui/border/border';
 
-import { useDispatch, useSelector } from '../../../services/store';
-
-import { IUserShift } from '../../../utils/api.interface';
+import { IShift, IUserShift } from '../../../utils/api.interface';
 
 import { TShiftStatus } from '../../../utils/types';
 
@@ -18,6 +14,7 @@ import {
   getCount,
   getPackerStats,
 } from '../../../utils/utils';
+
 import { ShiftDate } from '../../ui/shift-date/shift-date';
 import { Location } from '../../ui/location/location';
 import { HeaderWrapper } from '../../ui/wrappers/header-wrapper/header-wrapper';
@@ -26,11 +23,9 @@ import { Chart } from '../../ui/chart/chart';
 import { ShiftStatus } from '../../ui/shift-status/shift-status';
 import { Total } from '../../ui/total/total';
 import { CountWrapper } from '../../ui/wrappers/count-wrapper/count-wrapper';
-import { selectLastShift } from '../../../services/slices/shift/slice';
-import { getLastTeamShift } from '../../../services/slices/shift/actions';
 
 interface IChartProps {
-  shiftId: string;
+  shift: IShift;
   list: IUserShift[];
   shiftStatus: 'активная' | 'завершённая';
   date: Date;
@@ -39,18 +34,14 @@ interface IChartProps {
 }
 
 export const ProductionChart = ({
-  shiftId,
+  shift,
   list,
   shiftStatus,
   date,
   shiftNumber,
   teamNumber,
 }: IChartProps) => {
-  const dispatch = useDispatch();
-
-  const lastShift = useSelector(selectLastShift);
-
-  const productions = lastShift?.productions;
+  const productions = shift.productions;
 
   const activeStatusShift: TShiftStatus = 'активная';
 
@@ -66,13 +57,9 @@ export const ProductionChart = ({
         .reduce((sum, item) => sum + item.count, 0)
     : 0; // значение по умолчанию, если shipments === undefined
 
-  useEffect(() => {
-    dispatch(getLastTeamShift());
-  }, []);
-
   return (
     <div className={styles.container}>
-      {!shiftId ? (
+      {!shift ? (
         <Error />
       ) : (
         <>

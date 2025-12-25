@@ -1,13 +1,9 @@
 import styles from './fix-chart.module.css';
 
-import { useEffect } from 'react';
-
 import { Error } from '../../ui/error/error';
 import { Border } from '../../ui/border/border';
 
-import { useDispatch, useSelector } from '../../../services/store';
-
-import { IUserShift } from '../../../utils/api.interface';
+import { IShift, IUserShift } from '../../../utils/api.interface';
 
 import {
   extractNumber,
@@ -22,11 +18,9 @@ import { ColumnWrapper } from '../../ui/wrappers/column/column';
 import { HeaderWrapper } from '../../ui/wrappers/header-wrapper/header-wrapper';
 import { Location } from '../../ui/location/location';
 import { Chart } from '../../ui/chart/chart';
-import { selectLastShift } from '../../../services/slices/shift/slice';
-import { getLastTeamShift } from '../../../services/slices/shift/actions';
 
 interface IChartProps {
-  shiftId: string;
+  shift: IShift;
   list: IUserShift[];
   shiftStatus: 'активная' | 'завершённая';
   date: Date;
@@ -35,18 +29,14 @@ interface IChartProps {
 }
 
 export const FixChart = ({
-  shiftId,
+  shift,
   list,
   shiftStatus,
   date,
   shiftNumber,
   teamNumber,
 }: IChartProps) => {
-  const dispatch = useDispatch();
-
-  const lastShift = useSelector(selectLastShift);
-  
-    const fixs = lastShift?.fixs;
+  const fixs = shift.fixs;
 
   const finishedStatusShift: TShiftStatus = 'завершённая';
 
@@ -69,15 +59,11 @@ export const FixChart = ({
   const workersShifts = filterWorkers(list);
   const shipmentLocations = getShipmentStats(workersShifts);
 
-  useEffect(() => {
-    dispatch(getLastTeamShift());
-  }, []);
-
   return (
     <>
       {shiftStatus === finishedStatusShift && (
         <div className={styles.container}>
-          {!shiftId ? (
+          {!shift ? (
             <Error />
           ) : (
             <>

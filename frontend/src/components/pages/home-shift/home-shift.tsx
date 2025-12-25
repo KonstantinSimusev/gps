@@ -86,7 +86,7 @@ export const HomeShift = () => {
       {currentShift?.usersShifts && (
         <>
           <ProductionChart
-            shiftId={shiftId}
+            shift={currentShift}
             list={currentShift?.usersShifts}
             shiftStatus={currentStatus}
             date={currentShift.date}
@@ -95,7 +95,7 @@ export const HomeShift = () => {
           />
 
           <PackChart
-            shiftId={shiftId}
+            shift={currentShift}
             list={currentShift?.usersShifts}
             shiftStatus={currentStatus}
             date={currentShift.date}
@@ -104,7 +104,7 @@ export const HomeShift = () => {
           />
 
           <ShipmentChart
-            shiftId={shiftId}
+            shift={currentShift}
             list={currentShift?.usersShifts}
             shiftStatus={currentStatus}
             date={currentShift.date}
@@ -113,7 +113,7 @@ export const HomeShift = () => {
           />
 
           <FixChart
-            shiftId={shiftId}
+            shift={currentShift}
             list={currentShift?.usersShifts}
             shiftStatus={currentStatus}
             date={currentShift.date}
