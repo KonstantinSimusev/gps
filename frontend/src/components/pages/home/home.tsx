@@ -40,7 +40,7 @@ export const Home = () => {
   const isLoadingFinishedShift = useSelector(selectIsLoadingFinishedShift);
 
   const user = useSelector(selectUser);
-  const role: TRole = 'MASTER';
+  const role: TRole = 'ADMIN';
 
   useEffect(() => {
     dispatch(getFinishedShift());
