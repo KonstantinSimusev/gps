@@ -11,9 +11,7 @@ import { Header } from '../header/header';
 import { Banner } from '../banner/banner';
 import { Home } from '../pages/home/home';
 import { Timesheet } from '../pages/timesheet/timesheet';
-// import { Production } from '../pages/production/production';
 import { DefaultPage } from '../pages/default/default';
-import { Footer } from '../footer/footer';
 import { NotFound } from '../pages/not-found/not-found';
 import { Overlay } from '../overlay/overlay';
 import { Modal } from '../modal/modal';
@@ -41,6 +39,7 @@ import { Production } from '../pages/production/production';
 import { PackForm } from '../forms/pack/pack.form';
 import { FixForm } from '../forms/fix/fix.form';
 import { ResidueForm } from '../forms/residue/residue.form';
+import { Footer } from '../footer/footer';
 
 const App = () => {
   const { isLightTheme } = useContext(ThemeContext);

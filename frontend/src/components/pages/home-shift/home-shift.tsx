@@ -1,26 +1,34 @@
 import styles from './home-shift.module.css';
 
-import { BackButton } from '../../buttons/back/back';
-import { ProductionChart } from '../../charts/production-chart/production-chart';
-import { useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from '../../../services/store';
-import {
-  selectActiveShift,
-  selectFinishedShift,
-  selectIsLoadingShift,
-} from '../../../services/slices/shift/slice';
-import { MainLayout } from '../../ui/layouts/main/main-layout';
-import { TeamProfessionList } from '../../lists/profession-list/profession-list';
+import { Loader } from '../../ui/loader/loader';
+import { Error } from '../../ui/error/error';
+
 import { useEffect } from 'react';
-import { TShiftStatus } from '../../../utils/types';
+import { useParams } from 'react-router-dom';
+
 import { ShipmentChart } from '../../charts/shipment-chart/shipment-chart';
 import { PackChart } from '../../charts/pack-chart/pack-chart';
 import { FixChart } from '../../charts/fix-chart/fix-chart';
+import { MainLayout } from '../../ui/layouts/main/main-layout';
+import { TeamProfessionList } from '../../lists/profession-list/profession-list';
+import { BackButton } from '../../buttons/back/back';
+import { ProductionChart } from '../../charts/production-chart/production-chart';
+
+import { useDispatch, useSelector } from '../../../services/store';
+
+import {
+  selectActiveShift,
+  selectFinishedShift,
+  selectIsLoadingActiveShift,
+  selectIsLoadingFinishedShift,
+} from '../../../services/slices/shift/slice';
+
 import {
   getActiveShift,
   getFinishedShift,
 } from '../../../services/slices/shift/actions';
-import { Loader } from '../../ui/loader/loader';
+
+import { TShiftStatus } from '../../../utils/types';
 
 export const HomeShift = () => {
   const dispatch = useDispatch();
@@ -29,47 +37,12 @@ export const HomeShift = () => {
 
   const activeShift = useSelector(selectActiveShift);
   const finishedShift = useSelector(selectFinishedShift);
-  const isLoadingShift = useSelector(selectIsLoadingShift);
 
-  useEffect(() => {
-    // Скролим страницу наверх
-    window.scrollTo(0, 0);
-    dispatch(getActiveShift());
-    dispatch(getFinishedShift());
-  }, []);
+  const isLoadingActiveShift = useSelector(selectIsLoadingActiveShift);
+  const isLoadingFinishedShift = useSelector(selectIsLoadingFinishedShift);
 
-  // 1. Сначала проверяем shiftId
-  if (!shiftId) {
-    return <Loader />;
-  }
-
-  // 2. Затем проверяем загрузку
-  if (isLoadingShift) {
-    return (
-      <MainLayout>
-        <div className={styles.wrapper__button}>
-          <BackButton actionType="home" />
-        </div>
-        <Loader />
-      </MainLayout>
-    );
-  }
-
-  // 3. Ищем нужную смену
   const currentShift =
     activeShift?.id === shiftId ? activeShift : finishedShift;
-
-  // 4. Если смены нет после загрузки — показываем пустой контейнер
-  if (!currentShift) {
-    return (
-      <MainLayout>
-        <div className={styles.wrapper__button}>
-          <BackButton actionType="home" />
-        </div>
-        <Loader />
-      </MainLayout>
-    );
-  }
 
   const activeStatusShift: TShiftStatus = 'активная';
   const finishedStatusShift: TShiftStatus = 'завершённая';
@@ -77,10 +50,37 @@ export const HomeShift = () => {
   const currentStatus =
     currentShift === activeShift ? activeStatusShift : finishedStatusShift;
 
+  useEffect(() => {
+    // Скролим страницу наверх
+    window.scrollTo(0, 0);
+
+    dispatch(getActiveShift());
+    dispatch(getFinishedShift());
+  }, []);
+
+  if (isLoadingActiveShift && isLoadingFinishedShift) {
+    return (
+      <MainLayout>
+        <Loader />
+      </MainLayout>
+    );
+  }
+
+  if (!currentShift || !shiftId) {
+    return (
+      <MainLayout>
+        <div className={styles.wrapper__button}>
+          <BackButton actionType='home' />
+        </div>
+        <Error />
+      </MainLayout>
+    );
+  }
+
   return (
     <MainLayout>
       <div className={styles.wrapper__button}>
-        <BackButton actionType="home" />
+        <BackButton actionType='home' />
       </div>
 
       {currentShift?.usersShifts && (
@@ -125,7 +125,6 @@ export const HomeShift = () => {
             type={currentStatus}
             list={currentShift?.usersShifts}
             teamNumber={currentShift.teamNumber}
-            shift={currentShift}
           />
         </>
       )}

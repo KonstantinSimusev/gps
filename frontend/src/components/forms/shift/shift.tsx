@@ -6,7 +6,7 @@ import { Spinner } from '../../spinner/spinner';
 import { useDispatch, useSelector } from '../../../services/store';
 import {
   selectError,
-  selectIsLoadingShift,
+  selectIsLoadingLastShift,
   clearError,
 } from '../../../services/slices/shift/slice';
 import { LayerContext } from '../../../contexts/layer/layerContext';
@@ -27,7 +27,7 @@ interface IFormData extends Record<string, string> {
 export const ShiftForm = () => {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
-  const isLoading = useSelector(selectIsLoadingShift);
+  const isLoading = useSelector(selectIsLoadingLastShift);
   const serverError = useSelector(selectError);
   const { isAddShiftOpenModall, setIsOpenOverlay, setIsAddShiftOpenModall } =
     useContext(LayerContext);
@@ -92,6 +92,7 @@ export const ShiftForm = () => {
 
         if (response.payload) {
           dispatch(getLastTeamShift());
+
           setIsAddShiftOpenModall(false);
           setIsOpenOverlay(false);
         } else {
@@ -113,9 +114,9 @@ export const ShiftForm = () => {
         <label className={styles.shift}>
           <input
             className={styles.visually__hidden}
-            type="radio"
-            name="shift"
-            value="1"
+            type='radio'
+            name='shift'
+            value='1'
             checked={selectedShift === 1}
             onChange={handleRadioChange}
           />
@@ -126,9 +127,9 @@ export const ShiftForm = () => {
         <label className={styles.shift}>
           <input
             className={styles.visually__hidden}
-            type="radio"
-            name="shift"
-            value="2"
+            type='radio'
+            name='shift'
+            value='2'
             checked={selectedShift === 2}
             onChange={handleRadioChange}
           />
@@ -150,7 +151,7 @@ export const ShiftForm = () => {
         }
 
         <button
-          type="submit"
+          type='submit'
           className={styles.button__shift}
           disabled={isButtonDisabled}
           style={{

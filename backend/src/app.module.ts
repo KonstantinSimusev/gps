@@ -14,6 +14,7 @@ import { ShipmentModule } from './modules/shipment/shipment.module';
 import { PackModule } from './modules/pack/pack.module';
 import { FixModule } from './modules/fix/fix.module';
 import { ResidueModule } from './modules/residue/residue.module';
+import { ReportModule } from './modules/report/report.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ResidueModule } from './modules/residue/residue.module';
     PackModule,
     FixModule,
     ResidueModule,
+    ReportModule,
     // Первый статический модуль
     ServeStaticModule.forRoot({
       rootPath: path.join(__dirname, '..', 'dist', 'assets'),

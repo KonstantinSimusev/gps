@@ -42,7 +42,7 @@ export const getActiveShift = createAsyncThunk('shift/active', async () => {
 
     // Добавляем задержку кода
     await delay();
-    
+
     if (!response) {
       throw new Error();
     }

@@ -133,8 +133,8 @@ export const LoginForm = () => {
         <label className={styles.input__name}>Логин</label>
         <input
           className={styles.input__login}
-          type="text"
-          name="login"
+          type='text'
+          name='login'
           value={formData.login}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -146,8 +146,8 @@ export const LoginForm = () => {
         <label className={styles.input__name}>Пароль</label>
         <input
           className={styles.input__password}
-          type="password"
-          name="password"
+          type='password'
+          name='password'
           value={formData.password}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -162,7 +162,7 @@ export const LoginForm = () => {
         {<div className={styles.errors__server}>{error}</div>}
 
         <button
-          type="submit"
+          type='submit'
           className={styles.button__login}
           disabled={isButtonDisabled}
           style={{

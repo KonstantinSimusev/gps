@@ -7,9 +7,6 @@ import { Border } from '../../ui/border/border';
 
 import { useDispatch, useSelector } from '../../../services/store';
 
-import { selectPacks } from '../../../services/slices/pack/slice';
-import { getPacks } from '../../../services/slices/pack/actions';
-
 import { IUserShift } from '../../../utils/api.interface';
 
 import {
@@ -24,9 +21,11 @@ import { TShiftStatus } from '../../../utils/types';
 import { ShiftDate } from '../../ui/shift-date/shift-date';
 import { ShiftStatus } from '../../ui/shift-status/shift-status';
 import { ColumnWrapper } from '../../ui/wrappers/column/column';
-import { HeaderWrapper } from '../../ui/wrappers/header/header';
+import { HeaderWrapper } from '../../ui/wrappers/header-wrapper/header-wrapper';
 import { Location } from '../../ui/location/location';
 import { Chart } from '../../ui/chart/chart';
+import { selectLastShift } from '../../../services/slices/shift/slice';
+import { getLastTeamShift } from '../../../services/slices/shift/actions';
 
 interface IChartProps {
   shiftId: string;
@@ -47,15 +46,20 @@ export const PackChart = ({
 }: IChartProps) => {
   const dispatch = useDispatch();
 
-  const packs = useSelector(selectPacks);
+  const lastShift = useSelector(selectLastShift);
+
+  const packs = lastShift?.packs;
 
   const finishedStatusShift: TShiftStatus = 'завершённая';
 
+  // 1. Проверяем, что shipments не undefined
   const total = packs
-    .filter((item) => item.location === '2 ОЧЕРЕДЬ')
-    .reduce((sum, item) => sum + item.count, 0);
+    ? packs
+        .filter((item) => item.location === '2 ОЧЕРЕДЬ')
+        .reduce((sum, item) => sum + item.count, 0)
+    : 0; // значение по умолчанию, если shipments === undefined
 
-  const transformArray = transformLocations(packs);
+  const transformArray = transformLocations(packs ?? []);
 
   const workersShifts = filterWorkers(list);
   const packerLocations = getPackerStats(workersShifts);
@@ -63,10 +67,8 @@ export const PackChart = ({
   const filterArrayByLum = filterAndSortProfessions(attendanceProfessions);
 
   useEffect(() => {
-    if (shiftId) {
-      dispatch(getPacks(shiftId));
-    }
-  }, [shiftId]);
+    dispatch(getLastTeamShift());
+  }, []);
 
   return (
     <>
@@ -99,7 +101,7 @@ export const PackChart = ({
                 <div className={styles.wrapper__footer}>
                   <span className={styles.total__size}>Итого за смену:</span>
                   <span className={styles.total__size}>
-                    {getCount(packs)} рул
+                    {getCount(packs ?? [])} рул
                   </span>
                 </div>
               </div>

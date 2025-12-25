@@ -7,11 +7,6 @@ import { Border } from '../../ui/border/border';
 
 import { useDispatch, useSelector } from '../../../services/store';
 
-// import { ShiftStatus } from '../../ui/shift-status/shift-status';
-
-import { selectProductions } from '../../../services/slices/production/slice';
-import { getProductions } from '../../../services/slices/production/actions';
-
 import { IUserShift } from '../../../utils/api.interface';
 
 import { TShiftStatus } from '../../../utils/types';
@@ -25,12 +20,14 @@ import {
 } from '../../../utils/utils';
 import { ShiftDate } from '../../ui/shift-date/shift-date';
 import { Location } from '../../ui/location/location';
-import { HeaderWrapper } from '../../ui/wrappers/header/header';
+import { HeaderWrapper } from '../../ui/wrappers/header-wrapper/header-wrapper';
 import { ColumnWrapper } from '../../ui/wrappers/column/column';
 import { Chart } from '../../ui/chart/chart';
 import { ShiftStatus } from '../../ui/shift-status/shift-status';
 import { Total } from '../../ui/total/total';
 import { CountWrapper } from '../../ui/wrappers/count-wrapper/count-wrapper';
+import { selectLastShift } from '../../../services/slices/shift/slice';
+import { getLastTeamShift } from '../../../services/slices/shift/actions';
 
 interface IChartProps {
   shiftId: string;
@@ -51,7 +48,9 @@ export const ProductionChart = ({
 }: IChartProps) => {
   const dispatch = useDispatch();
 
-  const productions = useSelector(selectProductions);
+  const lastShift = useSelector(selectLastShift);
+
+  const productions = lastShift?.productions;
 
   const activeStatusShift: TShiftStatus = 'активная';
 
@@ -60,15 +59,16 @@ export const ProductionChart = ({
   const attendanceProfessions = countProfessionsByAttendance(workersShifts);
   const filterArrayByLum = filterAndSortProfessions(attendanceProfessions);
 
-  const productionTotal = productions
-    .filter((item) => item.location === '2 ОЧЕРЕДЬ')
-    .reduce((sum, item) => sum + item.count, 0);
+  // 1. Проверяем, что shipments не undefined
+  const total = productions
+    ? productions
+        .filter((item) => item.location === '2 ОЧЕРЕДЬ')
+        .reduce((sum, item) => sum + item.count, 0)
+    : 0; // значение по умолчанию, если shipments === undefined
 
   useEffect(() => {
-    if (shiftId) {
-      dispatch(getProductions(shiftId));
-    }
-  }, [shiftId]);
+    dispatch(getLastTeamShift());
+  }, []);
 
   return (
     <div className={styles.container}>
@@ -88,17 +88,13 @@ export const ProductionChart = ({
             </ColumnWrapper>
           </HeaderWrapper>
 
-          <Chart list={productions} titleField={'unit'} />
+          <Chart list={productions ?? []} titleField={'unit'} />
 
           <CountWrapper>
-            <Total
-              text={'АНГЦ + АНО + АИ:'}
-              count={productionTotal}
-              unit={'рул'}
-            />
+            <Total text={'АНГЦ + АНО + АИ:'} count={total} unit={'рул'} />
             <Total
               text={'Итого за смену:'}
-              count={getCount(productions)}
+              count={getCount(productions ?? [])}
               unit={'рул'}
             />
           </CountWrapper>

@@ -10,7 +10,6 @@ import { DownIcon } from '../../icons/down/down';
 import { useDispatch, useSelector } from '../../../services/store';
 
 import {
-  selectUserShiftById,
   selectError,
   selectIsLoadingUserShift,
   clearError,
@@ -31,12 +30,10 @@ import {
   WORK_STATUS_OPTIONS,
 } from '../../../utils/types';
 
-import {
-  getUsersShifts,
-  updateUserShift,
-} from '../../../services/slices/user-shift/actions';
+import { updateUserShift } from '../../../services/slices/user-shift/actions';
 
-import { selectCurrentShiftId } from '../../../services/slices/shift/slice';
+import { selectLastShift } from '../../../services/slices/shift/slice';
+import { getLastTeamShift } from '../../../services/slices/shift/actions';
 
 // Изменим тип IFormData на Record<string, string>
 interface IFormData extends Record<string, string> {
@@ -55,17 +52,13 @@ export const UpdateWorkerForm = () => {
   } = useContext(LayerContext);
 
   const dispatch = useDispatch();
-  const shiftID = useSelector(selectCurrentShiftId);
+  const lastShift = useSelector(selectLastShift);
   const isLoading = useSelector(selectIsLoadingUserShift);
   const error = useSelector(selectError);
 
-  const userShift = useSelector((state) =>
-    selectUserShiftById(state, selectedId),
+  const userShift = lastShift?.usersShifts?.find(
+    (userShift) => userShift.id === selectedId,
   );
-
-  if (!userShift?.user) {
-    return null;
-  }
 
   const attendance: TWorkStatus = 'Явка';
   const offline: TWorkPlace = 'Не работает';
@@ -94,12 +87,14 @@ export const UpdateWorkerForm = () => {
 
   // Состояние для хранения значений полей формы
   const [formData, setFormData] = useState<IFormData>({
-    workStatus: userShift.workStatus,
-    shiftProfession: userShift.shiftProfession,
+    workStatus: userShift?.workStatus ?? '',
+    shiftProfession: userShift?.shiftProfession ?? '',
     workPlace:
-      userShift.workStatus === attendance ? userShift.workPlace : offline,
+      userShift?.workStatus === attendance ? userShift.workPlace : offline,
     workHours:
-      userShift.workStatus === attendance ? String(userShift.workHours) : '0.0',
+      userShift?.workStatus === attendance
+        ? String(userShift.workHours)
+        : '0.0',
   });
 
   // Состояние для хранения ошибок валидации
@@ -196,7 +191,7 @@ export const UpdateWorkerForm = () => {
     if (Object.keys(formErrors).length === 0) {
       try {
         const payload = {
-          id: userShift.id,
+          id: userShift?.id ?? '',
           workStatus: formData.workStatus,
           shiftProfession: formData.shiftProfession,
           workPlace: formData.workPlace,
@@ -208,41 +203,13 @@ export const UpdateWorkerForm = () => {
           setIsUpdateWorkerOpenModall(false);
           setIsOpenOverlay(false);
 
-          if (shiftID) {
-            // если shiftID не null
-            dispatch(getUsersShifts(shiftID)); // shiftID гарантированно string
-          }
+          dispatch(getLastTeamShift());
         }
       } catch (err) {
         // Обработка ошибок (можно расширить)
       }
     }
   };
-
-  // const isButtonDisabled =
-  //   isLoading ||
-  //   formData.workPlace === empty ||
-  //   (formData.workStatus === attendance && formData.workPlace === offline) ||
-  //   (formData.workStatus === attendance && Number(formData.workHours) === 0) ||
-  //   (formData.workStatus !== attendance && formData.workPlace !== offline) ||
-  //   (formData.workPlace === offline && Number(formData.workHours) !== 0) ||
-  // (formData.shiftProfession === packer &&
-  //   !validPackerQueues.includes(formData.workPlace as TWorkPlace)) ||
-  // (formData.shiftProfession === stacker &&
-  //   !validStackerQueues.includes(formData.workPlace as TWorkPlace)) ||
-  // (formData.shiftProfession === operator &&
-  //   !validOperatorQueues.includes(formData.workPlace as TWorkPlace)) ||
-  // (formData.shiftProfession === lumPacker &&
-  //   !validLumPackerQueues.includes(formData.workPlace as TWorkPlace)) ||
-  // (formData.shiftProfession === brigadir &&
-  //   !validBrigadirQueues.includes(formData.workPlace as TWorkPlace)) ||
-  // (formData.shiftProfession === driver &&
-  //   !validDriverQuestions.includes(formData.workPlace as TWorkPlace)) ||
-  // (formData.shiftProfession === cutter &&
-  //   !validCutterQuestions.includes(formData.workPlace as TWorkPlace)) ||
-  // (formData.shiftProfession !== operator &&
-  //   formData.shiftProfession !== lumPacker &&
-  //   Number(formData.workHours) > 11.5);
 
   const isButtonDisabled =
     isLoading ||
@@ -281,16 +248,16 @@ export const UpdateWorkerForm = () => {
     <div className={styles.container}>
       <h3 className={styles.title}>
         <span>
-          {userShift.user.lastName} {userShift.user.firstName}
+          {userShift?.user?.lastName} {userShift?.user?.firstName}
         </span>
-        <span>{userShift.user.patronymic}</span>
+        <span>{userShift?.user?.patronymic}</span>
       </h3>
       <form className={styles.form__worker} onSubmit={handleSubmit}>
         <label className={styles.input__name}>Статус работы</label>
         <div className={styles.container__select}>
           <select
             className={styles.input__worker}
-            name="workStatus"
+            name='workStatus'
             value={formData.workStatus}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -313,7 +280,7 @@ export const UpdateWorkerForm = () => {
         <div className={styles.container__select}>
           <select
             className={styles.input__worker}
-            name="shiftProfession"
+            name='shiftProfession'
             value={formData.shiftProfession}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -336,7 +303,7 @@ export const UpdateWorkerForm = () => {
         <div className={styles.container__select}>
           <select
             className={styles.input__worker}
-            name="workPlace"
+            name='workPlace'
             value={formData.workPlace}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -361,13 +328,13 @@ export const UpdateWorkerForm = () => {
         <label className={styles.input__name}>Отработано часов</label>
         <input
           className={styles.input__worker}
-          type="text"
-          name="workHours"
+          type='text'
+          name='workHours'
           value={formData.workHours}
           onChange={handleChange}
           onBlur={handleBlur}
           onFocus={clearWorkHoursField}
-          placeholder="Введите часы"
+          placeholder='Введите часы'
         />
         <div className={styles.errors}>
           {errors.workHours && (
@@ -379,7 +346,7 @@ export const UpdateWorkerForm = () => {
         {<div className={styles.errors__server}>{error}</div>}
 
         <button
-          type="submit"
+          type='submit'
           className={styles.button__worker}
           disabled={isButtonDisabled}
           style={{

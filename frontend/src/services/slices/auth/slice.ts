@@ -1,23 +1,22 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
 import { checkAccessToken, loginUser, logoutUser } from './actions';
 
 import { IUser } from '../../../utils/api.interface';
 
 interface IAuthState {
+  user: IUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   checking: boolean;
-  user: IUser | null;
-  // users: IUser[];
   error: string | null;
 }
 
 const initialState: IAuthState = {
+  user: null,
   isAuthenticated: false,
   isLoading: false,
   checking: true,
-  user: null,
-  // users: [],
   error: null,
 };
 
@@ -30,11 +29,10 @@ export const authSlice = createSlice({
     },
   },
   selectors: {
+    selectUser: (state: IAuthState) => state.user,
     selectIsAuthenticated: (state: IAuthState) => state.isAuthenticated,
     selectIsLoading: (state: IAuthState) => state.isLoading,
     selectIsChecking: (state: IAuthState) => state.checking,
-    selectUser: (state: IAuthState) => state.user,
-    // selectUsers: (state: IAuthState) => state.users,
     selectError: (state: IAuthState) => state.error,
   },
   extraReducers: (builder) => {
@@ -45,15 +43,15 @@ export const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action: PayloadAction<IUser>) => {
+        state.user = action.payload;
         state.isAuthenticated = true;
         state.isLoading = false;
-        state.user = action.payload;
         state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
+        state.user = null;
         state.isAuthenticated = false;
         state.isLoading = false;
-        state.user = null;
         state.error = action.error.message ?? 'Неверный логин или пароль';
       })
       // Обработчик для checkRefreshToken
@@ -64,10 +62,10 @@ export const authSlice = createSlice({
       .addCase(
         checkAccessToken.fulfilled,
         (state, action: PayloadAction<IUser>) => {
+          state.user = action.payload;
           state.isAuthenticated = true;
           state.isLoading = false; // Сбрасываем флаг после успешного выполнения
           state.checking = false;
-          state.user = action.payload;
           state.error = null;
         },
       )
@@ -83,10 +81,9 @@ export const authSlice = createSlice({
         state.error = null; // Очищаем ошибку при начале выхода
       })
       .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
         state.isAuthenticated = false;
         state.isLoading = false;
-        state.user = null;
-        // state.users = [];
         state.error = null;
       })
       .addCase(logoutUser.rejected, (state, action) => {
@@ -104,6 +101,5 @@ export const {
   selectIsLoading,
   selectIsChecking,
   selectUser,
-  // selectUsers,
   selectError,
 } = authSlice.selectors;

@@ -51,14 +51,14 @@ export const Logout = () => {
       <div className={styles.wrapper}>
         <button
           className={styles.button__logout}
-          type="button"
+          type='button'
           onClick={handleClickLogout}
         >
-          Выйти
+          Да
         </button>
         <button
           className={styles.button__return}
-          type="button"
+          type='button'
           onClick={handleClickReturn}
         >
           Отменить

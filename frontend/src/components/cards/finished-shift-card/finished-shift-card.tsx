@@ -1,60 +1,37 @@
 import styles from './finished-shift-card.module.css';
 
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Singlton } from '../../ui/singlton/singlton';
-
-import { useDispatch, useSelector } from '../../../services/store';
-import { getFinishedShift } from '../../../services/slices/shift/actions';
-
-import {
-  selectFinishedShift,
-  selectIsLoadingFinishedShift,
-} from '../../../services/slices/shift/slice';
-
 import { formatDate } from '../../../utils/utils';
+import { IShift } from '../../../utils/api.interface';
 
-export const FinishedShiftCard = () => {
-  const dispatch = useDispatch();
-  const finishedShift = useSelector(selectFinishedShift);
-  const isLoadingFinishedShift = useSelector(selectIsLoadingFinishedShift);
+interface IProps {
+  shift: IShift;
+}
 
+export const FinishedShiftCard = ({ shift }: IProps) => {
   const navigate = useNavigate();
 
   const handleClick = (shiftId: string) => {
     navigate(`/home/shifts/${shiftId}`);
   };
 
-  useEffect(() => {
-    dispatch(getFinishedShift());
-  }, []);
-
   return (
     <li
-      key={finishedShift?.id}
+      key={shift.id}
       className={styles.item}
-      onClick={() => handleClick(finishedShift?.id ?? '')}
+      onClick={() => handleClick(shift.id ?? '')}
     >
-      {isLoadingFinishedShift ? (
-        <Singlton width={146.88} height={63.2} />
-      ) : finishedShift ? (
+      {shift ? (
         <div className={styles.wrapper__shift}>
-          <span className={styles.text}>{formatDate(finishedShift.date)}</span>
-          <span className={styles.text}>Смена {finishedShift.shiftNumber}</span>
-          <span className={styles.text}>
-            Бригада {finishedShift.teamNumber}
-          </span>
+          <span className={styles.text}>{formatDate(shift.date)}</span>
+          <span className={styles.text}>Смена {shift.shiftNumber}</span>
+          <span className={styles.text}>Бригада {shift.teamNumber}</span>
         </div>
       ) : (
         <span className={styles.emprty}>Нет данных</span>
       )}
-
-      {isLoadingFinishedShift ? (
-        <Singlton width={99.6} height={16} />
-      ) : (
-        <span className={styles.text__end}>завершённая</span>
-      )}
+      <span className={styles.text__end}>завершённая</span>
     </li>
   );
 };

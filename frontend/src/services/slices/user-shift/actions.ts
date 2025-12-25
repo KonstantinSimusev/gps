@@ -47,7 +47,7 @@ export const getUsersShifts = createAsyncThunk(
       const response = await getUsersShiftsApi(shiftId);
 
       // Добавляем задержку кода
-      // await delay();
+      await delay();
 
       if (!response) {
         throw new Error();
@@ -56,7 +56,7 @@ export const getUsersShifts = createAsyncThunk(
       return response;
     } catch (error) {
       // Добавляем задержку кода
-      // await delay();
+      await delay();
 
       // Пойдет в rejected
       throw error;
@@ -95,7 +95,7 @@ export const deleteUserShift = createAsyncThunk(
       const response = await deleteUserShiftApi(id);
 
       // Добавляем задержку кода
-      await delay();
+      // await delay();
 
       if (!response) {
         throw new Error();
@@ -104,7 +104,7 @@ export const deleteUserShift = createAsyncThunk(
       return response;
     } catch (error) {
       // Добавляем задержку кода
-      await delay();
+      // await delay();
 
       // Пойдет в rejected
       throw error;

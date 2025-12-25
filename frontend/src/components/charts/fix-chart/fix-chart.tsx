@@ -7,9 +7,6 @@ import { Border } from '../../ui/border/border';
 
 import { useDispatch, useSelector } from '../../../services/store';
 
-import { selectFixs } from '../../../services/slices/fix/slice';
-import { getFixs } from '../../../services/slices/fix/actions';
-
 import { IUserShift } from '../../../utils/api.interface';
 
 import {
@@ -22,9 +19,11 @@ import { TShiftStatus } from '../../../utils/types';
 import { ShiftDate } from '../../ui/shift-date/shift-date';
 import { ShiftStatus } from '../../ui/shift-status/shift-status';
 import { ColumnWrapper } from '../../ui/wrappers/column/column';
-import { HeaderWrapper } from '../../ui/wrappers/header/header';
+import { HeaderWrapper } from '../../ui/wrappers/header-wrapper/header-wrapper';
 import { Location } from '../../ui/location/location';
 import { Chart } from '../../ui/chart/chart';
+import { selectLastShift } from '../../../services/slices/shift/slice';
+import { getLastTeamShift } from '../../../services/slices/shift/actions';
 
 interface IChartProps {
   shiftId: string;
@@ -45,29 +44,34 @@ export const FixChart = ({
 }: IChartProps) => {
   const dispatch = useDispatch();
 
-  const fixs = useSelector(selectFixs);
+  const lastShift = useSelector(selectLastShift);
+  
+    const fixs = lastShift?.fixs;
 
   const finishedStatusShift: TShiftStatus = 'завершённая';
 
+  // 1. Проверяем, что shipments не undefined
   const total = fixs
-    .filter((item) => item.location === '2 ОЧЕРЕДЬ')
-    .reduce((sum, item) => sum + item.count, 0);
+    ? fixs
+        .filter((item) => item.location === '2 ОЧЕРЕДЬ')
+        .reduce((sum, item) => sum + item.count, 0)
+    : 0; // значение по умолчанию, если shipments === undefined
 
-  // Сортировка исходного массива
-  const sortedArray = [...fixs].sort((a, b) => {
-    const numA = extractNumber(a.railway ?? '');
-    const numB = extractNumber(b.railway ?? '');
-    return numA - numB;
-  });
+  // 2. Проверяем shipments перед сортировкой
+  const sortedArray = fixs
+    ? [...fixs].sort((a, b) => {
+        const numA = extractNumber(a.railway ?? '');
+        const numB = extractNumber(b.railway ?? '');
+        return numA - numB;
+      })
+    : []; // пустой массив по умолчанию
 
   const workersShifts = filterWorkers(list);
   const shipmentLocations = getShipmentStats(workersShifts);
 
   useEffect(() => {
-    if (shiftId) {
-      dispatch(getFixs(shiftId));
-    }
-  }, [shiftId]);
+    dispatch(getLastTeamShift());
+  }, []);
 
   return (
     <>
@@ -100,7 +104,7 @@ export const FixChart = ({
                 <div className={styles.wrapper__footer}>
                   <span className={styles.total__size}>Итого за смену:</span>
                   <span className={styles.total__size}>
-                    {getCount(fixs)} ваг
+                    {getCount(fixs ?? [])} ваг
                   </span>
                 </div>
               </div>

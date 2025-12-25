@@ -17,11 +17,10 @@ import {
   validateForm,
   validationRules,
 } from '../../../utils/validation';
-import {
-  createUserShift,
-  getUsersShifts,
-} from '../../../services/slices/user-shift/actions';
-import { selectCurrentShiftId } from '../../../services/slices/shift/slice';
+import { createUserShift } from '../../../services/slices/user-shift/actions';
+import { selectLastShift } from '../../../services/slices/shift/slice';
+import { getLastTeamShift } from '../../../services/slices/shift/actions';
+import { IUserShift } from '../../../utils/api.interface';
 
 // Изменим тип IFormData на Record<string, string>
 interface IFormData extends Record<string, string> {
@@ -31,12 +30,14 @@ interface IFormData extends Record<string, string> {
 export const AddWorkerForm = () => {
   const dispatch = useDispatch();
   const isLoading = useSelector(selectIsLoadingUserShift);
-  const currentShiftId = useSelector(selectCurrentShiftId);
+  const lastShift = useSelector(selectLastShift);
   const error = useSelector(selectError);
+
   const {
     isAddWorkerOpenModall,
     setIsAddWorkerOpenModall,
     setIsUserShiftInfoOpenModal,
+    setSelectedUser,
   } = useContext(LayerContext);
 
   // Состояние для хранения значений полей формы
@@ -102,29 +103,27 @@ export const AddWorkerForm = () => {
     // Если форма валидна, можно отправить данные на сервер
     if (Object.keys(formErrors).length === 0) {
       try {
-        if (!currentShiftId) {
-          return null;
-        }
-
-        if (!currentShiftId) {
-          throw new Error();
-        }
-
         const payload = {
           personalNumber: Number(formData.personalNumber),
-          shiftId: currentShiftId,
+          shiftId: lastShift?.id ?? '',
         };
 
         const response = await dispatch(createUserShift(payload));
 
         if (response.payload) {
+          const userShift = response.payload as IUserShift;
+
+          if (userShift.user) {
+            setSelectedUser(userShift.user);
+          }
+
           setIsAddWorkerOpenModall(false);
-          // setIsOpenOverlay(true);
           setIsUserShiftInfoOpenModal(true);
 
           setFormData({ personalNumber: '' });
           setErrors({ personalNumber: '', currentShift: '' });
-          dispatch(getUsersShifts(currentShiftId));
+
+          dispatch(getLastTeamShift());
         } else {
           setFormData({ personalNumber: '' });
           throw new Error();
@@ -146,8 +145,8 @@ export const AddWorkerForm = () => {
         <label className={styles.input__name}>Личный номер</label>
         <input
           className={styles.input__worker}
-          type="text"
-          name="personalNumber"
+          type='text'
+          name='personalNumber'
           value={formData.personalNumber}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -162,7 +161,7 @@ export const AddWorkerForm = () => {
         {<div className={styles.errors__server}>{error}</div>}
 
         <button
-          type="submit"
+          type='submit'
           className={styles.button__worker}
           disabled={isButtonDisabled}
           style={{

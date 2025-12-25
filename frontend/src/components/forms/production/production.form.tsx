@@ -17,14 +17,11 @@ import {
   clearError,
   selectError,
   selectIsLoadingProductions,
-  selectProductionById,
 } from '../../../services/slices/production/slice';
 import { formatProductionUnit } from '../../../utils/utils';
-import {
-  getProductions,
-  updateProduction,
-} from '../../../services/slices/production/actions';
-import { selectCurrentShiftId } from '../../../services/slices/shift/slice';
+import { updateProduction } from '../../../services/slices/production/actions';
+import { selectLastShift } from '../../../services/slices/shift/slice';
+import { getLastTeamShift } from '../../../services/slices/shift/actions';
 
 // Изменим тип IFormData на Record<string, string>
 interface IFormData extends Record<string, string> {
@@ -33,6 +30,7 @@ interface IFormData extends Record<string, string> {
 
 export const ProductionForm = () => {
   const dispatch = useDispatch();
+  const lastShift = useSelector(selectLastShift);
 
   const {
     isProductionOpenMdal,
@@ -41,11 +39,9 @@ export const ProductionForm = () => {
     setIsProductionOpenMdal,
   } = useContext(LayerContext);
 
-  const production = useSelector((state) =>
-    selectProductionById(state, selectedId),
+  const production = lastShift?.productions?.find(
+    (production) => production.id === selectedId,
   );
-
-  const currentShiftId = useSelector(selectCurrentShiftId);
 
   const isLoading = useSelector(selectIsLoadingProductions);
   const error = useSelector(selectError);
@@ -66,17 +62,6 @@ export const ProductionForm = () => {
       dispatch(clearError());
     }
   }, [isProductionOpenMdal, dispatch]);
-
-  // // 2. Инициализируем formData.count из production при открытии и наличии данных
-  // useEffect(() => {
-  //   if (isProductionOpenMdal && production) {
-  //     setFormData({
-  //       count: String(production.count || ''), // преобразуем число в строку
-  //     });
-  //     // Сброс ошибок при перезагрузке данных
-  //     setErrors({ count: '' });
-  //   }
-  // }, [isProductionOpenMdal, production]);
 
   // Обработчик изменения поля ввода
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,7 +112,7 @@ export const ProductionForm = () => {
         const payload = {
           id: selectedId,
           count: Number(formData.count),
-          shiftId: currentShiftId,
+          shiftId: lastShift?.id,
         };
 
         const response = await dispatch(updateProduction(payload));
@@ -136,14 +121,9 @@ export const ProductionForm = () => {
           setIsProductionOpenMdal(false);
           setIsOpenOverlay(false);
 
-          if (!currentShiftId) {
-            return null;
-          }
-
-          dispatch(getProductions(currentShiftId));
+          dispatch(getLastTeamShift());
         }
       } catch (error) {
-        // dispatch(clearError())
         throw new Error();
       }
     }
@@ -159,8 +139,8 @@ export const ProductionForm = () => {
         <label className={styles.input__name}>Производство за смену</label>
         <input
           className={styles.input__production}
-          type="text"
-          name="count"
+          type='text'
+          name='count'
           value={formData.count}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -173,7 +153,7 @@ export const ProductionForm = () => {
         {<div className={styles.errors__server}>{error}</div>}
 
         <button
-          type="submit"
+          type='submit'
           className={styles.button__production}
           disabled={isButtonDisabled}
           style={{

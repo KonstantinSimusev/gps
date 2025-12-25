@@ -5,11 +5,10 @@ import { useContext, useEffect, useState } from 'react';
 import { Spinner } from '../../spinner/spinner';
 
 import { useDispatch, useSelector } from '../../../services/store';
-import { selectCurrentShiftId } from '../../../services/slices/shift/slice';
-import { getShipments, updateShipment } from '../../../services/slices/shipment/actions';
+import { selectLastShift } from '../../../services/slices/shift/slice';
+import { updateShipment } from '../../../services/slices/shipment/actions';
 
 import {
-  selectShipmentById,
   clearError,
   selectError,
   selectIsLoadingShipments,
@@ -22,6 +21,7 @@ import {
   validateForm,
   validationRules,
 } from '../../../utils/validation';
+import { getLastTeamShift } from '../../../services/slices/shift/actions';
 
 // Изменим тип IFormData на Record<string, string>
 interface IFormData extends Record<string, string> {
@@ -38,11 +38,11 @@ export const ShipmentForm = () => {
     setIsShipmentOpenMdal,
   } = useContext(LayerContext);
 
-  const shipment = useSelector((state) =>
-    selectShipmentById(state, selectedId),
-  );
+  const lastShift = useSelector(selectLastShift);
 
-  const currentShiftId = useSelector(selectCurrentShiftId);
+  const shipment = lastShift?.shipments?.find(
+    (shipment) => shipment.id === selectedId,
+  );
 
   const isLoading = useSelector(selectIsLoadingShipments);
   const error = useSelector(selectError);
@@ -121,11 +121,7 @@ export const ShipmentForm = () => {
           setIsShipmentOpenMdal(false);
           setIsOpenOverlay(false);
 
-          if (!currentShiftId) {
-            return null;
-          }
-
-          dispatch(getShipments(currentShiftId));
+          dispatch(getLastTeamShift());
         }
       } catch (error) {
         // dispatch(clearError())
@@ -147,8 +143,8 @@ export const ShipmentForm = () => {
         <label className={styles.input__name}>Отгрузка за смену</label>
         <input
           className={styles.input}
-          type="text"
-          name="count"
+          type='text'
+          name='count'
           value={formData.count}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -161,7 +157,7 @@ export const ShipmentForm = () => {
         {<div className={styles.errors__server}>{error}</div>}
 
         <button
-          type="submit"
+          type='submit'
           className={styles.button}
           disabled={isButtonDisabled}
           style={{

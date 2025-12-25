@@ -28,10 +28,10 @@ export const formatShortDate = (date: string | Date): string => {
   const month = String(parsedDate.getMonth() + 1).padStart(2, '0'); // Месяц от 0 до 11 → +1
   const year = parsedDate.getFullYear();
 
-  return `${day}-${month}-${year}`;
+  return `${day}.${month}.${year}`;
 };
 
-export const delay = (ms: number = 1000): Promise<void> =>
+export const delay = (ms: number = 500): Promise<void> =>
   new Promise((resolve) => {
     const timeoutId = setTimeout(() => {
       clearTimeout(timeoutId);
@@ -141,31 +141,6 @@ export function countProfessionsByAttendance(
   // Сортируем результат по приоритету (sortOrder)
   return result.sort((a, b) => a.sortOrder - b.sortOrder);
 }
-
-export const isShowShift = (lastShift: IShift) => {
-  if (!lastShift || !lastShift.date) return false;
-
-  const today = new Date();
-  const lastShiftDate = new Date(lastShift.date);
-
-  // Устанавливаем время на 00:00:00 для корректного сравнения дат
-  today.setHours(0, 0, 0, 0);
-  lastShiftDate.setHours(0, 0, 0, 0);
-
-  // Разница в днях между текущей датой и датой последней смены
-  // today - lastShiftDate: положительное число = прошло дней, отрицательное = в будущем
-  const diffTime = today.getTime() - lastShiftDate.getTime();
-  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-
-  /*
-     Условия отображения:
-     - если последняя смена сегодня (diffDays = 0) → показываем
-     - если последняя смена была вчера (diffDays = 1) → показываем
-     - если последняя смена будет завтра (diffDays = -1) → показываем (сегодня меньше на 1 день)
-     - во всех остальных случаях (≥2 дня назад или ≥2 дня вперёд) → не показываем
-    */
-  return diffDays === 0 || diffDays === -1;
-};
 
 export function countProfessionsByAddedAttendance(
   usersShifts: IUserShift[],

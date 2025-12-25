@@ -73,7 +73,7 @@ export class ShiftController {
   async getLastTeamShift(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<IShift> {
+  ): Promise<IShift | null> {
     return this.shiftService.getLastTeamShift(req, res);
   }
 

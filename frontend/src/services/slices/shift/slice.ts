@@ -45,18 +45,16 @@ export const shiftSlice = createSlice({
     },
   },
   selectors: {
-    selectCurrentShift: (state: IShiftState) => state.lastTeamShift,
+    selectLastShift: (state: IShiftState) => state.lastTeamShift,
     selectActiveShift: (state: IShiftState) => state.activeShift,
     selectFinishedShift: (state: IShiftState) => state.finishedShift,
-    selectCurrentShiftId: (state: IShiftState) =>
-      state.lastTeamShift ? state.lastTeamShift.id : null,
     selectLastShiftsTeams: (state: IShiftState) => state.lastShiftsTeams,
+    selectIsLoadingLastShift: (state: IShiftState) => state.isLoadingShift,
+    selectError: (state: IShiftState) => state.error,
     selectIsLoadingActiveShift: (state: IShiftState) =>
       state.isLoadingActiveShift,
     selectIsLoadingFinishedShift: (state: IShiftState) =>
       state.isLoadingFinishedShift,
-    selectIsLoadingShift: (state: IShiftState) => state.isLoadingShift,
-    selectError: (state: IShiftState) => state.error,
   },
   extraReducers: (builder) => {
     builder
@@ -146,13 +144,12 @@ export const shiftSlice = createSlice({
 
 export const { resetShift, clearError } = shiftSlice.actions;
 export const {
-  selectCurrentShift,
+  selectLastShift,
   selectActiveShift,
   selectFinishedShift,
-  selectCurrentShiftId,
   selectLastShiftsTeams,
   selectIsLoadingActiveShift,
   selectIsLoadingFinishedShift,
-  selectIsLoadingShift,
+  selectIsLoadingLastShift,
   selectError,
 } = shiftSlice.selectors;

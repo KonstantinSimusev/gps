@@ -10,8 +10,20 @@
   font-size: 16px;
 }
 
+.title {
+  font-size: 14px;
+  opacity: 0.6;
+}
+
 .location {
   font-size: 14px;
+}
+
+.header__wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
 }
 
 .wrapper {
@@ -71,4 +83,11 @@
   font-size: 14px;
   margin-left: 10px;
   opacity: 0.6;
+}
+
+.status {
+  display: flex;
+  gap: 10px;
+  color: #1e9146;
+  margin-top: 10px;
 }

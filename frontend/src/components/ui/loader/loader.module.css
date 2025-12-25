@@ -1,12 +1,18 @@
 .container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 16px;
   opacity: 0.6;
+  flex-grow: 1;
 }
 
 .container::after {
-  content: '.';
-  animation: dots 0.8s linear infinite;
-  margin-left: 4px;
+  content: '';
+  width: 2rem; /* Фиксированная ширина под 3 точки */
+  margin-left: 4px; /* Отступ от слова */
+  font-family: monospace;
+  animation: dots 1s linear infinite;
 }
 
 @keyframes dots {
@@ -15,11 +21,11 @@
   }
 
   33% {
-    content: '. .';
+    content: '..';
   }
 
   66% {
-    content: '. . .';
+    content: '...';
   }
 
   100% {

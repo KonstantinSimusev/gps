@@ -1,72 +1,74 @@
 import styles from './timesheet.module.css';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { MainLayout } from '../../ui/layouts/main/main-layout';
+import { Loader } from '../../ui/loader/loader';
 import { PageTitle } from '../../ui/page-title/page-title';
-import { TeamProfessionList } from '../../lists/profession-list/profession-list';
-import { UserShiftList } from '../../lists/user-shift-list/user-shift-list';
 import { AddButton } from '../../buttons/add/add-button';
+import { TeamProfessionList } from '../../lists/profession-list/profession-list';
+import { HeaderWrapper } from '../../ui/wrappers/header-wrapper/header-wrapper';
+import { ShiftDate } from '../../ui/shift-date/shift-date';
+import { UserShiftList } from '../../lists/user-shift-list/user-shift-list';
 
 import { useDispatch, useSelector } from '../../../services/store';
+
 import {
-  selectCurrentShift,
-  selectCurrentShiftId,
+  selectIsLoadingLastShift,
+  selectLastShift,
 } from '../../../services/slices/shift/slice';
+
 import { getLastTeamShift } from '../../../services/slices/shift/actions';
-import { selectUsersShifts } from '../../../services/slices/user-shift/slice';
-import { isShowShift } from '../../../utils/utils';
-import { Loader } from '../../ui/loader/loader';
 
 export const Timesheet = () => {
   const dispatch = useDispatch();
-  const lastShift = useSelector(selectCurrentShift);
-  const usersShifts = useSelector(selectUsersShifts);
-  const currentShiftId = useSelector(selectCurrentShiftId);
 
-  // Состояние загрузки
-  const [isLoading, setIsLoading] = useState(true);
+  const lastShift = useSelector(selectLastShift);
+  const isLoading = useSelector(selectIsLoadingLastShift);
 
   useEffect(() => {
-    // Перед запросом устанавливаем загрузку
-    setIsLoading(true);
-    dispatch(getLastTeamShift())
-      .unwrap()
-      .catch(() => {
-        // Даже если ошибка — снимаем загрузку
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    dispatch(getLastTeamShift());
   }, []);
 
-  if (isLoading) {
+  if (isLoading && !lastShift) {
+    return (
+      <MainLayout>
+        <Loader />
+      </MainLayout>
+    );
+  }
+
+  if (lastShift === null) {
     return (
       <MainLayout>
         <PageTitle title="ТАБЕЛЬ" />
-        <Loader />
+        <div className={styles.wrapper__button}>
+          <AddButton label="Создать смену" actionType="shift" />
+        </div>
       </MainLayout>
     );
   }
 
   return (
     <MainLayout>
-      <PageTitle title="ТАБЕЛЬ" />
-      {(!lastShift || !isShowShift(lastShift)) && (
-        <div className={styles.wrapper__button}>
-          <AddButton label="Создать смену" actionType="shift" />
-        </div>
+      <HeaderWrapper gap={10}>
+        <PageTitle title="ТАБЕЛЬ" />
+        <ShiftDate
+          date={lastShift.date}
+          shiftNumber={lastShift.shiftNumber}
+          teamNumber={lastShift.teamNumber}
+        />
+      </HeaderWrapper>
+
+      {lastShift.usersShifts && (
+        <TeamProfessionList
+          list={lastShift.usersShifts}
+          teamNumber={lastShift.teamNumber}
+        />
       )}
 
-      {currentShiftId && lastShift && isShowShift(lastShift) && (
-        <>
-          <TeamProfessionList
-            list={usersShifts}
-            teamNumber={lastShift.teamNumber}
-            shift={lastShift}
-          />
-          <UserShiftList shiftId={currentShiftId} />
-        </>
+      {lastShift.usersShifts && (
+        <UserShiftList shift={lastShift} list={lastShift.usersShifts} />
       )}
     </MainLayout>
   );

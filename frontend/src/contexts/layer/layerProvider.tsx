@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { LayerContext } from './layerContext';
+import { IUser } from '../../utils/api.interface';
 
 interface TLayerProviderProps {
   children: React.ReactNode;
@@ -27,6 +28,7 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
   const [isPackOpenMdal, setIsPackOpenMdal] = useState(false);
   const [isFixOpenMdal, setIsFixOpenMdal] = useState(false);
   const [isResidueOpenMdal, setIsResidueOpenMdal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
 
   // Мемоизируем значение контекста
   const value = useMemo(
@@ -50,6 +52,7 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
       selectedId,
       selectedScrollPosition,
       selectedButtonActionType,
+      selectedUser,
       setIsOpenOverlay,
       setIsOpenMenu,
       setIsOpenModal,
@@ -69,6 +72,7 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
       setSelectedId,
       setSelectedScrollPosition,
       setSelectedButtonActionType,
+      setSelectedUser,
     }),
     [
       isOpenOverlay,
@@ -84,6 +88,7 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
       selectedId,
       selectedScrollPosition,
       selectedButtonActionType,
+      selectedUser,
     ],
   );
 

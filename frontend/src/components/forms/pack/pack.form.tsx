@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Spinner } from '../../spinner/spinner';
 
 import { useDispatch, useSelector } from '../../../services/store';
-import { selectCurrentShiftId } from '../../../services/slices/shift/slice';
+import { selectLastShift } from '../../../services/slices/shift/slice';
 
 import { LayerContext } from '../../../contexts/layer/layerContext';
 
@@ -18,10 +18,10 @@ import {
 import {
   selectIsLoadingPacks,
   clearError,
-  selectPackById,
   selectError,
 } from '../../../services/slices/pack/slice';
-import { getPacks, updatePack } from '../../../services/slices/pack/actions';
+import { updatePack } from '../../../services/slices/pack/actions';
+import { getLastTeamShift } from '../../../services/slices/shift/actions';
 
 // Изменим тип IFormData на Record<string, string>
 interface IFormData extends Record<string, string> {
@@ -34,9 +34,9 @@ export const PackForm = () => {
   const { isPackOpenMdal, selectedId, setIsOpenOverlay, setIsPackOpenMdal } =
     useContext(LayerContext);
 
-  const shipment = useSelector((state) => selectPackById(state, selectedId));
+  const lastShift = useSelector(selectLastShift);
 
-  const currentShiftId = useSelector(selectCurrentShiftId);
+  const pack = lastShift?.packs?.find((pack) => pack.id === selectedId);
 
   const isLoading = useSelector(selectIsLoadingPacks);
   const error = useSelector(selectError);
@@ -107,7 +107,7 @@ export const PackForm = () => {
         const payload = {
           id: selectedId,
           count: Number(formData.count),
-          shiftId: currentShiftId,
+          shiftId: lastShift?.id,
         };
 
         const response = await dispatch(updatePack(payload));
@@ -116,11 +116,7 @@ export const PackForm = () => {
           setIsPackOpenMdal(false);
           setIsOpenOverlay(false);
 
-          if (!currentShiftId) {
-            return null;
-          }
-
-          dispatch(getPacks(currentShiftId));
+          dispatch(getLastTeamShift());
         }
       } catch (error) {
         // dispatch(clearError())
@@ -135,15 +131,15 @@ export const PackForm = () => {
   return (
     <div className={styles.container}>
       <div className={styles.location}>
-        <h3 className={styles.title}>{`${shipment?.location}`}</h3>
-        <h3 className={styles.title}>{`${shipment?.area}`}</h3>
+        <h3 className={styles.title}>{`${pack?.location}`}</h3>
+        <h3 className={styles.title}>{`${pack?.area}`}</h3>
       </div>
       <form className={styles.form} onSubmit={handleSubmit}>
         <label className={styles.input__name}>Упаковка за смену</label>
         <input
           className={styles.input}
-          type="text"
-          name="count"
+          type='text'
+          name='count'
           value={formData.count}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -156,7 +152,7 @@ export const PackForm = () => {
         {<div className={styles.errors__server}>{error}</div>}
 
         <button
-          type="submit"
+          type='submit'
           className={styles.button}
           disabled={isButtonDisabled}
           style={{

@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Spinner } from '../../spinner/spinner';
 
 import { useDispatch, useSelector } from '../../../services/store';
-import { selectCurrentShiftId } from '../../../services/slices/shift/slice';
+import { selectLastShift } from '../../../services/slices/shift/slice';
 
 import { LayerContext } from '../../../contexts/layer/layerContext';
 
@@ -18,13 +18,10 @@ import {
 import {
   selectIsLoadingResidues,
   clearError,
-  selectResidueById,
   selectError,
 } from '../../../services/slices/residue/slice';
-import {
-  getResidues,
-  updateResidue,
-} from '../../../services/slices/residue/actions';
+import { updateResidue } from '../../../services/slices/residue/actions';
+import { getLastTeamShift } from '../../../services/slices/shift/actions';
 
 // Изменим тип IFormData на Record<string, string>
 interface IFormData extends Record<string, string> {
@@ -41,9 +38,11 @@ export const ResidueForm = () => {
     setIsResidueOpenMdal,
   } = useContext(LayerContext);
 
-  const residue = useSelector((state) => selectResidueById(state, selectedId));
+  const lastShift = useSelector(selectLastShift);
 
-  const currentShiftId = useSelector(selectCurrentShiftId);
+  const residue = lastShift?.residues?.find(
+    (residue) => residue.id === selectedId,
+  );
 
   const isLoading = useSelector(selectIsLoadingResidues);
   const error = useSelector(selectError);
@@ -114,7 +113,7 @@ export const ResidueForm = () => {
         const payload = {
           id: selectedId,
           count: Number(formData.count),
-          shiftId: currentShiftId,
+          shiftId: lastShift?.id,
         };
 
         const response = await dispatch(updateResidue(payload));
@@ -123,11 +122,7 @@ export const ResidueForm = () => {
           setIsResidueOpenMdal(false);
           setIsOpenOverlay(false);
 
-          if (!currentShiftId) {
-            return null;
-          }
-
-          dispatch(getResidues(currentShiftId));
+          dispatch(getLastTeamShift());
         }
       } catch (error) {
         // dispatch(clearError())
@@ -149,8 +144,8 @@ export const ResidueForm = () => {
         <label className={styles.input__name}>Остаток на конец смены</label>
         <input
           className={styles.input}
-          type="text"
-          name="count"
+          type='text'
+          name='count'
           value={formData.count}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -163,7 +158,7 @@ export const ResidueForm = () => {
         {<div className={styles.errors__server}>{error}</div>}
 
         <button
-          type="submit"
+          type='submit'
           className={styles.button}
           disabled={isButtonDisabled}
           style={{

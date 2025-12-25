@@ -1,45 +1,60 @@
-// import styles from './production.module.css';
-
 import { useEffect } from 'react';
 
 import { MainLayout } from '../../ui/layouts/main/main-layout';
+import { Loader } from '../../ui/loader/loader';
 import { PageTitle } from '../../ui/page-title/page-title';
-import { ShiftInfo } from '../../shift-info/shift-info';
+import { Error } from '../../ui/error/error';
+import { HeaderWrapper } from '../../ui/wrappers/header-wrapper/header-wrapper';
+import { ShiftDate } from '../../ui/shift-date/shift-date';
+import { ProductionList } from '../../lists/production-list/production-list';
 
 import { useDispatch, useSelector } from '../../../services/store';
+
 import {
-  selectCurrentShift,
-  selectCurrentShiftId,
+  selectIsLoadingLastShift,
+  selectLastShift,
 } from '../../../services/slices/shift/slice';
+
 import { getLastTeamShift } from '../../../services/slices/shift/actions';
-import { ProductionList } from '../../lists/production-list/production-list';
-import { isShowShift } from '../../../utils/utils';
-import { Loader } from '../../ui/loader/loader';
 
 export const Production = () => {
   const dispatch = useDispatch();
-  const lastShift = useSelector(selectCurrentShift);
-  const currentShiftId = useSelector(selectCurrentShiftId);
+  const lastShift = useSelector(selectLastShift);
+  const isLoading = useSelector(selectIsLoadingLastShift);
 
   useEffect(() => {
     dispatch(getLastTeamShift());
   }, []);
 
+  if (isLoading && !lastShift) {
+    return (
+      <MainLayout>
+        <Loader />
+      </MainLayout>
+    );
+  }
+
+  if (lastShift === null) {
+    return (
+      <MainLayout>
+        <PageTitle title="ПРОИЗВОДСТВО" />
+        <Error />
+      </MainLayout>
+    );
+  }
+
   return (
     <MainLayout>
-      <PageTitle title="ПРОИЗВОДСТВО" />
-      {currentShiftId && lastShift && isShowShift(lastShift) ? (
-        <>
-          <ShiftInfo
-            date={lastShift.date}
-            shiftNumber={lastShift.shiftNumber}
-            teamNumber={lastShift.teamNumber}
-          />
-          <ProductionList shiftId={currentShiftId} />
-        </>
-      ) : (
-        <Loader />
-      )}
+      <HeaderWrapper gap={10}>
+        <PageTitle title="ПРОИЗВОДСТВО" />
+        <ShiftDate
+          date={lastShift.date}
+          shiftNumber={lastShift.shiftNumber}
+          teamNumber={lastShift.teamNumber}
+        />
+      </HeaderWrapper>
+
+      {lastShift.productions && <ProductionList list={lastShift.productions} />}
     </MainLayout>
   );
 };

@@ -1,14 +1,13 @@
 import styles from './modal-info-block.module.css';
 
-import { useSelector } from 'react-redux';
-import { selectCurrentUserShift } from '../../services/slices/user-shift/slice';
-import { Button } from '../ui/button/button';
 import { useContext } from 'react';
+
+import { Button } from '../ui/button/button';
+
 import { LayerContext } from '../../contexts/layer/layerContext';
 
 export const ModalInfoBlock = () => {
-  const currentUserShift = useSelector(selectCurrentUserShift);
-  const { setIsOpenOverlay, setIsUserShiftInfoOpenModal } =
+  const { selectedUser, setIsOpenOverlay, setIsUserShiftInfoOpenModal } =
     useContext(LayerContext);
 
   const handleClick = () => {
@@ -21,22 +20,19 @@ export const ModalInfoBlock = () => {
       <div className={styles.wrapper}>
         <div className={styles.wrapper__fio}>
           <span className={styles.text}>
-            {currentUserShift?.user?.lastName}{' '}
-            {currentUserShift?.user?.firstName}
+            {selectedUser?.lastName} {selectedUser?.firstName}
           </span>
-          <span className={styles.text}>
-            {currentUserShift?.user?.patronymic}
-          </span>
+          <span className={styles.text}>{selectedUser?.patronymic}</span>
         </div>
         <span className={styles.text}>
-          из бригады №{currentUserShift?.user?.currentTeamNumber}
+          из бригады №{selectedUser?.currentTeamNumber}
         </span>
 
         <span className={styles.text}>добавлен в категорию:</span>
-        <span className={styles.text}>{currentUserShift?.shiftProfession}</span>
+        <span className={styles.text}>{selectedUser?.profession}</span>
       </div>
       <div className={styles.wrapper__button}>
-        <Button label={'Понятно'} onClick={handleClick} />
+        <Button label='Понятно' onClick={handleClick} />
       </div>
     </div>
   );

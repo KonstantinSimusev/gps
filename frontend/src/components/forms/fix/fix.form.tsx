@@ -5,11 +5,10 @@ import { useContext, useEffect, useState } from 'react';
 import { Spinner } from '../../spinner/spinner';
 
 import { useDispatch, useSelector } from '../../../services/store';
-import { selectCurrentShiftId } from '../../../services/slices/shift/slice';
-import { getFixs, updateFix } from '../../../services/slices/fix/actions';
+import { selectLastShift } from '../../../services/slices/shift/slice';
+import { updateFix } from '../../../services/slices/fix/actions';
 
 import {
-  selectFixById,
   clearError,
   selectError,
   selectIsLoadingFixs,
@@ -22,6 +21,7 @@ import {
   validateForm,
   validationRules,
 } from '../../../utils/validation';
+import { getLastTeamShift } from '../../../services/slices/shift/actions';
 
 // Изменим тип IFormData на Record<string, string>
 interface IFormData extends Record<string, string> {
@@ -31,18 +31,12 @@ interface IFormData extends Record<string, string> {
 export const FixForm = () => {
   const dispatch = useDispatch();
 
-  const {
-    isFixOpenMdal,
-    selectedId,
-    setIsOpenOverlay,
-    setIsFixOpenMdal,
-  } = useContext(LayerContext);
+  const { isFixOpenMdal, selectedId, setIsOpenOverlay, setIsFixOpenMdal } =
+    useContext(LayerContext);
 
-  const fix = useSelector((state) =>
-    selectFixById(state, selectedId),
-  );
+  const lastShift = useSelector(selectLastShift);
 
-  const currentShiftId = useSelector(selectCurrentShiftId);
+  const fix = lastShift?.fixs?.find((fix) => fix.id === selectedId);
 
   const isLoading = useSelector(selectIsLoadingFixs);
   const error = useSelector(selectError);
@@ -121,11 +115,7 @@ export const FixForm = () => {
           setIsFixOpenMdal(false);
           setIsOpenOverlay(false);
 
-          if (!currentShiftId) {
-            return null;
-          }
-
-          dispatch(getFixs(currentShiftId));
+          dispatch(getLastTeamShift());
         }
       } catch (error) {
         // dispatch(clearError())
@@ -147,8 +137,8 @@ export const FixForm = () => {
         <label className={styles.input__name}>Раскрепление за смену</label>
         <input
           className={styles.input}
-          type="text"
-          name="count"
+          type='text'
+          name='count'
           value={formData.count}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -161,7 +151,7 @@ export const FixForm = () => {
         {<div className={styles.errors__server}>{error}</div>}
 
         <button
-          type="submit"
+          type='submit'
           className={styles.button}
           disabled={isButtonDisabled}
           style={{

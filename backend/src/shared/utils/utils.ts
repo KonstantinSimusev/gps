@@ -1,5 +1,5 @@
 import { EArea, ELocation, EProfession, ERailway, EUnit } from '../enums/enums';
-import { ISchedule, IUser } from '../interfaces/api.interface';
+import { ISchedule, IShift, IUser } from '../interfaces/api.interface';
 
 export function getNextShift(teamNumber: number): ISchedule {
   const shifts = [
@@ -154,14 +154,14 @@ export const packs = [
     count: 0,
   },
   {
-    location: ELocation.LINE_3,
-    area: EArea.PACK,
+    location: ELocation.LINE_2,
+    area: EArea.LUM,
     sortOrder: 3,
     count: 0,
   },
   {
-    location: ELocation.LINE_2,
-    area: EArea.LUM,
+    location: ELocation.LINE_3,
+    area: EArea.PACK,
     sortOrder: 4,
     count: 0,
   },
@@ -274,3 +274,28 @@ export function getProfessionCounts(
     .sort((a, b) => b.grade - a.grade)
     .map(({ profession, count }) => ({ profession, count }));
 }
+
+export const isShowShift = (lastShift: IShift) => {
+  if (!lastShift || !lastShift.date) return false;
+
+  const today = new Date();
+  const lastShiftDate = new Date(lastShift.date);
+
+  // Устанавливаем время на 00:00:00 для корректного сравнения дат
+  today.setHours(0, 0, 0, 0);
+  lastShiftDate.setHours(0, 0, 0, 0);
+
+  // Разница в днях между текущей датой и датой последней смены
+  // today - lastShiftDate: положительное число = прошло дней, отрицательное = в будущем
+  const diffTime = today.getTime() - lastShiftDate.getTime();
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+  /*
+     Условия отображения:
+     - если последняя смена сегодня (diffDays = 0) → показываем
+     - если последняя смена была вчера (diffDays = 1) → показываем
+     - если последняя смена будет завтра (diffDays = -1) → показываем (сегодня меньше на 1 день)
+     - во всех остальных случаях (≥2 дня назад или ≥2 дня вперёд) → не показываем
+    */
+  return diffDays === 0 || diffDays === -1;
+};

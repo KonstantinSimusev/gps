@@ -27,6 +27,7 @@ import {
   compareShifts,
   getNextShift,
   getProfessionCounts,
+  isShowShift,
 } from '../../shared/utils/utils';
 
 @Injectable()
@@ -169,14 +170,14 @@ export class ShiftService {
     }
   }
 
-  async getFinishedShift(req: Request, res: Response): Promise<IShift> {
+  async getFinishedShift(req: Request, res: Response): Promise<IShift | null> {
     try {
       await this.authService.validateAccessToken(req, res);
 
       const finishedShift = await this.shiftRepository.findFinishedShift();
 
       if (!finishedShift) {
-        throw new NotFoundException('Нет данных...');
+        throw new NotFoundException('Нет данных');
       }
 
       return finishedShift;
@@ -198,17 +199,15 @@ export class ShiftService {
         res,
       );
 
-      const shifts =
+      const lastShift =
         await this.shiftRepository.findLastTeamShift(currentTeamNumber);
 
-      if (shifts.length === 0) {
-        throw new NotFoundException('Пожалуйста, создайте смену...');
+      if (!lastShift) {
+        throw new NotFoundException('Нет данных');
       }
 
-      const lastShift = shifts[0];
-
-      if (!lastShift) {
-        throw new NotFoundException('Смена не найдена');
+      if (!isShowShift(lastShift)) {
+        return null;
       }
 
       return lastShift;
@@ -236,8 +235,8 @@ export class ShiftService {
       const lastShift =
         await this.shiftRepository.findLastTeamShift(teamNumber);
 
-      if (lastShift.length > 0) {
-        lastShifts.push(lastShift[0]);
+      if (lastShift) {
+        lastShifts.push(lastShift);
       }
     }
 

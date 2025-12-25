@@ -1,37 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import {
-  getResiduesApi,
-  updateResidueApi,
-} from '../../../utils/api/residue.api';
+import { updateResidueApi } from '../../../utils/api/residue.api';
 
-import { IList, IResidue, ISuccess } from '../../../utils/api.interface';
+import { IResidue, ISuccess } from '../../../utils/api.interface';
 
-import { delay } from '../../../utils/utils';
-
-export const getResidues = createAsyncThunk(
-  'shift/residue',
-  async (shiftId: string): Promise<IList<IResidue>> => {
-    try {
-      const response = await getResiduesApi(shiftId);
-
-      // Добавляем задержку кода
-      await delay();
-
-      if (!response) {
-        throw new Error();
-      }
-
-      return response;
-    } catch (error) {
-      // Добавляем задержку кода
-      await delay();
-
-      // Пойдет в rejected
-      throw error;
-    }
-  },
-);
+// import { delay } from '../../../utils/utils';
 
 export const updateResidue = createAsyncThunk(
   'residue/update',
@@ -41,7 +14,7 @@ export const updateResidue = createAsyncThunk(
       const response = await updateResidueApi(payload);
 
       // Добавляем задержку кода
-      await delay();
+      // await delay();
 
       if (!response) {
         throw new Error();
@@ -50,7 +23,7 @@ export const updateResidue = createAsyncThunk(
       return response;
     } catch (error) {
       // Добавляем задержку кода
-      await delay();
+      // await delay();
 
       throw error;
     }

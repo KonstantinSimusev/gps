@@ -3,43 +3,60 @@
 import { useEffect } from 'react';
 
 import { MainLayout } from '../../ui/layouts/main/main-layout';
+import { Loader } from '../../ui/loader/loader';
 import { PageTitle } from '../../ui/page-title/page-title';
-import { ShiftInfo } from '../../shift-info/shift-info';
+import { Error } from '../../ui/error/error';
+import { HeaderWrapper } from '../../ui/wrappers/header-wrapper/header-wrapper';
+import { ShiftDate } from '../../ui/shift-date/shift-date';
 import { FixList } from '../../lists/fix-list/fix-list';
 
 import { useDispatch, useSelector } from '../../../services/store';
+
 import {
-  selectCurrentShift,
-  selectCurrentShiftId,
+  selectIsLoadingLastShift,
+  selectLastShift,
 } from '../../../services/slices/shift/slice';
+
 import { getLastTeamShift } from '../../../services/slices/shift/actions';
-import { isShowShift } from '../../../utils/utils';
-import { Loader } from '../../ui/loader/loader';
 
 export const Fix = () => {
   const dispatch = useDispatch();
-  const lastShift = useSelector(selectCurrentShift);
-  const currentShiftId = useSelector(selectCurrentShiftId);
+  const lastShift = useSelector(selectLastShift);
+  const isLoading = useSelector(selectIsLoadingLastShift);
 
   useEffect(() => {
     dispatch(getLastTeamShift());
   }, []);
 
+  if (isLoading && !lastShift) {
+    return (
+      <MainLayout>
+        <Loader />
+      </MainLayout>
+    );
+  }
+
+  if (lastShift === null) {
+    return (
+      <MainLayout>
+        <PageTitle title="РАСКРЕПЛЕНИЕ" />
+        <Error />
+      </MainLayout>
+    );
+  }
+
   return (
     <MainLayout>
-      <PageTitle title="РАСКРЕПЛЕНИЕ" />
-      {currentShiftId && lastShift && isShowShift(lastShift) ? (
-        <>
-          <ShiftInfo
-            date={lastShift.date}
-            shiftNumber={lastShift.shiftNumber}
-            teamNumber={lastShift.teamNumber}
-          />
-          <FixList shiftId={currentShiftId} />
-        </>
-      ) : (
-        <Loader />
-      )}
+      <HeaderWrapper gap={10}>
+        <PageTitle title="РАСКРЕПЛЕНИЕ" />
+        <ShiftDate
+          date={lastShift.date}
+          shiftNumber={lastShift.shiftNumber}
+          teamNumber={lastShift.teamNumber}
+        />
+      </HeaderWrapper>
+
+      {lastShift.fixs && <FixList list={lastShift.fixs} />}
     </MainLayout>
   );
 };

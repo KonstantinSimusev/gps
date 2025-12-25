@@ -76,7 +76,7 @@ export const getFinishedShiftApi = async (): Promise<IShift> => {
   }
 };
 
-export const getLastTeamShiftApi = async (): Promise<IShift> => {
+export const getLastTeamShiftApi = async (): Promise<IShift | null> => {
   try {
     // Здесь происходит запрос к серверу
     const response = await fetch(`${URL}/shifts/last-team-shift`, {
@@ -88,11 +88,9 @@ export const getLastTeamShiftApi = async (): Promise<IShift> => {
     });
 
     if (!response.ok) {
-      // Если ответ не успешный, создаем ошибку, происходит переход в catch
-      throw new Error();
+      return null;
     }
 
-    // Если все хорошо, возвращаем данные
     return await response.json();
   } catch (error) {
     // Сюда попадаем при любом throw new Error()

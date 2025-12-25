@@ -162,16 +162,36 @@ export class ShiftRepository {
     });
   }
 
-  async findLastTeamShift(teamNumber: number): Promise<Shift[]> {
-    return this.shiftRepository.find({
+  async findLastTeamShift(teamNumber: number): Promise<Shift> {
+    return this.shiftRepository.findOne({
       where: {
         teamNumber,
       },
       order: {
         date: 'DESC',
+        productions: { sortOrder: 'ASC' },
+        shipments: { sortOrder: 'ASC' },
+        packs: { sortOrder: 'ASC' },
+        fixs: { sortOrder: 'ASC' },
+        // Добавляем сортировку для usersShifts.user
+        usersShifts: {
+          user: {
+            sortOrder: 'ASC',
+            lastName: 'ASC',
+            firstName: 'ASC',
+            patronymic: 'ASC',
+          },
+        },
       },
-      relations: ['usersShifts', 'usersShifts.user'],
-      take: 1,
+      relations: [
+        'usersShifts',
+        'usersShifts.user',
+        'productions',
+        'shipments',
+        'packs',
+        'fixs',
+        'residues',
+      ],
       select: {
         // Поля Shift
         id: true,

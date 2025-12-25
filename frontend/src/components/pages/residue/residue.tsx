@@ -3,43 +3,60 @@
 import { useEffect } from 'react';
 
 import { MainLayout } from '../../ui/layouts/main/main-layout';
+import { Loader } from '../../ui/loader/loader';
 import { PageTitle } from '../../ui/page-title/page-title';
-import { ShiftInfo } from '../../shift-info/shift-info';
 import { Error } from '../../ui/error/error';
+import { HeaderWrapper } from '../../ui/wrappers/header-wrapper/header-wrapper';
+import { ShiftDate } from '../../ui/shift-date/shift-date';
+import { ResidueList } from '../../lists/residue-list/residue-list';
 
 import { useDispatch, useSelector } from '../../../services/store';
+
 import {
-  selectCurrentShift,
-  selectCurrentShiftId,
+  selectIsLoadingLastShift,
+  selectLastShift,
 } from '../../../services/slices/shift/slice';
+
 import { getLastTeamShift } from '../../../services/slices/shift/actions';
-import { isShowShift } from '../../../utils/utils';
-import { ResidueList } from '../../lists/residue-list/residue-list';
 
 export const Residue = () => {
   const dispatch = useDispatch();
-  const lastShift = useSelector(selectCurrentShift);
-  const currentShiftId = useSelector(selectCurrentShiftId);
+  const lastShift = useSelector(selectLastShift);
+  const isLoading = useSelector(selectIsLoadingLastShift);
 
   useEffect(() => {
     dispatch(getLastTeamShift());
   }, []);
 
+  if (isLoading && !lastShift) {
+    return (
+      <MainLayout>
+        <Loader />
+      </MainLayout>
+    );
+  }
+
+  if (lastShift === null) {
+    return (
+      <MainLayout>
+        <PageTitle title="ОСТАТКИ" />
+        <Error />
+      </MainLayout>
+    );
+  }
+
   return (
     <MainLayout>
-      <PageTitle title="ОСТАТКИ" />
-      {currentShiftId && lastShift && isShowShift(lastShift) ? (
-        <>
-          <ShiftInfo
-            date={lastShift.date}
-            shiftNumber={lastShift.shiftNumber}
-            teamNumber={lastShift.teamNumber}
-          />
-          <ResidueList shiftId={currentShiftId} />
-        </>
-      ) : (
-        <Error />
-      )}
+      <HeaderWrapper gap={10}>
+        <PageTitle title="ОСТАТКИ" />
+        <ShiftDate
+          date={lastShift.date}
+          shiftNumber={lastShift.shiftNumber}
+          teamNumber={lastShift.teamNumber}
+        />
+      </HeaderWrapper>
+
+      {lastShift.residues && <ResidueList list={lastShift.residues} />}
     </MainLayout>
   );
 };

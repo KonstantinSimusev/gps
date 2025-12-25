@@ -9,7 +9,11 @@ import { useDispatch, useSelector } from '../../services/store';
 import { getLastShiftsTeams } from '../../services/slices/shift/actions';
 import { selectLastShiftsTeams } from '../../services/slices/shift/slice';
 
-import { countProfessionsBySickLeave, getCount } from '../../utils/utils';
+import {
+  countProfessionsBySickLeave,
+  formatShortDate,
+  getCount,
+} from '../../utils/utils';
 
 export const SickInfo = () => {
   const dispatch = useDispatch();
@@ -24,7 +28,16 @@ export const SickInfo = () => {
 
   return (
     <div className={styles.container}>
-      <span className={styles.location}>БОЛЬНИЧНЫЙ ЛИСТ</span>
+      {/* <span className={styles.title}>УММ ЛПЦ-11</span> */}
+      <div className={styles.header__wrapper}>
+        <span className={styles.location}>БОЛЬНИЧНЫЙ ЛИСТ</span>
+        <span className={styles.location}>УММ ЛПЦ-11</span>
+
+        <span className={styles.status}>
+          <span>Обновлено:</span>
+          <span>{formatShortDate(new Date())}</span>
+        </span>
+      </div>
       {total > 0 ? (
         <>
           <ul className={styles.wrapper__list}>

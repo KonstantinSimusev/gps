@@ -3,24 +3,19 @@ import styles from './delete.module.css';
 import { useContext } from 'react';
 
 import { LayerContext } from '../../contexts/layer/layerContext';
+import { Spinner } from '../spinner/spinner';
+
 import { useDispatch, useSelector } from '../../services/store';
 
-import { Spinner } from '../spinner/spinner';
-import {
-  selectCurrentShiftId,
-  selectIsLoadingShift,
-} from '../../services/slices/shift/slice';
+import { selectIsLoadingLastShift } from '../../services/slices/shift/slice';
 import { selectIsLoadingUserShift } from '../../services/slices/user-shift/slice';
-import {
-  deleteUserShift,
-  getUsersShifts,
-} from '../../services/slices/user-shift/actions';
+import { deleteUserShift } from '../../services/slices/user-shift/actions';
+import { getLastTeamShift } from '../../services/slices/shift/actions';
 
 export const Delete = () => {
   const dispatch = useDispatch();
-  const currentShiftId = useSelector(selectCurrentShiftId);
   const isLoadingShift = useSelector(selectIsLoadingUserShift);
-  const isLoadingUserShift = useSelector(selectIsLoadingShift);
+  const isLoadingUserShift = useSelector(selectIsLoadingLastShift);
   const {
     selectedId,
     selectedButtonActionType,
@@ -32,12 +27,7 @@ export const Delete = () => {
     try {
       if (selectedButtonActionType === 'userShift') {
         await dispatch(deleteUserShift(selectedId));
-
-        if (!currentShiftId) {
-          return null;
-        }
-
-        await dispatch(getUsersShifts(currentShiftId));
+        await dispatch(getLastTeamShift());
       }
 
       // Очищаем состояние оверлеев и модальных окон
@@ -57,7 +47,7 @@ export const Delete = () => {
   return (
     <div className={styles.container}>
       <span className={styles.wrapper__info}>
-        <span className={styles.text}>Удалить смену?</span>
+        <span className={styles.text}>Удалить работника?</span>
       </span>
       <div className={styles.spinner}>
         {isLoadingShift && <Spinner />}
@@ -67,14 +57,14 @@ export const Delete = () => {
       <div className={styles.wrapper}>
         <button
           className={styles.button__logout}
-          type="button"
+          type='button'
           onClick={handleClickDelete}
         >
-          Удалить
+          Да
         </button>
         <button
           className={styles.button__return}
-          type="button"
+          type='button'
           onClick={handleClickReturn}
         >
           Отменить

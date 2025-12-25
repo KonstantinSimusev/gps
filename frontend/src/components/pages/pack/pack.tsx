@@ -3,43 +3,60 @@
 import { useEffect } from 'react';
 
 import { MainLayout } from '../../ui/layouts/main/main-layout';
+import { Loader } from '../../ui/loader/loader';
 import { PageTitle } from '../../ui/page-title/page-title';
-import { ShiftInfo } from '../../shift-info/shift-info';
+import { Error } from '../../ui/error/error';
+import { HeaderWrapper } from '../../ui/wrappers/header-wrapper/header-wrapper';
+import { ShiftDate } from '../../ui/shift-date/shift-date';
+import { PackList } from '../../lists/pack-list/pack-list';
 
 import { useDispatch, useSelector } from '../../../services/store';
+
 import {
-  selectCurrentShift,
-  selectCurrentShiftId,
+  selectIsLoadingLastShift,
+  selectLastShift,
 } from '../../../services/slices/shift/slice';
+
 import { getLastTeamShift } from '../../../services/slices/shift/actions';
-import { isShowShift } from '../../../utils/utils';
-import { PackList } from '../../lists/pack-list/pack-list';
-import { Loader } from '../../ui/loader/loader';
 
 export const Pack = () => {
   const dispatch = useDispatch();
-  const lastShift = useSelector(selectCurrentShift);
-  const currentShiftId = useSelector(selectCurrentShiftId);
+  const lastShift = useSelector(selectLastShift);
+  const isLoading = useSelector(selectIsLoadingLastShift);
 
   useEffect(() => {
     dispatch(getLastTeamShift());
   }, []);
 
+  if (isLoading && !lastShift) {
+    return (
+      <MainLayout>
+        <Loader />
+      </MainLayout>
+    );
+  }
+
+  if (lastShift === null) {
+    return (
+      <MainLayout>
+        <PageTitle title="УПАКОВКА" />
+        <Error />
+      </MainLayout>
+    );
+  }
+
   return (
     <MainLayout>
-      <PageTitle title="УПАКОВКА" />
-      {currentShiftId && lastShift && isShowShift(lastShift) ? (
-        <>
-          <ShiftInfo
-            date={lastShift.date}
-            shiftNumber={lastShift.shiftNumber}
-            teamNumber={lastShift.teamNumber}
-          />
-          <PackList shiftId={currentShiftId} />
-        </>
-      ) : (
-        <Loader />
-      )}
+      <HeaderWrapper gap={10}>
+        <PageTitle title="УПАКОВКА" />
+        <ShiftDate
+          date={lastShift.date}
+          shiftNumber={lastShift.shiftNumber}
+          teamNumber={lastShift.teamNumber}
+        />
+      </HeaderWrapper>
+
+      {lastShift.packs && <PackList list={lastShift.packs} />}
     </MainLayout>
   );
 };

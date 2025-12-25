@@ -12,6 +12,7 @@ import { packSlice } from './slices/pack/slice';
 import { fixSlice } from './slices/fix/slice';
 import { residueSlice } from './slices/residue/slice';
 import { userSlice } from './slices/user/slice';
+import { reportSlice } from './slices/report/slice';
 
 export const rootReducer = combineSlices(
   authSlice,
@@ -23,6 +24,7 @@ export const rootReducer = combineSlices(
   fixSlice,
   residueSlice,
   userSlice,
+  reportSlice,
 );
 
 export const store = configureStore({

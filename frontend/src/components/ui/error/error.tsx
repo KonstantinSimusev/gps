@@ -1,5 +1,9 @@
 import styles from './error.module.css';
 
-export const Error = () => {
-  return <span className={styles.container}>Нет данных</span>;
+interface IProps {
+  text?: string;
+}
+
+export const Error = ({ text = 'Нет данных' }: IProps) => {
+  return <span className={styles.container}>{text}</span>;
 };

@@ -34,6 +34,9 @@ export interface IShift {
   endShift?: Date;
   usersShifts?: IUserShift[];
   productions?: IProduction[];
+  shipments?: IShipment[];
+  packs?: IPack[];
+  fixs?: IFix[];
   residues?: IResidue[];
 }
 
