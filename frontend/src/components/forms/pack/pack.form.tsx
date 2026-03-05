@@ -2,7 +2,7 @@ import styles from './pack.form.module.css';
 
 import { useContext, useEffect, useState } from 'react';
 
-import { Spinner } from '../../spinner/spinner';
+import { Spinner } from '../../ui/spinner/spinner';
 
 import { useDispatch, useSelector } from '../../../services/store';
 import { selectLastShift } from '../../../services/slices/shift/slice';

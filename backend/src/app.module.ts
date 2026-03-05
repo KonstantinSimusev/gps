@@ -5,16 +5,9 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from '@nestjs/config';
 
 import { DatabaseModule } from './database/database.module';
-import { UserModule } from './modules/user/user.module';
+
+import { EmployeesModule } from './modules/employees/employees.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { ShiftModule } from './modules/shift/shift.module';
-import { UserShiftModule } from './modules/user-shift/user-shift.module';
-import { ProductionModule } from './modules/production/production.module';
-import { ShipmentModule } from './modules/shipment/shipment.module';
-import { PackModule } from './modules/pack/pack.module';
-import { FixModule } from './modules/fix/fix.module';
-import { ResidueModule } from './modules/residue/residue.module';
-import { ReportModule } from './modules/report/report.module';
 
 @Module({
   imports: [
@@ -23,15 +16,7 @@ import { ReportModule } from './modules/report/report.module';
     }),
     DatabaseModule,
     AuthModule,
-    UserModule,
-    ShiftModule,
-    UserShiftModule,
-    ProductionModule,
-    ShipmentModule,
-    PackModule,
-    FixModule,
-    ResidueModule,
-    ReportModule,
+    EmployeesModule,
     // Первый статический модуль
     ServeStaticModule.forRoot({
       rootPath: path.join(__dirname, '..', 'dist', 'assets'),

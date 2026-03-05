@@ -3,6 +3,6 @@
   display: flex;
   flex-direction: column;
   gap: 30px;
-  margin: 0 clamp(1.875rem, -8.406rem + 38.255vw, 37.5rem);
+  margin: 0 var(--horizontal-margin);
   flex-grow: 1;
 }

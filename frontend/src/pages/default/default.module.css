@@ -1,0 +1,59 @@
+.container {
+  padding: 50px 0;
+}
+
+.section,
+.number__list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section__title {
+  font-weight: 400;
+  font-size: 16px;
+  opacity: 0.6;
+}
+
+.section__title,
+.politic__title {
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.circle__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-left: 14px;
+}
+
+.circle__item {
+  list-style: circle;
+}
+
+.number__item {
+  list-style: decimal;
+  font-size: 14px;
+  margin-left: 16px;
+}
+
+.politic__title {
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.politic__title,
+.politic__text {
+  margin-bottom: 10px;
+}
+
+.button__wrapper {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.color {
+  background-color: var(--bg-color-button-default);
+}

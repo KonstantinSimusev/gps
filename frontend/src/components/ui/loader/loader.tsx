@@ -4,12 +4,6 @@ interface IProps {
   text?: string;
 }
 
-export const Loader = ({ text = 'Загрузка' }: IProps) => {
-  return (
-    <span
-      className={styles.container}
-    >
-      {text}
-    </span>
-  );
+export const Loader = ({ text }: IProps) => {
+  return <span className={styles.container}>{text}</span>;
 };

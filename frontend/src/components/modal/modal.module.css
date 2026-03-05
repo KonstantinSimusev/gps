@@ -6,34 +6,29 @@
   flex-direction: column;
   width: 90%;
   max-width: 500px;
-  padding: 30px;
   min-height: auto;
   max-height: 94vh;
+  padding: 30px;
   border: 1px solid var(--color-modal-border);
-  border-radius: 30px;
-  overflow: auto;
+  border-radius: 40px;
+  /* overflow: auto; */
   color: var(--color-default);
   background-color: var(--bg-color-default);
   transform: translate(-50%, -50%);
+}
 
-  /* Начальная прозрачность */
-  /* opacity: 0; */
+.wrapper {
+  display: flex;
+  justify-content: flex-end; /* Кнопка справа */
+  margin-bottom: 10px; /* Отступ между кнопкой и контентом */
+}
 
-  /* Блокируем события */
-  /* pointer-events: none; */
-
-  /* Добавляем анимацию */
-  /* transition: opacity 0.2s ease 0.1s; */
+.content {
+  flex: 1; /* Занимает оставшееся место */
+  overflow-y: auto; /* Только контент будет скроллиться */
+  /* padding-right: 5px; Небольшой отступ справа для скроллбара */
 }
 
 .container > :first-child {
   margin-left: auto;
 }
-
-/* .modal__open { */
-/* Полная видимость */
-/* opacity: 1; */
-
-/* Разрешаем события */
-/* pointer-events: auto; */
-/* } */

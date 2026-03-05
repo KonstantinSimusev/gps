@@ -2,7 +2,7 @@ import styles from './success.module.css';
 
 import { useContext } from 'react';
 import { LayerContext } from '../../contexts/layer/layerContext';
-import { SuccessIcon } from '../icons/success/success';
+import { SuccessIcon } from '../ui/icons/success/success';
 
 export const Success = () => {
   const { setIsLoginModalOpen } =

@@ -8,188 +8,261 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
   GRANT ALL PRIVILEGES ON DATABASE "$DB_NAME" TO "$DB_USER";
 EOSQL
 
-# Часть 2: Суперпользователь настраивает владельца БД и схему
+# Часть 2: Суперпользователь настраивает владельца БД, схему, предоставляет права
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$DB_NAME" <<-EOSQL
   ALTER DATABASE "$DB_NAME" OWNER TO "$DB_USER";
+
   CREATE SCHEMA IF NOT EXISTS gps;
   ALTER SCHEMA gps OWNER TO "$DB_USER";
-EOSQL
 
-# Часть 3: Суперпользователь предоставляет права
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$DB_NAME" <<-EOSQL
   GRANT ALL ON ALL TABLES IN SCHEMA gps TO "$DB_USER";
   GRANT ALL ON ALL SEQUENCES IN SCHEMA gps TO "$DB_USER";
   GRANT ALL ON ALL FUNCTIONS IN SCHEMA gps TO "$DB_USER";
 EOSQL
 
-# Часть 4: Подключение к созданной базе данных, DB_USER создает таблицы и расширения
+# Часть 3: Подключение к созданной базе данных, DB_USER создает таблицы и расширения
 psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
 
   -- Создание расширения для работы с UUID
   CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA gps;
 
-  -- Создание типа enum для ролей
-  CREATE TYPE gps.role_type AS ENUM (
-    'MANAGER',
-    'MASTER',
-    'ADMIN',
-    'USER'
-  );
-
-  -- Создание типа enum для профессий
-  CREATE TYPE gps.profession_type AS ENUM (
-    'Бригадир ОСП',
-    'Бригадир УОП',
-    'Ведущий инженер АМПП',
-    'Водитель погрузчика',
-    'Мастер участка',
-    'Начальник участка',
-    'Оператор ПУ',
-    'Резчик холодного металла',
-    'Укладчик-упаковщик',
-    'Укладчик-упаковщик ЛУМ',
-    'Штабелировщик металла',
-    'Управление'
-  );
-
-  -- Создание типа enum для location
-  CREATE TYPE gps.location_type AS ENUM (
-    '1 ОЧЕРЕДЬ',
-    '2 ОЧЕРЕДЬ',
-    '3 ОЧЕРЕДЬ'
-  );
-
-  -- Создание типа enum для unit
-  CREATE TYPE gps.unit_type AS ENUM (
-    'СТАН',
-    'АНГЦ',
-    'АНО',
-    'АИ',
-    'АНГЦ-3'
-  );
-
-  -- Создание типа enum для railway
-  CREATE TYPE gps.railway_type AS ENUM (
-    'Тупик 6',
-    'Тупик 7',
-    'Тупик 8',
-    'Тупик 10'
-  );
-
-  -- Создание типа enum для area
-  CREATE TYPE gps.area_type AS ENUM (
-    'Ручная упаковка',
-    'ЛУМ',
-    'ВЛРТ'
-  );
-
-  -- Создание таблицы users
-  CREATE TABLE IF NOT EXISTS gps.users (
-    id uuid DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
-    position_code INTEGER NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    first_name VARCHAR(100) NOT NULL,
-    patronymic VARCHAR(100) NOT NULL,
-    profession gps.profession_type NOT NULL,
-    grade INTEGER NOT NULL,
-    personal_number INTEGER NOT NULL UNIQUE,
-    team_number INTEGER NOT NULL,
-    current_team_number INTEGER NOT NULL,
-    work_schedule VARCHAR(10) NOT NULL,
-    workshop_code VARCHAR(20) NOT NULL,
+  -- Создание таблицы accounts
+  CREATE TABLE IF NOT EXISTS gps.accounts (
+    id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
     login VARCHAR(255) NOT NULL UNIQUE,
     hashed_password VARCHAR(512) NOT NULL,
-    refresh_token VARCHAR(512),
-    role gps.role_type NOT NULL,
-    sort_order INTEGER NOT NULL
+    refresh_token VARCHAR(512)
   );
 
-  -- Создание таблицы shifts
-  CREATE TABLE IF NOT EXISTS gps.shifts (
-    id uuid DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
-    date DATE NOT NULL,
-    shift_number INTEGER NOT NULL,
-    team_number INTEGER NOT NULL,
-    start_shift TIMESTAMP WITH TIME ZONE NOT NULL,
-    end_shift TIMESTAMP WITH TIME ZONE NOT NULL,
-    
-    CONSTRAINT unique_date_team UNIQUE (date, team_number),
-    CONSTRAINT unique_date_shift UNIQUE (date, shift_number)
+  -- Создание таблицы teams
+  CREATE TABLE IF NOT EXISTS gps.teams (
+    id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    team_number VARCHAR(1) NOT NULL UNIQUE
   );
 
-  -- Создание таблицы user_shifts
-  CREATE TABLE IF NOT EXISTS gps.users_shifts (
-    id uuid DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
-    work_status VARCHAR(255) NOT NULL,
-    work_place VARCHAR(255) NOT NULL,
-    shift_profession VARCHAR(255),
-    work_hours DECIMAL(4, 1) NOT NULL,
-    user_id uuid NOT NULL,
-    shift_id uuid NOT NULL,
-
-    CONSTRAINT unique_user_shift UNIQUE (user_id, shift_id),
-
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES gps.users(id),
-    CONSTRAINT fk_shift FOREIGN KEY (shift_id) REFERENCES gps.shifts(id) ON DELETE CASCADE
+  -- Создание таблицы workshops
+  CREATE TABLE IF NOT EXISTS gps.workshops (
+    id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    workshop_code VARCHAR(100) NOT NULL UNIQUE
   );
 
-  -- Создание таблицы productions
-  CREATE TABLE IF NOT EXISTS gps.productions (
-    id uuid DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
-    location gps.location_type NOT NULL,
-    unit gps.unit_type NOT NULL,
-    count INTEGER NOT NULL,
-    sort_order INTEGER NOT NULL,
-    shift_id uuid NOT NULL,
-
-    CONSTRAINT fk_shift FOREIGN KEY (shift_id) REFERENCES gps.shifts(id) ON DELETE CASCADE
+  -- Создание таблицы professions
+  CREATE TABLE IF NOT EXISTS gps.professions (
+    id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE
   );
 
-  -- Создание таблицы shipments
-  CREATE TABLE IF NOT EXISTS gps.shipments (
-    id uuid DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
-    location gps.location_type NOT NULL,
-    railway gps.railway_type NOT NULL,
-    count INTEGER NOT NULL,
-    sort_order INTEGER NOT NULL,
-    shift_id uuid NOT NULL,
-
-    CONSTRAINT fk_shift FOREIGN KEY (shift_id) REFERENCES gps.shifts(id) ON DELETE CASCADE
+  -- Создание таблицы grades
+  CREATE TABLE IF NOT EXISTS gps.grades (
+    id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    grade_code VARCHAR(10) NOT NULL UNIQUE
   );
 
-  -- Создание таблицы packs
-  CREATE TABLE IF NOT EXISTS gps.packs (
-    id uuid DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
-    location gps.location_type NOT NULL,
-    area gps.area_type NOT NULL,
-    count INTEGER NOT NULL,
-    sort_order INTEGER NOT NULL,
-    shift_id uuid NOT NULL,
-
-    CONSTRAINT fk_shift FOREIGN KEY (shift_id) REFERENCES gps.shifts(id) ON DELETE CASCADE
+  -- Создание таблицы schedules
+  CREATE TABLE IF NOT EXISTS gps.schedules (
+    id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    schedule_code VARCHAR(20) NOT NULL UNIQUE
   );
 
-  -- Создание таблицы fixs
-  CREATE TABLE IF NOT EXISTS gps.fixs (
-    id uuid DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
-    location gps.location_type NOT NULL,
-    railway gps.railway_type NOT NULL,
-    count INTEGER NOT NULL,
-    sort_order INTEGER NOT NULL,
-    shift_id uuid NOT NULL,
-
-    CONSTRAINT fk_shift FOREIGN KEY (shift_id) REFERENCES gps.shifts(id) ON DELETE CASCADE
+  -- Создание таблицы roles
+  CREATE TABLE IF NOT EXISTS gps.roles (
+    id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
   );
 
-  -- Создание таблицы residues
-  CREATE TABLE IF NOT EXISTS gps.residues (
-    id uuid DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
-    location gps.location_type NOT NULL,
-    area gps.area_type NOT NULL,
-    count INTEGER NOT NULL,
-    sort_order INTEGER NOT NULL,
-    shift_id uuid NOT NULL,
+  -- Создание таблицы positions
+  CREATE TABLE IF NOT EXISTS gps.positions (
+    id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    position_code VARCHAR(10) NOT NULL UNIQUE,
 
-    CONSTRAINT fk_shift FOREIGN KEY (shift_id) REFERENCES gps.shifts(id) ON DELETE CASCADE
+    workshop_id UUID NOT NULL,
+    profession_id UUID NOT NULL,
+    grade_id UUID NOT NULL,
+    schedule_id UUID NOT NULL,
+    role_id UUID NOT NULL,
+
+    CONSTRAINT fk__workshop FOREIGN KEY (workshop_id) REFERENCES gps.workshops(id),
+    CONSTRAINT fk__profession FOREIGN KEY (profession_id) REFERENCES gps.professions(id),
+    CONSTRAINT fk__grade FOREIGN KEY (grade_id) REFERENCES gps.grades(id),
+    CONSTRAINT fk__schedule FOREIGN KEY (schedule_id) REFERENCES gps.schedules(id),
+    CONSTRAINT fk__role FOREIGN KEY (role_id) REFERENCES gps.roles(id)
   );
+
+  -- Создание таблицы employees
+  CREATE TABLE IF NOT EXISTS gps.employees (
+    id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    last_name VARCHAR(50) NOT NULL,
+    first_name VARCHAR(30) NOT NULL,
+    patronymic VARCHAR(40) NOT NULL,
+    personal_number VARCHAR(10) NOT NULL UNIQUE,
+    birth_day DATE NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+    position_id UUID NOT NULL,
+    team_id UUID NOT NULL,
+    account_id UUID UNIQUE NOT NULL,
+
+    CONSTRAINT unique_person_full_name UNIQUE (last_name, first_name, patronymic),
+
+    CONSTRAINT fk__position FOREIGN KEY (position_id) REFERENCES gps.positions(id),
+    CONSTRAINT fk__team FOREIGN KEY (team_id) REFERENCES gps.teams(id),
+    CONSTRAINT fk__account FOREIGN KEY (account_id) REFERENCES gps.accounts(id)
+  );
+
+  -- Вставляем номера бригад в таблицу
+  INSERT INTO gps.teams (team_number)
+  VALUES
+    ('1'),
+    ('2'),
+    ('3'),
+    ('4'),
+    ('5');
+
+  -- Вставляем цеха в таблицу
+  INSERT INTO gps.workshops (workshop_code)
+  VALUES
+    ('Управление'),
+    ('ЛПЦ-4'),
+    ('ЛПЦ-5'),
+    ('ЛПЦ-7'),
+    ('ЛПЦ-8'),
+    ('ЛПЦ-10'),
+    ('ЛПЦ-11'),
+    ('ПМП (южный блок)'),
+    ('ПМП (северный блок)'),
+    ('УВС ЛПЦ-4'),
+    ('Центральный склад');
+
+  -- Вставляем профессии в таблицу
+  INSERT INTO gps.professions (name)
+  VALUES
+    ('Директор'),
+    ('Начальник производства (в промышленности)'),
+    ('Старший менеджер'),
+    ('Механик'),
+    ('Энергетик'),
+    ('Ведущий специалист по охране труда'),
+    ('Ведущий инженер'),
+    ('Ведущий инженер по качеству'),
+    ('Специалист по охране труда'),
+    ('Инженер по подготовке производства первой категории'),
+    ('Инспектор-делопроизводитель'),
+    ('Распределитель работ'),
+    ('Ведущий экономист'),
+    ('Ведущий инженер по организации и нормированию труда'),
+    ('Инженер по организации и нормированию труда первой категории'),
+    ('Ведущий специалист'),
+    ('Ведущий инженер-технолог'),
+    ('Инженер-технолог первой категории'),
+    ('Инженер первой категории'),
+    ('Начальник участка (в промышленности)'),
+    ('Мастер участка'),
+    ('Бригадир на участках основного производства'),
+    ('Бригадир на отделке, сортировке, приемке, сдаче, пакетировке и упаковке металла и готовой продукции'),
+    ('Укладчик-упаковщик'),
+    ('Слесарь-ремонтник'),
+    ('Штабелировщик металла'),
+    ('Штамповщик'),
+    ('Водитель погрузчика'),
+    ('Резчик холодного металла'),
+    ('Старший мастер участка'),
+    ('Газорезчик'),
+    ('Машинист крана'),
+    ('Ведущий инженер по автоматизации и механизации производственных процессов'),
+    ('Оператор поста управления'),
+    ('Электромонтер по ремонту и обслуживанию электрооборудования'),
+    ('Бригадир по перемещению сырья, полуфабрикатов и готовой продукции в процессе производства'),
+    ('Машинист крана (крановщик)'),
+    ('Кладовщик (старший)'),
+    ('Водитель автомобиля'),
+    ('Кладовщик');
+
+  -- Вставляем разряды в таблицу
+  INSERT INTO gps.grades (grade_code)
+  VALUES
+    ('20.м'),
+    ('19.м'),
+    ('17.м'),
+    ('16.м'),
+    ('15.м'),
+    ('14.м'),
+    ('13.м'),
+    ('12.м'),
+    ('11.м'),
+    ('6.ч'),
+    ('5.ч'),
+    ('4.ч'),
+    ('3.ч');
+
+  -- Вставляем графики в таблицу
+  INSERT INTO gps.schedules (schedule_code)
+  VALUES
+    ('5-Б-1'),
+    ('2-А'),
+    ('9'),
+    ('2');
+
+  -- Вставляем роли в таблицу
+  INSERT INTO gps.roles (name)
+  VALUES
+    ('DIRECTOR'), -- Директор
+    ('PRODUCTION_MANAGER'), -- Начальник производства (в промышленности)
+    ('SENIOR_MANAGER'), -- Старший менеджер
+    ('MECHANIC'), -- Механик
+    ('ENERGETICIST'), -- Энергетик
+    ('LEAD_OHS_SPECIALIST'), -- Ведущий специалист по охране труда
+    ('LEAD_ENGINEER'), -- Ведущий инженер
+    ('QUALITY_ENGINEER'), -- Ведущий инженер по качеству
+    ('OHS_SPECIALIST'), -- Специалист по охране труда
+    ('PRODUCTION_ENGINEER'), -- Инженер по подготовке производства первой категории
+    ('INSPECTOR_CLERK'), -- Инспектор‑делопроизводитель
+    ('WORK_DISTRIBUTOR'), -- Распределитель работ
+    ('LEAD_ECONOMIST'), -- Ведущий экономист
+    ('LABOR_ENGINEER'), -- Ведущий инженер по организации и нормированию труда
+    ('TECHNOLOGIST_ENGINEER'), -- Инженер по организации и нормированию труда первой категории
+    ('LEAD_SPECIALIST'), -- Ведущий специалист
+    ('SENIOR_TECHNOLOGIST'), -- Ведущий инженер‑технолог
+    ('FIRST_ENGINEER'), -- Инженер‑технолог первой категории
+    ('SECTION_HEAD'), -- Начальник участка (в промышленности)
+    ('SECTION_MASTER'), -- Мастер участка
+    ('BRIGADE_LEADER'), -- Бригадир на участках основного производства
+    ('FINISHING_LEADER'), -- Бригадир на отделке, сортировке, приёмке, сдаче, пакетировке и упаковке металла и готовой продукции
+    ('PACKER'), -- Укладчик‑упаковщик
+    ('REPAIR_MECHANIC'), -- Слесарь‑ремонтник
+    ('METAL_STACKER'), -- Штабелировщик металла
+    ('STAMPER'), -- Штамповщик
+    ('FORKLIFT_DRIVER'), -- Водитель погрузчика
+    ('COLD_CUTTER'), -- Резчик холодного металла
+    ('SENIOR_MASTER'), -- Старший мастер участка
+    ('FLAME_CUTTER'), -- Газорезчик
+    ('CRANE_OPERATOR'), -- Машинист крана
+    ('AUTOMATION_ENGINEER'), -- Ведущий инженер по автоматизации и механизации производственных процессов
+    ('CONTROL_OPERATOR'), -- Оператор поста управления
+    ('ELECTRICAL_TECHNICIAN'), -- Электромонтёр по ремонту и обслуживанию электрооборудования
+    ('MOVEMENT_LEADER'), -- Бригадир по перемещению сырья, полуфабрикатов и готовой продукции в процессе производства
+    ('CRANEMAN'), -- Машинист крана (крановщик)
+    ('SENIOR_STOREKEEPER'), -- Кладовщик (старший)
+    ('CAR_DRIVER'), -- Водитель автомобиля
+    ('STOREKEEPER'); -- Кладовщик
+
+  -- Вставляем позиции в таблицу
+  INSERT INTO gps.positions (position_code, workshop_id, profession_id, grade_id, schedule_id, role_id)
+  VALUES
+    ('644494',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'),
+      (SELECT id FROM gps.professions WHERE name = 'Укладчик-упаковщик'),
+      (SELECT id FROM gps.grades WHERE grade_code = '3.ч'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.roles WHERE name = 'PACKER')
+    ),
+    ('643977',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'),
+      (SELECT id FROM gps.professions WHERE name = 'Укладчик-упаковщик'),
+      (SELECT id FROM gps.grades WHERE grade_code = '3.ч'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.roles WHERE name = 'PACKER')
+    )
+  ON CONFLICT (position_code) DO NOTHING;
 EOSQL

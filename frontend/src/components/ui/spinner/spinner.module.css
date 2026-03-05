@@ -1,0 +1,28 @@
+.container {
+  position: relative; /* Создаём контекст для абсолютного позиционирования */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 26px;
+}
+
+.spinner {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--color-spinner);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  transform: translateX(-50%);
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}

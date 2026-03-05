@@ -1,6 +1,6 @@
 import styles from './back.module.css';
 
-import { BackIcon } from '../../icons/back/back';
+import { BackIcon } from '../../ui/icons/back/back';
 
 import { useNavigate } from 'react-router-dom';
 

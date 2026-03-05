@@ -4,14 +4,8 @@
   gap: 30px;
 }
 
-.item {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  padding: 30px;
-  background-color: var(--bg-color-shift);
-  color: var(--color-shift);
-  border-radius: 30px;
+.item .card__container {
+  gap: 20px;
 }
 
 .wrapper__header,

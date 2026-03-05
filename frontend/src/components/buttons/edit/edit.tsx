@@ -1,10 +1,10 @@
-import styles from './edit.module.css';
-
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-import { EditIcon } from '../../icons/edit/edit';
 import { LayerContext } from '../../../contexts/layer/layerContext';
+
+import { EditIcon } from '../../ui/icons/edit/edit';
+
+import styles from './edit.module.css';
 
 interface IEditButtonProps {
   id?: string;
@@ -18,7 +18,6 @@ interface IEditButtonProps {
     | 'shipment'
     | 'pack'
     | 'fix'
-    | 'residue'
     | 'worker';
 }
 
@@ -41,7 +40,6 @@ export const EditButton = ({
     setIsShipmentOpenMdal,
     setIsPackOpenMdal,
     setIsFixOpenMdal,
-    setIsResidueOpenMdal,
     setSelectedId,
   } = useContext(LayerContext);
 
@@ -71,11 +69,6 @@ export const EditButton = ({
         setIsFixOpenMdal(true);
         setSelectedId(id);
         break;
-      case 'residue':
-        setIsOpenOverlay(true);
-        setIsResidueOpenMdal(true);
-        setSelectedId(id);
-        break;
       case 'worker':
         setIsOpenOverlay(true);
         setIsUpdateWorkerOpenModall(true);
@@ -88,7 +81,7 @@ export const EditButton = ({
   };
 
   return (
-    <button className={styles.container} type="button" onClick={handleClick}>
+    <button className={styles.container} type='button' onClick={handleClick}>
       {label}
       <EditIcon width={iconWidth} height={iconHeight} />
     </button>

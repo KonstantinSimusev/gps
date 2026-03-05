@@ -3,6 +3,60 @@ export interface IList<T> {
   items: T[];
 }
 
+export interface IEmployee {
+  id: string;
+  lastName: string;
+  firstName: string;
+  patronymic: string;
+  personalNumber: string;
+  birthDay: Date;
+  startDate: Date;
+  endDate: Date | null;
+  isActive: boolean;
+  position: IPosition;
+  team: ITeam;
+}
+
+export interface IPosition {
+  id: string;
+  positionCode: string;
+  workshop: IWorkshop;
+  profession: IProfession;
+  grade: IGrade;
+  schedule: ISchedule;
+  role: IRole;
+}
+
+export interface IWorkshop {
+  id: string;
+  workshopCode: string;
+}
+
+export interface IProfession {
+  id: string;
+  name: string;
+}
+
+export interface IGrade {
+  id: string;
+  gradeCode: string;
+}
+
+export interface ISchedule {
+  id: string;
+  scheduleCode: string;
+}
+
+export interface IRole {
+  id: string;
+  name: string;
+}
+
+export interface ITeam {
+  id: string;
+  teamNumber: string;
+}
+
 export interface ILoginData {
   login: string;
   password: string;
@@ -25,19 +79,19 @@ export interface IUser {
   sortOrder: number;
 }
 
+export interface ICreatedShift {
+  date: Date;
+  shiftNumber: number;
+}
+
 export interface IShift {
-  id?: string;
+  id: string;
   date: Date;
   shiftNumber: number;
   teamNumber: number;
-  startShift?: Date;
-  endShift?: Date;
-  usersShifts?: IUserShift[];
-  productions?: IProduction[];
-  shipments?: IShipment[];
-  packs?: IPack[];
-  fixs?: IFix[];
-  residues?: IResidue[];
+  startShift: Date;
+  endShift: Date;
+  workshopCode: string;
 }
 
 export interface IUserShift {
@@ -101,7 +155,7 @@ export interface IProfession {
 }
 
 export interface ISuccess {
-  success: boolean;
+  success?: boolean;
   message: string;
   id?: string;
 }

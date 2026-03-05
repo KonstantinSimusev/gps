@@ -1,0 +1,45 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100px;
+}
+
+.label {
+  font-size: 14px;
+  position: relative;
+  padding: 0 10px;
+  opacity: 0.6;
+}
+
+.label::after {
+  content: '*';
+  position: absolute;
+  top: 0;
+  left: 2px;
+}
+
+.wrapper {
+  position: relative;
+}
+
+.select {
+  width: 100%;
+  padding: 18px 60px 18px 20px;
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  outline: none;
+  color: var(--color-default);
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.error {
+  padding: 0 6px;
+  color: #bc1818;
+  font-size: 12px;
+}

@@ -2,7 +2,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 30px clamp(1.875rem, -8.406rem + 38.255vw, 37.5rem) 0;
+  min-height: 60px;
+  padding: 30px var(--horizontal-margin) 0;
 }
 
 .logo {

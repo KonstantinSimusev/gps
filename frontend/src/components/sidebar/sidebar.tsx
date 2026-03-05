@@ -5,20 +5,17 @@ import { useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import { CloseButton } from '../buttons/close/close';
-import { Switch } from '../switch/switch';
 
 import { LayerContext } from '../../contexts/layer/layerContext';
-import { ThemeContext } from '../../contexts/theme/themeContext';
 
 import { useSelector } from '../../services/store';
 import {
   selectIsAuthenticated,
-  selectUser,
+  selectEmployee,
 } from '../../services/slices/auth/slice';
 import { type TRole } from '../../utils/types';
 
 export const Sidebar = () => {
-  const { isLightTheme } = useContext(ThemeContext);
   const {
     isOpenMenu,
     setIsOpenOverlay,
@@ -28,7 +25,7 @@ export const Sidebar = () => {
   } = useContext(LayerContext);
 
   const isAuthenticated = useSelector(selectIsAuthenticated);
-  const user = useSelector(selectUser);
+  const employee = useSelector(selectEmployee);
   const location = useLocation(); // Получаем текущий путь
 
   const master: TRole = 'MASTER';
@@ -59,7 +56,6 @@ export const Sidebar = () => {
       className={clsx(
         styles.container,
         isOpenMenu && styles.menu__open,
-        isLightTheme ? 'theme-light' : 'theme-dark',
       )}
       onClick={handleMenuClick}
     >
@@ -79,7 +75,7 @@ export const Sidebar = () => {
             </li>
           )}
 
-          {isAuthenticated && user?.role === master && (
+          {isAuthenticated && employee?.position.role.name === master && (
             <li
               className={clsx(
                 styles.link,
@@ -92,11 +88,11 @@ export const Sidebar = () => {
           )}
 
           {isAuthenticated &&
-            user?.role === master &&
-            (user?.teamNumber === 1 ||
-              user?.teamNumber === 2 ||
-              user?.teamNumber === 3 ||
-              user?.teamNumber === 4) && (
+            employee?.position.role.name === master &&
+            (employee?.team.teamNumber === '1' ||
+              employee?.team.teamNumber === '2' ||
+              employee?.team.teamNumber === '3' ||
+              employee?.team.teamNumber === '4') && (
               <>
                 <li
                   className={clsx(
@@ -156,8 +152,6 @@ export const Sidebar = () => {
           )}
         </ul>
       </nav>
-
-      <Switch />
     </div>
   );
 };

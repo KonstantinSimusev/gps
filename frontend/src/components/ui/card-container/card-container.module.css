@@ -1,0 +1,8 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  background-color: var(--bg-color-card);
+  padding: 30px;
+  border-radius: 40px;
+}

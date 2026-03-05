@@ -6,54 +6,50 @@ export enum ERole {
 }
 
 export enum EProfession {
+  MANAGER = 'Управленец',
+  CHIEF = 'Начальник участка',
+  MASTER = 'Мастер участка',
+  ENGINEER_AMPP = 'Ведущий инженер АМПП',
+  OPERATOR = 'Оператор ПУ',
   BRIGADIR_OSP = 'Бригадир ОСП',
   BRIGADIR_UOP = 'Бригадир УОП',
-  ENGINEER_AMPP = 'Ведущий инженер АМПП',
-  DRIVER = 'Водитель погрузчика',
-  MASTER = 'Мастер участка',
-  MANAGER = 'Начальник участка',
-  OPERATOR = 'Оператор ПУ',
-  CUTTER = 'Резчик холодного металла',
   PACKER = 'Укладчик-упаковщик',
   PACKER_LUM = 'Укладчик-упаковщик ЛУМ',
   STACKER = 'Штабелировщик металла',
-  MANAGEMENT = 'Управление',
-}
-
-export enum ETeamProfession {
-  MASTER = 'Мастер участка',
-  BRIGADIR_OSP = 'Бригадир ОСП',
   DRIVER = 'Водитель погрузчика',
-  OPERATOR = 'Оператор ПУ',
   CUTTER = 'Резчик холодного металла',
-  PACKER = 'Укладчик-упаковщик',
-  PACKER_LUM = 'Укладчик-упаковщик ЛУМ',
-  STACKER = 'Штабелировщик металла',
-}
-
-export enum ELocation {
-  LINE_1 = '1 ОЧЕРЕДЬ',
-  LINE_2 = '2 ОЧЕРЕДЬ',
-  LINE_3 = '3 ОЧЕРЕДЬ',
 }
 
 export enum EUnit {
-  STAN = 'СТАН',
+  // ЛПЦ-5
+  LPC_4 = 'ЛПЦ-4',
+  NTA = 'НТА',
+  NTA_K = 'НТА-К',
+  APR_2 = 'АПР-2',
+  APR_3 = 'АПР-3',
+  APR_4 = 'АПР-4',
+  APR_5 = 'АПР-5',
+  APR_8 = 'АПР-8',
+  APR_9 = 'АПР-9',
+
+  // ЛПЦ-11
+  STAN = 'СТАН-2000',
   ANGZ = 'АНГЦ',
-  ANO = 'АНО',
+  ANO = 'АНО-ГЦ',
   AI = 'АИ',
   ANGZ_3 = 'АНГЦ-3',
+  LUM = 'ЛУМ',
 }
 
 export enum ERailway {
+  // ЛПЦ-11
   TUPIC_6 = 'Тупик 6',
   TUPIC_7 = 'Тупик 7',
   TUPIC_8 = 'Тупик 8',
   TUPIC_10 = 'Тупик 10',
-}
 
-export enum EArea {
-  PACK = 'Ручная упаковка',
-  LUM = 'ЛУМ',
-  VLRT = 'ВЛРТ',
+  // ЛПЦ-5
+  TUPIC_10_1 = 'Тупик 10/1',
+  TUPIC_10_2 = 'Тупик 10/2',
+  TUPIC_12 = 'Тупик 12',
 }

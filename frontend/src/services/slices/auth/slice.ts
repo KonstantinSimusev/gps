@@ -2,10 +2,10 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { checkAccessToken, loginUser, logoutUser } from './actions';
 
-import { IUser } from '../../../utils/api.interface';
+import { IEmployee } from '../../../utils/api.interface';
 
 interface IAuthState {
-  user: IUser | null;
+  employee: IEmployee | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   checking: boolean;
@@ -13,7 +13,7 @@ interface IAuthState {
 }
 
 const initialState: IAuthState = {
-  user: null,
+  employee: null,
   isAuthenticated: false,
   isLoading: false,
   checking: true,
@@ -29,7 +29,7 @@ export const authSlice = createSlice({
     },
   },
   selectors: {
-    selectUser: (state: IAuthState) => state.user,
+    selectEmployee: (state: IAuthState) => state.employee,
     selectIsAuthenticated: (state: IAuthState) => state.isAuthenticated,
     selectIsLoading: (state: IAuthState) => state.isLoading,
     selectIsChecking: (state: IAuthState) => state.checking,
@@ -42,38 +42,20 @@ export const authSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action: PayloadAction<IUser>) => {
-        state.user = action.payload;
-        state.isAuthenticated = true;
-        state.isLoading = false;
-        state.error = null;
-      })
-      .addCase(loginUser.rejected, (state, action) => {
-        state.user = null;
-        state.isAuthenticated = false;
-        state.isLoading = false;
-        state.error = action.error.message ?? 'Неверный логин или пароль';
-      })
-      // Обработчик для checkRefreshToken
-      .addCase(checkAccessToken.pending, (state) => {
-        state.isLoading = true; // Устанавливаем флаг загрузки
-        state.checking = true;
-      })
       .addCase(
-        checkAccessToken.fulfilled,
-        (state, action: PayloadAction<IUser>) => {
-          state.user = action.payload;
+        loginUser.fulfilled,
+        (state, action: PayloadAction<IEmployee>) => {
+          state.employee = action.payload;
           state.isAuthenticated = true;
-          state.isLoading = false; // Сбрасываем флаг после успешного выполнения
-          state.checking = false;
+          state.isLoading = false;
           state.error = null;
         },
       )
-      .addCase(checkAccessToken.rejected, (state, action) => {
+      .addCase(loginUser.rejected, (state, action) => {
+        state.employee = null;
         state.isAuthenticated = false;
-        state.isLoading = false; // Сбрасываем флаг после ошибки
-        state.checking = false;
-        state.error = action.error.message ?? 'Ошибка токена';
+        state.isLoading = false;
+        state.error = action.error.message ?? 'Неверный логин или пароль';
       })
       // Обработчик для logoutUser
       .addCase(logoutUser.pending, (state) => {
@@ -81,7 +63,7 @@ export const authSlice = createSlice({
         state.error = null; // Очищаем ошибку при начале выхода
       })
       .addCase(logoutUser.fulfilled, (state) => {
-        state.user = null;
+        state.employee = null;
         state.isAuthenticated = false;
         state.isLoading = false;
         state.error = null;
@@ -90,6 +72,23 @@ export const authSlice = createSlice({
         state.isAuthenticated = false;
         state.isLoading = false;
         state.error = action.error.message ?? 'Ошибка при выходе из системы';
+      })
+      // Обработчик для checkRefreshToken
+      .addCase(checkAccessToken.pending, (state) => {
+        state.isLoading = true; // Устанавливаем флаг загрузки
+        state.checking = true;
+      })
+      .addCase(checkAccessToken.fulfilled, (state) => {
+        state.isAuthenticated = true;
+        state.isLoading = false; // Сбрасываем флаг после успешного выполнения
+        state.checking = false;
+        state.error = null;
+      })
+      .addCase(checkAccessToken.rejected, (state, action) => {
+        state.isAuthenticated = false;
+        state.isLoading = false; // Сбрасываем флаг после ошибки
+        state.checking = false;
+        state.error = action.error.message ?? 'Ошибка токена';
       });
   },
 });
@@ -100,6 +99,6 @@ export const {
   selectIsAuthenticated,
   selectIsLoading,
   selectIsChecking,
-  selectUser,
+  selectEmployee,
   selectError,
 } = authSlice.selectors;

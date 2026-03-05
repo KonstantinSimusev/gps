@@ -1,5 +1,7 @@
 import * as bcrypt from 'bcrypt';
 
+import { Response, Request } from 'express';
+
 import {
   BadRequestException,
   Injectable,
@@ -8,37 +10,42 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 
-import { Response, Request } from 'express';
+import { Employee } from '../employees/entities/employee.entity';
 
-import { User } from '../user/entities/user.entity';
-import { UserRepository } from '../user/user.repository';
+import { AccountsRepository } from '../account/accounts.repository';
+import { EmployeesRepository } from '../employees/employees.repository';
 
-import { ISuccess, IUser } from '../../shared/interfaces/api.interface';
+import { IEmployee, ISuccess } from '../../shared/interfaces/api.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private userRepository: UserRepository,
-    private jwtService: JwtService,
-    private configService: ConfigService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+    private readonly accountsRepository: AccountsRepository,
+    private readonly employeesRepository: EmployeesRepository,
   ) {}
 
-  async login(login: string, password: string, res: Response): Promise<IUser> {
+  async login(
+    login: string,
+    password: string,
+    res: Response,
+  ): Promise<IEmployee> {
     try {
-      // Поиск пользователя
-      const user = await this.userRepository.findByLogin(login);
+      // Проверка аккаунта
+      const account = await this.accountsRepository.findByLogin(login);
 
-      if (!user) {
-        throw new NotFoundException('Пользователь не найден');
+      if (!account.id) {
+        throw new NotFoundException('Аккаунт не найден');
       }
 
       // Проверка пароля
       const isPasswordValid = await bcrypt.compare(
         password,
-        user.hashedPassword,
+        account.hashedPassword,
       );
 
       if (!isPasswordValid) {
@@ -47,7 +54,7 @@ export class AuthService {
 
       // Генерируем accessToken
       const accessToken = await this.jwtService.signAsync(
-        { sub: user.id, login: user.login },
+        { sub: account.id, login: account.login },
         {
           secret: this.configService.get('ACCESS_TOKEN_SECRET'),
           expiresIn: parseInt(
@@ -59,7 +66,7 @@ export class AuthService {
 
       // Генерируем refreshToken
       const refreshToken = await this.jwtService.signAsync(
-        { sub: user.id },
+        { sub: account.id },
         {
           secret: this.configService.get('REFRESH_TOKEN_SECRET'),
           expiresIn: parseInt(
@@ -70,17 +77,25 @@ export class AuthService {
       );
 
       // Обновили refreshToken в базе данных
-      await this.userRepository.update(user, {
+      await this.accountsRepository.update(account.id, {
         refreshToken,
       });
 
       // Установили токен в куки
       this.setAccessToken(res, accessToken);
 
-      // Убрали пароль, логин, токен
-      const apiUser = this.transformUser(user);
+      // Ищем сотрудника по accountId
+      const employee = await this.employeesRepository.findByAccountId(
+        account.id,
+      );
 
-      return apiUser;
+      if (!employee) {
+        throw new NotFoundException('Сотрудник не найден');
+      }
+
+      const apiEmployee = this.toApiEmployee(employee);
+
+      return apiEmployee;
     } catch (error) {
       throw new InternalServerErrorException(
         'Произошла ошибка при авторизации',
@@ -90,7 +105,8 @@ export class AuthService {
 
   async logout(req: Request, res: Response): Promise<ISuccess> {
     try {
-      const savedAccessToken = await this.getAccessToken(req);
+      // Получаем токен
+      const savedAccessToken = this.getAccessToken(req);
 
       // Проверяем, что токен не пустой
       if (!savedAccessToken) {
@@ -105,24 +121,33 @@ export class AuthService {
         throw new UnauthorizedException('Ошибка декодирования токена');
       }
 
-      const userId = decoded.sub;
+      const accountId = decoded.sub;
 
-      if (!userId) {
-        throw new UnauthorizedException('В токене отсутствует поле userId');
+      if (!accountId) {
+        throw new UnauthorizedException('В токене отсутствует accountId');
       }
 
-      // Находим пользователя в базе
-      const user = await this.userRepository.findById(userId);
+      // Ищем сотрудника по accountId
+      const employee =
+        await this.employeesRepository.findByAccountId(accountId);
 
-      if (!user) {
-        throw new UnauthorizedException('Пользователь не найден');
+      // Проверяем, что сотрудник найден
+      if (!employee) {
+        throw new NotFoundException('Сотрудник не найден');
+      }
+
+      // Проверяем, что у сотрудника есть связанный аккаунт
+      if (!employee.account) {
+        throw new UnauthorizedException(
+          'У сотрудника отсутствует связанный аккаунт',
+        );
       }
 
       // Удаляем токен из куки
       this.clearCookies(res);
 
-      // Очищаем токен в бд
-      await this.userRepository.update(user, {
+      // Очищаем refreshToken в базе данных
+      await this.accountsRepository.update(accountId, {
         refreshToken: null,
       });
 
@@ -130,20 +155,20 @@ export class AuthService {
         message: 'Успешный выход из системы',
       };
     } catch {
-      // Удаляем токен из куки
+      // Всегда удаляем куки при любой ошибке — пользователь должен быть разлогинен
       this.clearCookies(res);
 
       throw new InternalServerErrorException(
-        'Ошибка при обновлении данных пользователя',
+        'Ошибка при выходе сотрудника из системы',
       );
     }
   }
 
-  async validateAccessToken(req: Request, res: Response): Promise<IUser> {
-    let userId: string | undefined;
+  async validateAccessToken(req: Request, res: Response): Promise<ISuccess> {
+    let accountId: string | undefined;
 
     try {
-      const savedAccessToken = await this.getAccessToken(req);
+      const savedAccessToken = this.getAccessToken(req);
 
       // Проверяем, что токен не пустой
       if (!savedAccessToken) {
@@ -158,17 +183,10 @@ export class AuthService {
         throw new UnauthorizedException('Ошибка декодирования токена');
       }
 
-      userId = decoded.sub;
+      accountId = decoded.sub;
 
-      if (!userId) {
-        throw new UnauthorizedException('В токене отсутствует поле userId');
-      }
-
-      // Находим пользователя в базе
-      const user = await this.userRepository.findById(userId);
-
-      if (!user) {
-        throw new UnauthorizedException('Пользователь не найден');
+      if (!accountId) {
+        throw new UnauthorizedException('В токене отсутствует accountId');
       }
 
       // Проверяем валидность токена с учетом срока действия
@@ -180,35 +198,20 @@ export class AuthService {
         throw new UnauthorizedException('Access token истек');
       }
 
-      // Генерируем новый access token
-      const accessToken = await this.jwtService.signAsync(
-        { sub: user.id, login: user.login },
-        {
-          secret: this.configService.get('ACCESS_TOKEN_SECRET'),
-          expiresIn: parseInt(
-            this.configService.get('ACCESS_TOKEN_EXPIRATION'),
-            10,
-          ),
-        },
-      );
-
-      // Установили токен в куки
-      this.setAccessToken(res, accessToken);
-
-      // Убрали пароль, логин, токен
-      const apiUser = this.transformUser(user);
-
-      return apiUser;
+      return {
+        message: 'Access token проверен',
+      };
     } catch (error) {
       if (error instanceof TokenExpiredError) {
-        // Находим пользователя в базе
-        const user = await this.userRepository.findById(userId);
+        // Находим сотрудника в базе
+        const employee =
+          await this.employeesRepository.findByAccountId(accountId);
 
-        if (!user) {
-          throw new UnauthorizedException('Пользователь не найден');
+        if (!employee) {
+          throw new UnauthorizedException('Сотрудник не найден');
         }
 
-        const dbRefreshToken = user.refreshToken;
+        const dbRefreshToken = employee.account.refreshToken;
 
         if (!dbRefreshToken) {
           throw new UnauthorizedException('Refresh token не найден');
@@ -227,8 +230,8 @@ export class AuthService {
           // Удаляем токен из куки
           this.clearCookies(res);
 
-          // Очищаем токен в бд
-          await this.userRepository.update(user, {
+          // Очищаем refreshToken в базе данных
+          await this.accountsRepository.update(accountId, {
             refreshToken: null,
           });
 
@@ -237,7 +240,7 @@ export class AuthService {
 
         // Генерируем новый access token
         const accessToken = await this.jwtService.signAsync(
-          { sub: user.id, login: user.login },
+          { sub: employee.account.id, login: employee.account.login },
           {
             secret: this.configService.get('ACCESS_TOKEN_SECRET'),
             expiresIn: parseInt(
@@ -250,10 +253,9 @@ export class AuthService {
         // Установили токен в куки
         this.setAccessToken(res, accessToken);
 
-        // Убрали пароль, логин, токен
-        const apiUser = this.transformUser(user);
-
-        return apiUser;
+        return {
+          message: 'Access token обновлен',
+        };
       }
 
       // Удаляем токен из куки
@@ -263,7 +265,7 @@ export class AuthService {
     }
   }
 
-  async getAccessToken(req: Request): Promise<string> {
+  private getAccessToken(req: Request): string {
     const savedAccessToken = req.cookies.access_token;
 
     if (!savedAccessToken) {
@@ -273,23 +275,34 @@ export class AuthService {
     return savedAccessToken;
   }
 
-  async setAccessToken(res: Response, accessToken: string): Promise<void> {
+  private setAccessToken(res: Response, accessToken: string): void {
+    const expirationSeconds = parseInt(
+      this.configService.get('ACCESS_TOKEN_EXPIRATION'),
+      10,
+    );
+
+    // конвертируем секунды в миллисекунды
+    const maxAgeInMs = expirationSeconds * 1000;
+
     res.cookie('access_token', accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      maxAge: maxAgeInMs, // срок жизни куки в миллисекундах
+      path: '/',
     });
   }
 
-  async clearCookies(res: Response): Promise<void> {
+  private clearCookies(res: Response): void {
     res.cookie('access_token', '', {
       httpOnly: true,
       expires: new Date(0),
     });
   }
 
-  private transformUser(user: User): IUser {
-    const { login, hashedPassword, refreshToken, ...apiUser } = user;
-    return apiUser;
+  private toApiEmployee(employee: Employee): IEmployee {
+    const { account, ...apiEmployee } = employee;
+
+    return apiEmployee;
   }
 }

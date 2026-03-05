@@ -80,8 +80,8 @@ export const validationRules: IValidationRules = {
       },
       {
         type: 'length',
-        pattern: /^.{8,30}$/,
-        message: 'Введите 8-30 символов',
+        pattern: /^.{8,50}$/,
+        message: 'Введите 8-50 символов',
       },
       {
         type: 'noSpaces',
@@ -105,18 +105,19 @@ export const validationRules: IValidationRules = {
       },
       {
         type: 'length',
-        pattern: /^.{8,30}$/,
+        pattern: /^.{8,50}$/,
         message: 'Введите 8-30 символов',
+      },
+      {
+        type: 'uuidOrPassword',
+        pattern:
+          /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[^\s]+)$/i,
+        message: 'Введите корректный пароль или UUID',
       },
       {
         type: 'noSpaces',
         pattern: /^\S+$/,
         message: 'Введите корректный пароль',
-      },
-      {
-        type: 'uppercase',
-        pattern: /[A-Z]/, // Проверяет наличие хотя бы одной заглавной буквы
-        message: 'Введите корректный пароль', // Должна быть хотя бы одна заглавная буква
       },
     ],
   },

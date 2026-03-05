@@ -2,10 +2,10 @@ import { Body, Controller, Post, Req, Res } from '@nestjs/common';
 
 import { Response, Request } from 'express';
 
+import { AuthDTO } from './dto/auth.dto';
 import { AuthService } from './auth.service';
 
-import { LoginDTO } from './dto/login.dto';
-import { ISuccess, IUser } from '../../shared/interfaces/api.interface';
+import { IEmployee, ISuccess } from '../../shared/interfaces/api.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -13,10 +13,10 @@ export class AuthController {
 
   @Post('login')
   async login(
-    @Body() dto: LoginDTO,
+    @Body() dto: AuthDTO,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<IUser> {
-    return await this.authService.login(dto.login, dto.password, res);
+  ): Promise<IEmployee> {
+    return this.authService.login(dto.login, dto.password, res);
   }
 
   @Post('logout')
@@ -24,14 +24,14 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<ISuccess> {
-    return await this.authService.logout(req, res);
+    return this.authService.logout(req, res);
   }
 
   @Post('token')
   async checkAccessToken(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<IUser> {
-    return await this.authService.validateAccessToken(req, res);
+  ): Promise<ISuccess> {
+    return this.authService.validateAccessToken(req, res);
   }
 }

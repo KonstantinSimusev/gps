@@ -1,15 +1,14 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
-import { forwardRef } from '@nestjs/common';
 
-import { AuthService } from './auth.service';
+import { AccountsModule } from '../account/account.module';
+import { EmployeesModule } from '../employees/employees.module';
 import { AuthController } from './auth.controller';
-
-import { UserModule } from '../user/user.module';
+import { AuthService } from './auth.service';
 
 @Module({
-  imports: [ConfigModule, JwtModule, forwardRef(() => UserModule)],
+  imports: [ConfigModule, JwtModule, AccountsModule, EmployeesModule],
   controllers: [AuthController],
   providers: [AuthService],
   exports: [AuthService],

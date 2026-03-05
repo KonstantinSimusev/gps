@@ -3,95 +3,102 @@ export interface IList<T> {
   items: T[];
 }
 
-export interface IUser {
-  id?: string;
-  positionCode?: number;
-  lastName?: string;
-  firstName?: string;
-  patronymic?: string;
-  profession?: string;
-  grade?: number;
-  personalNumber?: number;
-  teamNumber?: number;
-  currentTeamNumber?: number;
-  workSchedule?: string;
-  workshopCode?: string;
-  role?: string;
-  sortOrder?: number;
-}
-
-export interface IShift {
+export interface IEmployee {
   id: string;
-  date: Date;
-  shiftNumber: number;
-  teamNumber: number;
-  startShift: Date;
-  endShift: Date;
-  usersShifts?: IUserShift[];
-  productions?: IProduction[];
+  lastName: string;
+  firstName: string;
+  patronymic: string;
+  personalNumber: string;
+  birthDay: Date;
+  startDate: Date;
+  endDate: Date | null;
+  isActive: boolean;
+  position: IPosition;
+  team: ITeam;
+  // account: IAccount;
 }
 
-export interface ISchedule {
-  date: Date;
-  shiftNumber: number;
-  teamNumber: number;
-}
-
-export interface IUserShift {
+export interface IPosition {
   id: string;
-  workStatus: string;
-  workPlace: string;
-  shiftProfession: string;
-  workHours: number;
+  positionCode: string;
+  workshop: IWorkshop;
+  profession: IProfession;
+  grade: IGrade;
+  schedule: ISchedule;
+  role: IRole;
 }
 
-export interface IProduction {
+export interface IWorkshop {
   id: string;
-  location: string;
-  unit: string;
-  count: number;
-  sortOrder: number;
-}
-
-export interface IShipment {
-  id: string;
-  location: string;
-  railway: string;
-  count: number;
-  sortOrder: number;
-}
-
-export interface IPack {
-  id: string;
-  location: string;
-  area: string;
-  count: number;
-  sortOrder: number;
-}
-
-export interface IFix {
-  id: string;
-  location: string;
-  railway: string;
-  count: number;
-  sortOrder: number;
-}
-
-export interface IResidue {
-  id: string;
-  location: string;
-  area: string;
-  count: number;
-  sortOrder: number;
+  workshopCode: string;
 }
 
 export interface IProfession {
-  profession: string;
-  count: number;
+  id: string;
+  name: string;
 }
+
+export interface IGrade {
+  id: string;
+  gradeCode: string;
+}
+
+export interface ISchedule {
+  id: string;
+  scheduleCode: string;
+}
+
+export interface IRole {
+  id: string;
+  name: string;
+}
+
+export interface ITeam {
+  id: string;
+  teamNumber: string;
+}
+
+export interface IAccountAPI {
+  lastName: string;
+  firstName: string;
+  patronymic: string;
+  login: string;
+  password: string;
+}
+
+export interface IAccount {
+  id: string;
+  login: string;
+  hashedPassword: string;
+  refreshToken: string | null;
+}
+
+// export interface IShift {
+//   id: string;
+//   workshopCode: string;
+//   date: Date;
+//   shiftNumber: number;
+//   teamNumber: number;
+//   startShift: Date;
+//   endShift: Date;
+//   usersShifts?: IUserShift[];
+//   productions?: IProduction[];
+//   shipments?: IShipment[];
+//   packs?: IPack[];
+//   fixs?: IFix[];
+//   residues?: IResidue[];
+// }
+
+// export interface IUserShift {
+//   id: string;
+//   workStatus: string;
+//   workPlace: string;
+//   shiftProfession: string;
+//   workHours: number;
+// }
 
 export interface ISuccess {
   message?: string;
   accessToken?: string;
-  user?: IUser;
+  // user?: IPerson;
 }

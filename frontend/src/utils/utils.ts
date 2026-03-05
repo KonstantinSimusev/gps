@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { IPack, IResidue, IShift, IUserShift } from './api.interface';
+import { IPack, IResidue, IUserShift } from './api.interface';
 import {
   TProfession,
   TRole,
@@ -7,6 +7,15 @@ import {
   WORK_STATUS_ABBREVIATIONS,
   WORK_STATUS_OPTIONS,
 } from './types';
+
+export const ROLE_TO_PAGE: { [key: string]: string } = {
+  SECTION_MASTER: '/timesheet',
+  PACKER: '/timesheet',
+  DIRECTOR: '/dashboard',
+  PRODUCTION_MANAGER: '/production-overview',
+  SENIOR_MANAGER: '/management',
+  DEFAULT: '/home',
+};
 
 export const formatDate = (date: Date) => {
   const parsedDate = new Date(date);
@@ -571,50 +580,50 @@ export function extractNumber(railway: string) {
   return match ? parseInt(match[1], 10) : 0;
 }
 
-export function countProfessionsBySickLeave(
-  shifts: IShift[],
-): { profession: string; count: number }[] {
-  // 1. Собираем всех сотрудников на больничном с их sortOrder
-  const sickUsers: { profession: string; sortOrder: number }[] = [];
+// export function countProfessionsBySickLeave(
+//   shifts: IShift[],
+// ): { profession: string; count: number }[] {
+//   // 1. Собираем всех сотрудников на больничном с их sortOrder
+//   const sickUsers: { profession: string; sortOrder: number }[] = [];
 
-  for (const shift of shifts) {
-    const users = shift.usersShifts ?? [];
+//   for (const shift of shifts) {
+//     const users = shift.usersShifts ?? [];
 
-    for (const user of users) {
-      if (
-        user?.workStatus === 'Больничный лист' &&
-        user.user?.sortOrder != null
-      ) {
-        sickUsers.push({
-          profession: user.shiftProfession,
-          sortOrder: user.user.sortOrder,
-        });
-      }
-    }
-  }
+//     for (const user of users) {
+//       if (
+//         user?.workStatus === 'Больничный лист' &&
+//         user.user?.sortOrder != null
+//       ) {
+//         sickUsers.push({
+//           profession: user.shiftProfession,
+//           sortOrder: user.user.sortOrder,
+//         });
+//       }
+//     }
+//   }
 
-  // 2. Сортируем по sortOrder (по возрастанию)
-  sickUsers.sort((a, b) => a.sortOrder - b.sortOrder);
+//   // 2. Сортируем по sortOrder (по возрастанию)
+//   sickUsers.sort((a, b) => a.sortOrder - b.sortOrder);
 
-  // 3. Считаем количество профессий, сохраняя порядок сортировки
-  const counts: Record<string, number> = {};
-  const order: string[] = []; // Чтобы запомнить порядок профессий по sortOrder
+//   // 3. Считаем количество профессий, сохраняя порядок сортировки
+//   const counts: Record<string, number> = {};
+//   const order: string[] = []; // Чтобы запомнить порядок профессий по sortOrder
 
-  for (const { profession } of sickUsers) {
-    if (!counts[profession]) {
-      counts[profession] = 1;
-      order.push(profession); // Первая встреча профессии — добавляем в порядок
-    } else {
-      counts[profession]++;
-    }
-  }
+//   for (const { profession } of sickUsers) {
+//     if (!counts[profession]) {
+//       counts[profession] = 1;
+//       order.push(profession); // Первая встреча профессии — добавляем в порядок
+//     } else {
+//       counts[profession]++;
+//     }
+//   }
 
-  // 4. Формируем результат в порядке сортировки
-  return order.map((profession) => ({
-    profession,
-    count: counts[profession],
-  }));
-}
+//   // 4. Формируем результат в порядке сортировки
+//   return order.map((profession) => ({
+//     profession,
+//     count: counts[profession],
+//   }));
+// }
 
 export function useToggleAfterDelay(delay = 1000) {
   const [value, setValue] = useState(true); // Изначально true

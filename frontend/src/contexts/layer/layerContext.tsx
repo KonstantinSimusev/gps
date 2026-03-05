@@ -2,6 +2,7 @@ import { createContext } from 'react';
 import { IUser } from '../../utils/api.interface';
 
 interface ILayerContextValue {
+  isAgreed: boolean;
   isOpenOverlay: boolean;
   isOpenMenu: boolean;
   isOpenModal: boolean;
@@ -16,12 +17,11 @@ interface ILayerContextValue {
   isShipmentOpenMdal: boolean;
   isPackOpenMdal: boolean;
   isFixOpenMdal: boolean;
-  isResidueOpenMdal: boolean;
-  isCookie: boolean;
   selectedId: string;
   selectedScrollPosition: number;
   selectedButtonActionType: string;
   selectedUser: IUser | null;
+  setIsAgreed: (value: boolean) => void;
   setIsOpenOverlay: (value: boolean) => void;
   setIsOpenMenu: (value: boolean) => void;
   setIsOpenModal: (value: boolean) => void;
@@ -36,8 +36,6 @@ interface ILayerContextValue {
   setIsShipmentOpenMdal: (value: boolean) => void;
   setIsPackOpenMdal: (value: boolean) => void;
   setIsFixOpenMdal: (value: boolean) => void;
-  setIsResidueOpenMdal: (value: boolean) => void;
-  setIsCookie: (value: boolean) => void;
   setSelectedId: (value: string) => void;
   setSelectedScrollPosition: (value: number) => void;
   setSelectedButtonActionType: (value: string) => void;
@@ -45,6 +43,7 @@ interface ILayerContextValue {
 }
 
 export const LayerContext = createContext<ILayerContextValue>({
+  isAgreed: false,
   isOpenOverlay: false,
   isOpenMenu: false,
   isOpenModal: false,
@@ -59,12 +58,11 @@ export const LayerContext = createContext<ILayerContextValue>({
   isShipmentOpenMdal: false,
   isPackOpenMdal: false,
   isFixOpenMdal: false,
-  isResidueOpenMdal: false,
-  isCookie: false,
   selectedId: '',
   selectedScrollPosition: 0,
   selectedButtonActionType: '',
   selectedUser: null,
+  setIsAgreed: () => {},
   setIsOpenOverlay: () => {},
   setIsOpenMenu: () => {},
   setIsOpenModal: () => {},
@@ -79,8 +77,6 @@ export const LayerContext = createContext<ILayerContextValue>({
   setIsShipmentOpenMdal: () => {},
   setIsPackOpenMdal: () => {},
   setIsFixOpenMdal: () => {},
-  setIsResidueOpenMdal: () => {},
-  setIsCookie: () => {},
   setSelectedId: () => {},
   setSelectedScrollPosition: () => {},
   setSelectedButtonActionType: () => {},

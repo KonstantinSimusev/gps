@@ -1,6 +1,6 @@
 .icon {
-  width: 100%;
-  height: 100%;
+  width: 18px;
+  height: 18px;
   stroke: var(--color-icon);
   stroke-width: 2.5;
 }

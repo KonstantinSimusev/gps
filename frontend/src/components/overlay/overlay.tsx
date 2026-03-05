@@ -1,8 +1,10 @@
+import { useContext } from 'react';
+import { useEscapeHandler } from '../../hooks/useEscapeHandler';
+
+import { LayerContext } from '../../contexts/layer/layerContext';
+
 import styles from './overlay.module.css';
 
-import { useContext } from 'react';
-import { LayerContext } from '../../contexts/layer/layerContext';
-import { useEscapeHandler } from '../../hooks/useEscapeHandler';
 export const Overlay = () => {
   const {
     isOpenOverlay,
@@ -18,7 +20,6 @@ export const Overlay = () => {
     isShipmentOpenMdal,
     isPackOpenMdal,
     isFixOpenMdal,
-    isResidueOpenMdal,
     setIsOpenOverlay,
     setIsOpenMenu,
     setIsLoginModalOpen,
@@ -32,7 +33,6 @@ export const Overlay = () => {
     setIsShipmentOpenMdal,
     setIsPackOpenMdal,
     setIsFixOpenMdal,
-    setIsResidueOpenMdal,
   } = useContext(LayerContext);
 
   useEscapeHandler(() => {
@@ -87,10 +87,6 @@ export const Overlay = () => {
     if (isFixOpenMdal) {
       setIsFixOpenMdal(false);
     }
-
-    if (isResidueOpenMdal) {
-      setIsResidueOpenMdal(false);
-    }
   });
 
   const handleClick = (event: React.MouseEvent) => {
@@ -109,7 +105,6 @@ export const Overlay = () => {
       setIsShipmentOpenMdal(false);
       setIsPackOpenMdal(false);
       setIsFixOpenMdal(false);
-      setIsResidueOpenMdal(false);
     }
   };
 

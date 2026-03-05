@@ -4,7 +4,7 @@ import clsx from 'clsx';
 
 interface IInfoBlockProps {
   className?: string;
-  title: string;
+  title?: string;
   text: string | number;
 }
 

@@ -1,13 +1,21 @@
+import clsx from 'clsx';
 import styles from './button.module.css';
 
-interface IButtonProps {
+interface IButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  className?: string;
   label?: string;
-  onClick?: () => void;
 }
 
-export const Button = ({ label, onClick }: IButtonProps) => {
+export const Button = ({ label, className, ...props }: IButtonProps) => {
   return (
-    <button className={styles.container} type="button" onClick={onClick}>
+    <button
+      className={clsx(
+        styles.button,
+        className,
+        props.disabled && styles.button_disabled,
+      )}
+      {...props}
+    >
       {label}
     </button>
   );

@@ -1,17 +1,18 @@
-import styles from './modal.module.css';
-
 import { CloseButton } from '../buttons/close/close';
 
-interface IModalProps {
+import styles from './modal.module.css';
+
+interface IProps {
   children?: React.ReactNode;
 }
 
-export const Modal = ({ children }: IModalProps) => {
-
+export const Modal = ({ children }: IProps) => {
   return (
     <div className={styles.container}>
-      <CloseButton />
-      {children}
+      <div className={styles.wrapper}>
+        <CloseButton />
+      </div>
+      <div className={styles.content}>{children}</div>
     </div>
   );
 };

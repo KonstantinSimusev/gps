@@ -1,0 +1,22 @@
+.title {
+  margin-top: clamp(1.25rem, 0.5603rem + 3.4483vw, 2.5rem);
+}
+
+.spinner {
+  margin: clamp(0.625rem, -0.0647rem + 3.4483vw, 1.875rem) 0;
+}
+
+.buttons__wrapper {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.button__logout {
+  color: var(--color-button);
+  background-color: var(--bg-color-button);
+}
+
+.button__return {
+  background-color: var(--bg-button-return);
+}

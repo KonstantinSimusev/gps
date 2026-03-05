@@ -1,0 +1,45 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-right: 4px;
+  font-size: 14px;
+}
+
+.header__title {
+  opacity: 0.6;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.item__profession {
+  margin-left: 10px;
+}
+
+.item__count {
+  margin: 0 12px 0 18px;
+}
+
+.footer {
+  display: flex;
+  justify-content: end;
+}
+
+.total {
+  margin: 0 12px 0 18px;
+}

@@ -1,8 +1,8 @@
-import styles from './close.module.css';
-
 import { useContext } from 'react';
-import { CloseIcon } from '../../icons/close/close';
 import { LayerContext } from '../../../contexts/layer/layerContext';
+import { CloseIcon } from '../../ui/icons/close/close';
+
+import styles from './close.module.css';
 
 export const CloseButton = () => {
   const {
@@ -19,7 +19,6 @@ export const CloseButton = () => {
     setIsShipmentOpenMdal,
     setIsPackOpenMdal,
     setIsFixOpenMdal,
-    setIsResidueOpenMdal,
   } = useContext(LayerContext);
 
   const handleClick = () => {
@@ -36,11 +35,10 @@ export const CloseButton = () => {
     setIsShipmentOpenMdal(false);
     setIsPackOpenMdal(false);
     setIsFixOpenMdal(false);
-    setIsResidueOpenMdal(false);
   };
 
   return (
-    <button className={styles.container} type="button" onClick={handleClick}>
+    <button className={styles.container} type='button' onClick={handleClick}>
       <CloseIcon />
     </button>
   );

@@ -1,8 +1,9 @@
-import styles from './delete.module.css';
-
 import { useContext } from 'react';
-import { DeleteIcon } from '../../icons/delete/delete';
 import { LayerContext } from '../../../contexts/layer/layerContext';
+
+import { DeleteIcon } from '../../ui/icons/delete/delete';
+
+import styles from './delete.module.css';
 
 interface IDeleteButtonProps {
   id?: string;

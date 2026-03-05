@@ -1,7 +1,7 @@
 import styles from './shift-info.module.css';
 
 import { InfoBlock } from '../ui/info-block/info-block';
-import { Error } from '../ui/error/error';
+import { Error } from '../ui/errors/error/error';
 
 import { formatDate } from '../../utils/utils';
 

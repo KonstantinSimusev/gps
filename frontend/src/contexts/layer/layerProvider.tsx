@@ -7,6 +7,7 @@ interface TLayerProviderProps {
 }
 
 export const LayerProvider = ({ children }: TLayerProviderProps) => {
+  const [isAgreed, setIsAgreed] = useState(false);
   const [isOpenOverlay, setIsOpenOverlay] = useState(false);
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -19,7 +20,6 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
   const [isDeleteOpenModall, setIsDeleteOpenModall] = useState(false);
   const [isUserShiftInfoOpenModal, setIsUserShiftInfoOpenModal] =
     useState(false);
-  const [isCookie, setIsCookie] = useState(false);
   const [selectedId, setSelectedId] = useState('');
   const [selectedScrollPosition, setSelectedScrollPosition] = useState(0);
   const [selectedButtonActionType, setSelectedButtonActionType] = useState('');
@@ -27,12 +27,12 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
   const [isShipmentOpenMdal, setIsShipmentOpenMdal] = useState(false);
   const [isPackOpenMdal, setIsPackOpenMdal] = useState(false);
   const [isFixOpenMdal, setIsFixOpenMdal] = useState(false);
-  const [isResidueOpenMdal, setIsResidueOpenMdal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
 
   // Мемоизируем значение контекста
   const value = useMemo(
     () => ({
+      isAgreed,
       isOpenOverlay,
       isOpenMenu,
       isOpenModal,
@@ -47,12 +47,11 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
       isShipmentOpenMdal,
       isPackOpenMdal,
       isFixOpenMdal,
-      isResidueOpenMdal,
-      isCookie,
       selectedId,
       selectedScrollPosition,
       selectedButtonActionType,
       selectedUser,
+      setIsAgreed,
       setIsOpenOverlay,
       setIsOpenMenu,
       setIsOpenModal,
@@ -67,14 +66,13 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
       setIsShipmentOpenMdal,
       setIsPackOpenMdal,
       setIsFixOpenMdal,
-      setIsResidueOpenMdal,
-      setIsCookie,
       setSelectedId,
       setSelectedScrollPosition,
       setSelectedButtonActionType,
       setSelectedUser,
     }),
     [
+      isAgreed,
       isOpenOverlay,
       isOpenMenu,
       isOpenModal,
@@ -84,7 +82,6 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
       isUpdateWorkerOpenModall,
       isAddShiftOpenModall,
       isDeleteOpenModall,
-      isCookie,
       selectedId,
       selectedScrollPosition,
       selectedButtonActionType,

@@ -1,6 +1,6 @@
 import styles from './production-chart.module.css';
 
-import { Error } from '../../ui/error/error';
+import { Error } from '../../ui/errors/error/error';
 import { Border } from '../../ui/border/border';
 
 import { IShift, IUserShift } from '../../../utils/api.interface';
