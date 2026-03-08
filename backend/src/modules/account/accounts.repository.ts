@@ -1,4 +1,4 @@
-import { Repository, UpdateResult } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -15,11 +15,28 @@ export class AccountsRepository {
     return this.accountsRepository.save(account);
   }
 
-  async findByLogin(login: string): Promise<Account> {
-    return this.accountsRepository.findOne({ where: { login } });
-  }
-
   async update(id: string, updateData: Partial<Account>): Promise<void> {
     this.accountsRepository.update(id, updateData);
+  }
+
+  async findByLogin(login: string): Promise<Account | null> {
+    return this.accountsRepository.findOne({
+      where: {
+        login,
+        employee: {
+          isActive: true,
+        },
+      },
+      relations: ['employee'],
+    });
+  }
+
+  // Получаем все аккаунты с установленным hashedRefreshToken
+  async findAllByHashedRefreshToken(): Promise<Account[]> {
+    return this.accountsRepository.find({
+      where: {
+        hashedRefreshToken: Not(IsNull()),
+      },
+    });
   }
 }

@@ -1,3 +1,15 @@
+export interface ITokenOptions<T> {
+  payload: T;
+  secretKey: string; // ключ в конфиге для секрета
+  expiresInKey: string; // ключ в конфиге для времени жизни
+}
+
+export interface IJwtPayload {
+  sub: string;
+  iat?: number;
+  exp?: number;
+}
+
 export interface IList<T> {
   total: number;
   items: T[];
@@ -70,7 +82,7 @@ export interface IAccount {
   id: string;
   login: string;
   hashedPassword: string;
-  refreshToken: string | null;
+  hashedRefreshToken: string | null;
 }
 
 // export interface IShift {

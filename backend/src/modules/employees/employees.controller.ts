@@ -1,16 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-  Query,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 
 import { Response, Request } from 'express';
 
@@ -31,6 +19,7 @@ export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
   @Post()
+  // @UseGuards(AuthGuard)
   async create(@Body() dto: CreateEmployeeDTO): Promise<IAccountAPI> {
     return this.employeesService.create(dto);
   }

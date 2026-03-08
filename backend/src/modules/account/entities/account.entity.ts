@@ -28,12 +28,12 @@ export class Account {
   hashedPassword: string;
 
   @Column({
-    name: 'refresh_token',
+    name: 'hashed_refresh_token',
     type: 'varchar',
     length: 512,
     nullable: true,
   })
-  refreshToken: string | null;
+  hashedRefreshToken: string | null;
 
   @OneToOne(() => Employee, (employee) => employee.account)
   employee: Employee;

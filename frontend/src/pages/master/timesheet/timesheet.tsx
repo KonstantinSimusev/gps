@@ -24,6 +24,8 @@ import { UserShiftList } from '../../../components/lists/user-shift-list/user-sh
 
 import styles from './timesheet.module.css';
 
+import { checkAccessToken } from '../../../services/slices/auth/actions';
+
 export const Timesheet = () => {
   const { setIsOpenOverlay, setIsAddShiftOpenModall } =
     useContext(LayerContext);
@@ -54,6 +56,10 @@ export const Timesheet = () => {
     setIsAddShiftOpenModall(true);
   };
 
+  const checkClick = () => {
+    dispatch(checkAccessToken())
+  }
+
   if (isLoadingLastShift) {
     return (
       <MainLayout>
@@ -65,7 +71,7 @@ export const Timesheet = () => {
   if (!lastShift) {
     return (
       <MainLayout>
-        <p>Hello</p>
+        <a onClick={checkClick}>Hello</a>
         <div className={styles.button__wrapper}>
           <Button type='button' label='Создать смену' onClick={handleClick} />
         </div>

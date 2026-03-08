@@ -31,7 +31,7 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
     login VARCHAR(255) NOT NULL UNIQUE,
     hashed_password VARCHAR(512) NOT NULL,
-    refresh_token VARCHAR(512)
+    hashed_refresh_token VARCHAR(512)
   );
 
   -- Создание таблицы teams

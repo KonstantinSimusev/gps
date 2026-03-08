@@ -16,7 +16,7 @@ psql -v ON_ERROR_STOP=1 postgresql://student:password@localhost:5432/gps <<-EOSQ
     id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
     login VARCHAR(255) NOT NULL UNIQUE,
     hashed_password VARCHAR(512) NOT NULL,
-    refresh_token VARCHAR(512)
+    hashed_refresh_token VARCHAR(512)
   );
 
   -- Создание таблицы teams

@@ -1,4 +1,5 @@
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Response, Request } from 'express';
 
@@ -11,14 +12,19 @@ import {
 } from '@nestjs/common';
 
 import { ConfigService } from '@nestjs/config';
-import { JwtService, TokenExpiredError } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 
 import { Employee } from '../employees/entities/employee.entity';
 
 import { AccountsRepository } from '../account/accounts.repository';
 import { EmployeesRepository } from '../employees/employees.repository';
 
-import { IEmployee, ISuccess } from '../../shared/interfaces/api.interface';
+import {
+  ITokenOptions,
+  IEmployee,
+  ISuccess,
+  IJwtPayload,
+} from '../../shared/interfaces/api.interface';
 
 @Injectable()
 export class AuthService {
@@ -38,8 +44,14 @@ export class AuthService {
       // Проверка аккаунта
       const account = await this.accountsRepository.findByLogin(login);
 
-      if (!account.id) {
+      if (!account) {
         throw new NotFoundException('Аккаунт не найден');
+      }
+
+      if (!account.hashedPassword) {
+        throw new InternalServerErrorException(
+          'Ошибка сервера: отсутствует хешированный пароль',
+        );
       }
 
       // Проверка пароля
@@ -53,36 +65,39 @@ export class AuthService {
       }
 
       // Генерируем accessToken
-      const accessToken = await this.jwtService.signAsync(
-        { sub: account.id, login: account.login },
-        {
-          secret: this.configService.get('ACCESS_TOKEN_SECRET'),
-          expiresIn: parseInt(
-            this.configService.get('ACCESS_TOKEN_EXPIRATION'),
-            10,
-          ),
-        },
+      const accessToken = await this.generateToken({
+        payload: { sub: account.id },
+        secretKey: 'ACCESS_TOKEN_SECRET',
+        expiresInKey: 'ACCESS_TOKEN_EXPIRATION',
+      });
+
+      // Устанавливаем accessToken в куки
+      this.setCookie(
+        res,
+        'access_token',
+        accessToken,
+        'ACCESS_TOKEN_EXPIRATION',
       );
 
-      // Генерируем refreshToken
-      const refreshToken = await this.jwtService.signAsync(
-        { sub: account.id },
-        {
-          secret: this.configService.get('REFRESH_TOKEN_SECRET'),
-          expiresIn: parseInt(
-            this.configService.get('REFRESH_TOKEN_EXPIRATION'),
-            10,
-          ),
-        },
-      );
+      // Генерируем refreshToken (UUID + соль)
+      const refreshToken = uuidv4();
+      const salt = await bcrypt.genSalt(10);
+
+      // Хешируем refreshToken
+      const hashedRefreshToken = await bcrypt.hash(refreshToken, salt);
 
       // Обновили refreshToken в базе данных
       await this.accountsRepository.update(account.id, {
-        refreshToken,
+        hashedRefreshToken,
       });
 
-      // Установили токен в куки
-      this.setAccessToken(res, accessToken);
+      // Установили токен куки
+      this.setCookie(
+        res,
+        'refresh_token',
+        refreshToken,
+        'REFRESH_TOKEN_EXPIRATION',
+      );
 
       // Ищем сотрудника по accountId
       const employee = await this.employeesRepository.findByAccountId(
@@ -106,15 +121,10 @@ export class AuthService {
   async logout(req: Request, res: Response): Promise<ISuccess> {
     try {
       // Получаем токен
-      const savedAccessToken = this.getAccessToken(req);
-
-      // Проверяем, что токен не пустой
-      if (!savedAccessToken) {
-        throw new UnauthorizedException('Токен отсутствует');
-      }
+      const accessToken = await this.getAccessToken(req);
 
       // Декодируем токен без проверки срока действия
-      const decoded = this.jwtService.decode(savedAccessToken);
+      const decoded = this.jwtService.decode(accessToken);
 
       // Проверяем результат декодирования
       if (!decoded) {
@@ -144,11 +154,12 @@ export class AuthService {
       }
 
       // Удаляем токен из куки
-      this.clearCookies(res);
+      this.clearCookies(res, 'access_token');
+      this.clearCookies(res, 'refresh_token');
 
       // Очищаем refreshToken в базе данных
       await this.accountsRepository.update(accountId, {
-        refreshToken: null,
+        hashedRefreshToken: null,
       });
 
       return {
@@ -156,7 +167,10 @@ export class AuthService {
       };
     } catch {
       // Всегда удаляем куки при любой ошибке — пользователь должен быть разлогинен
-      this.clearCookies(res);
+      this.clearCookies(res, 'access_token');
+      this.clearCookies(res, 'refresh_token');
+
+      await this.invalidateRefreshToken(req);
 
       throw new InternalServerErrorException(
         'Ошибка при выходе сотрудника из системы',
@@ -164,137 +178,189 @@ export class AuthService {
     }
   }
 
-  async validateAccessToken(req: Request, res: Response): Promise<ISuccess> {
-    let accountId: string | undefined;
-
+  async checkAccessToken(req: Request, res: Response): Promise<ISuccess> {
     try {
-      const savedAccessToken = this.getAccessToken(req);
-
-      // Проверяем, что токен не пустой
-      if (!savedAccessToken) {
-        throw new UnauthorizedException('Токен отсутствует');
-      }
-
-      // Декодируем токен без проверки срока действия
-      const decoded = this.jwtService.decode(savedAccessToken);
-
-      // Проверяем результат декодирования
-      if (!decoded) {
-        throw new UnauthorizedException('Ошибка декодирования токена');
-      }
-
-      accountId = decoded.sub;
-
-      if (!accountId) {
-        throw new UnauthorizedException('В токене отсутствует accountId');
-      }
-
-      // Проверяем валидность токена с учетом срока действия
-      const accessDecoded = this.jwtService.verify(savedAccessToken, {
-        secret: this.configService.get('ACCESS_TOKEN_SECRET'),
-      });
-
-      if (!accessDecoded) {
-        throw new UnauthorizedException('Access token истек');
-      }
-
-      return {
-        message: 'Access token проверен',
-      };
+      // Сначала пробуем проверить access token
+      return await this.validateAccessToken(req);
     } catch (error) {
-      if (error instanceof TokenExpiredError) {
-        // Находим сотрудника в базе
-        const employee =
-          await this.employeesRepository.findByAccountId(accountId);
+      try {
+        // Если access token истёк — пробуем обновить
+        return await this.refreshAccessToken(req, res);
+      } catch (error) {
+        // При ошибке обновления токена обнуляем refreshToken в базе
+        await this.invalidateRefreshToken(req);
+        throw new UnauthorizedException('Требуется авторизация');
+      }
+    }
+  }
 
-        if (!employee) {
-          throw new UnauthorizedException('Сотрудник не найден');
-        }
+  private async validateAccessToken(req: Request): Promise<ISuccess> {
+    const accessToken = await this.getAccessToken(req);
 
-        const dbRefreshToken = employee.account.refreshToken;
+    // Проверяем токен (подпись и срок действия), возвращаем обьект payload
+    const decoded = this.jwtService.verify<IJwtPayload>(accessToken, {
+      secret: this.configService.get('ACCESS_TOKEN_SECRET'),
+    });
 
-        if (!dbRefreshToken) {
-          throw new UnauthorizedException('Refresh token не найден');
-        }
+    const accountId = decoded.sub;
 
-        try {
-          // Проверяем срок жизни refreshToken
-          const refreshDecoded = this.jwtService.verify(dbRefreshToken, {
-            secret: this.configService.get('REFRESH_TOKEN_SECRET'),
-          });
+    if (!accountId) {
+      throw new UnauthorizedException(
+        'Обязательное поле sub в payload JWT-токена отсутствует или пусто',
+      );
+    }
 
-          if (!refreshDecoded) {
-            throw new UnauthorizedException('Refresh token просрочен');
-          }
-        } catch {
-          // Удаляем токен из куки
-          this.clearCookies(res);
+    // Ищем сотрудника по accountId
+    const employee = await this.employeesRepository.findByAccountId(accountId);
 
-          // Очищаем refreshToken в базе данных
-          await this.accountsRepository.update(accountId, {
-            refreshToken: null,
-          });
+    if (!employee) {
+      throw new NotFoundException('Сотрудник не найден');
+    }
 
-          throw new UnauthorizedException('Refresh token просрочен');
-        }
+    return {
+      message: 'Access token проверен успешно',
+    };
+  }
 
-        // Генерируем новый access token
-        const accessToken = await this.jwtService.signAsync(
-          { sub: employee.account.id, login: employee.account.login },
-          {
-            secret: this.configService.get('ACCESS_TOKEN_SECRET'),
-            expiresIn: parseInt(
-              this.configService.get('ACCESS_TOKEN_EXPIRATION'),
-              10,
-            ),
-          },
+  private async getAccessToken(req: Request): Promise<string> {
+    const accessToken = req.cookies.access_token;
+
+    if (!accessToken || accessToken.trim() === '') {
+      throw new UnauthorizedException('Access token отсутствует');
+    }
+
+    return accessToken;
+  }
+
+  private async refreshAccessToken(
+    req: Request,
+    res: Response,
+  ): Promise<ISuccess> {
+    try {
+      const refreshToken = req.cookies.refresh_token;
+
+      if (!refreshToken || refreshToken.trim() === '') {
+        throw new UnauthorizedException('Refresh token отсутствует');
+      }
+
+      // Получаем все аккаунты с установленным hashedRefreshToken
+      const accounts =
+        await this.accountsRepository.findAllByHashedRefreshToken();
+
+      let account = null;
+
+      // Проходим по всем аккаунтам и проверяем токен
+      for (const acc of accounts) {
+        const isValid = await bcrypt.compare(
+          refreshToken,
+          acc.hashedRefreshToken,
         );
 
-        // Установили токен в куки
-        this.setAccessToken(res, accessToken);
-
-        return {
-          message: 'Access token обновлен',
-        };
+        if (isValid) {
+          account = acc;
+          break;
+        }
       }
 
-      // Удаляем токен из куки
-      this.clearCookies(res);
+      if (!account) {
+        throw new UnauthorizedException('Неверный refresh token');
+      }
 
-      throw new UnauthorizedException('Требуется повторная авторизация');
+      // Генерируем новый accessToken
+      const newAccessToken = await this.generateToken({
+        payload: { sub: account.id },
+        secretKey: 'ACCESS_TOKEN_SECRET',
+        expiresInKey: 'ACCESS_TOKEN_EXPIRATION',
+      });
+
+      // Устанавливаем accessToken в куки
+      this.setCookie(
+        res,
+        'access_token',
+        newAccessToken,
+        'ACCESS_TOKEN_EXPIRATION',
+      );
+
+      return {
+        message: 'Access token успешно обновлен',
+      };
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        // Пробрасываем ошибку дальше без изменений
+        throw error;
+      }
+
+      // Для любых других ошибок или неожиданных исключений
+      throw new UnauthorizedException('Ошибка при обновлении токена');
     }
   }
 
-  private getAccessToken(req: Request): string {
-    const savedAccessToken = req.cookies.access_token;
+  async invalidateRefreshToken(req: Request): Promise<void> {
+    const refreshToken = req.cookies.refresh_token;
+    if (!refreshToken) return;
 
-    if (!savedAccessToken) {
-      throw new UnauthorizedException('Access token не найден в cookies');
+    const accounts =
+      await this.accountsRepository.findAllByHashedRefreshToken();
+
+    for (const acc of accounts) {
+      const isValid = await bcrypt.compare(
+        refreshToken,
+        acc.hashedRefreshToken,
+      );
+
+      if (isValid) {
+        await this.accountsRepository.update(acc.id, {
+          hashedRefreshToken: null,
+        });
+
+        break;
+      }
     }
-
-    return savedAccessToken;
   }
 
-  private setAccessToken(res: Response, accessToken: string): void {
-    const expirationSeconds = parseInt(
-      this.configService.get('ACCESS_TOKEN_EXPIRATION'),
+  private async generateToken(
+    options: ITokenOptions<IJwtPayload>,
+  ): Promise<string> {
+    const secret = this.configService.get(options.secretKey);
+
+    const expiresIn = parseInt(
+      this.configService.get(options.expiresInKey),
       10,
     );
 
-    // конвертируем секунды в миллисекунды
-    const maxAgeInMs = expirationSeconds * 1000;
+    if (!secret) {
+      throw new Error(`Secret not found: ${options.secretKey}`);
+    }
 
-    res.cookie('access_token', accessToken, {
+    if (isNaN(expiresIn)) {
+      throw new Error(`Invalid expiresIn: ${options.expiresInKey}`);
+    }
+
+    return this.jwtService.signAsync(options.payload, { secret, expiresIn });
+  }
+
+  private setCookie(
+    res: Response,
+    name: string,
+    value: string,
+    expirationConfigKey: string,
+  ): void {
+    const expirationSeconds = parseInt(
+      this.configService.get(expirationConfigKey),
+      10,
+    );
+
+    res.cookie(name, value, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-      maxAge: maxAgeInMs, // срок жизни куки в миллисекундах
+      maxAge: expirationSeconds * 1000, // конвертируем секунды в миллисекунды
       path: '/',
     });
   }
 
-  private clearCookies(res: Response): void {
-    res.cookie('access_token', '', {
+  private clearCookies(res: Response, cookieName: string): void {
+    res.cookie(cookieName, '', {
       httpOnly: true,
       expires: new Date(0),
     });

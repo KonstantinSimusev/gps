@@ -1,9 +1,10 @@
-import { Body, Controller, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 
 import { Response, Request } from 'express';
 
 import { AuthDTO } from './dto/auth.dto';
 import { AuthService } from './auth.service';
+import { AuthGuard } from './guards/auth.guard';
 
 import { IEmployee, ISuccess } from '../../shared/interfaces/api.interface';
 
@@ -28,10 +29,11 @@ export class AuthController {
   }
 
   @Post('token')
+  @UseGuards(AuthGuard)
   async checkAccessToken(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<ISuccess> {
-    return this.authService.validateAccessToken(req, res);
+    return this.authService.checkAccessToken(req, res);
   }
 }
