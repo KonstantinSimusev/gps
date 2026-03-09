@@ -2,11 +2,7 @@ import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { plainToInstance } from 'class-transformer';
 
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
 import { Account } from './entities/account.entity';
 
@@ -39,10 +35,6 @@ export class AccountsService {
 
       // Сохраняем в базу данных
       const savedAccount = await this.accountsRepository.save(entityAccount);
-
-      if (!savedAccount.id) {
-        throw new NotFoundException('Аккаунт не сохранен');
-      }
 
       return {
         account: savedAccount,

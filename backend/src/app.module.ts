@@ -5,9 +5,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from '@nestjs/config';
 
 import { DatabaseModule } from './database/database.module';
-
-import { EmployeesModule } from './modules/employees/employees.module';
-import { AuthModule } from './modules/auth/auth.module';
+import { GlobalAuthModule } from './global/global-auth.module';
 
 @Module({
   imports: [
@@ -15,21 +13,21 @@ import { AuthModule } from './modules/auth/auth.module';
       isGlobal: true,
     }),
     DatabaseModule,
-    AuthModule,
-    EmployeesModule,
-    // Первый статический модуль
-    ServeStaticModule.forRoot({
-      rootPath: path.join(__dirname, '..', 'dist', 'assets'),
-    }),
-    // Второй статический модуль с особыми настройками
-    ServeStaticModule.forRoot({
-      rootPath: path.join(__dirname, 'public'),
-      serveStaticOptions: {
-        index: false,
+    GlobalAuthModule,
+    ServeStaticModule.forRoot(
+      {
+        rootPath: path.join(__dirname, '..', 'dist', 'assets'),
       },
-    }),
+      {
+        rootPath: path.join(__dirname, 'public'),
+        serveStaticOptions: {
+          index: false,
+        },
+      },
+    ),
   ],
   controllers: [],
   providers: [],
+  exports: [],
 })
 export class AppModule {}

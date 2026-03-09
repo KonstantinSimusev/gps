@@ -20,14 +20,6 @@ export class AuthController {
     return this.authService.login(dto.login, dto.password, res);
   }
 
-  @Post('logout')
-  async logout(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<ISuccess> {
-    return this.authService.logout(req, res);
-  }
-
   @Post('token')
   @UseGuards(AuthGuard)
   async checkAccessToken(
@@ -35,5 +27,14 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<ISuccess> {
     return this.authService.checkAccessToken(req, res);
+  }
+
+  @Post('logout')
+  @UseGuards(AuthGuard)
+  async logout(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<ISuccess> {
+    return this.authService.logout(req, res);
   }
 }

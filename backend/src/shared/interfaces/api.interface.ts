@@ -1,3 +1,12 @@
+export interface IList<T> {
+  total: number;
+  items: T[];
+}
+
+export interface ISuccess {
+  message: string;
+}
+
 export interface ITokenOptions<T> {
   payload: T;
   secretKey: string; // ключ в конфиге для секрета
@@ -8,11 +17,6 @@ export interface IJwtPayload {
   sub: string;
   iat?: number;
   exp?: number;
-}
-
-export interface IList<T> {
-  total: number;
-  items: T[];
 }
 
 export interface IEmployee {
@@ -108,9 +112,3 @@ export interface IAccount {
 //   shiftProfession: string;
 //   workHours: number;
 // }
-
-export interface ISuccess {
-  message?: string;
-  accessToken?: string;
-  // user?: IPerson;
-}

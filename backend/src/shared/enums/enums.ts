@@ -1,25 +1,3 @@
-export enum ERole {
-  MANAGER = 'MANAGER',
-  MASTER = 'MASTER',
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-}
-
-export enum EProfession {
-  MANAGER = 'Управленец',
-  CHIEF = 'Начальник участка',
-  MASTER = 'Мастер участка',
-  ENGINEER_AMPP = 'Ведущий инженер АМПП',
-  OPERATOR = 'Оператор ПУ',
-  BRIGADIR_OSP = 'Бригадир ОСП',
-  BRIGADIR_UOP = 'Бригадир УОП',
-  PACKER = 'Укладчик-упаковщик',
-  PACKER_LUM = 'Укладчик-упаковщик ЛУМ',
-  STACKER = 'Штабелировщик металла',
-  DRIVER = 'Водитель погрузчика',
-  CUTTER = 'Резчик холодного металла',
-}
-
 export enum EUnit {
   // ЛПЦ-5
   LPC_4 = 'ЛПЦ-4',

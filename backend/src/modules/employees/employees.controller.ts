@@ -1,10 +1,9 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 
-import { Response, Request } from 'express';
-
 import { CreateEmployeeDTO } from './dto/create-employee.dto';
 import { CreateEmployeesDTO } from './dto/create-employees.dto';
 
+import { AuthGuard } from '../auth/guards/auth.guard';
 import { EmployeesService } from './employees.service';
 
 import {
@@ -12,14 +11,14 @@ import {
   IEmployee,
   IAccountAPI,
 } from '../../shared/interfaces/api.interface';
-import { AuthGuard } from '../auth/guards/auth.guard';
+
 
 @Controller('employees')
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
   @Post()
-  // @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   async create(@Body() dto: CreateEmployeeDTO): Promise<IAccountAPI> {
     return this.employeesService.create(dto);
   }

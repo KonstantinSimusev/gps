@@ -36,7 +36,11 @@ export class AccountsRepository {
     return this.accountsRepository.find({
       where: {
         hashedRefreshToken: Not(IsNull()),
+        employee: {
+          isActive: true,
+        },
       },
+      relations: ['employee'],
     });
   }
 }

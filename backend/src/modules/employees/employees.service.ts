@@ -33,55 +33,47 @@ export class EmployeesService {
   ) {}
 
   async create(dto: CreateEmployeeDTO): Promise<IAccountAPI> {
-    try {
-      const position = await this.positionsRepository.findByPosition(
-        dto.positionCode,
-      );
+    const position = await this.positionsRepository.findByPosition(
+      dto.positionCode,
+    );
 
-      if (!position) {
-        throw new NotFoundException(
-          `Штатная позиция ${dto.positionCode} не найдена`,
-        );
-      }
-
-      const team = await this.teamsRepository.findByTeam(dto.teamNumber);
-
-      if (!team) {
-        throw new NotFoundException(
-          `Номер бригады ${dto.teamNumber} не найден`,
-        );
-      }
-
-      const { account, initialPassword } =
-        await this.accountsService.createAсcount(
-          dto.lastName,
-          dto.firstName,
-          dto.patronymic,
-        );
-
-      // Преобразовываем простой объект dto в сущность
-      const employee = plainToInstance(Employee, dto);
-
-      // Связываем с другими сущностями
-      employee.position = position;
-      employee.team = team;
-      employee.account = account;
-
-      // Сохраняем в базу данных
-      await this.employeesRepository.save(employee);
-
-      return {
-        lastName: employee.lastName,
-        firstName: employee.firstName,
-        patronymic: employee.patronymic,
-        login: account.login,
-        password: initialPassword,
-      };
-    } catch (error) {
-      throw new InternalServerErrorException(
-        `Не удалось создать сотрудника: ${error.message}`,
+    if (!position) {
+      throw new NotFoundException(
+        `Штатная позиция ${dto.positionCode} не найдена`,
       );
     }
+
+    const team = await this.teamsRepository.findByTeam(dto.teamNumber);
+
+    if (!team) {
+      throw new NotFoundException(`Номер бригады ${dto.teamNumber} не найден`);
+    }
+
+    const { account, initialPassword } =
+      await this.accountsService.createAсcount(
+        dto.lastName,
+        dto.firstName,
+        dto.patronymic,
+      );
+
+    // Преобразовываем простой объект dto в сущность
+    const employee = plainToInstance(Employee, dto);
+
+    // Связываем с другими сущностями
+    employee.position = position;
+    employee.team = team;
+    employee.account = account;
+
+    // Сохраняем в базу данных
+    await this.employeesRepository.save(employee);
+
+    return {
+      lastName: employee.lastName,
+      firstName: employee.firstName,
+      patronymic: employee.patronymic,
+      login: account.login,
+      password: initialPassword,
+    };
   }
 
   async createMany(dtos: CreateEmployeesDTO): Promise<IList<IAccountAPI>> {
