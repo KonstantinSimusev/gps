@@ -18,7 +18,7 @@ export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
   @Post()
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   async create(@Body() dto: CreateEmployeeDTO): Promise<IAccountAPI> {
     return this.employeesService.create(dto);
   }

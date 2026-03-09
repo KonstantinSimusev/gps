@@ -6,11 +6,13 @@ import {
   ManyToOne,
   OneToOne,
   Unique,
+  OneToMany,
 } from 'typeorm';
 
 import { Position } from '../../positions/entities/position.entity';
 import { Team } from '../../teams/entities/team.entity';
 import { Account } from '../../account/entities/account.entity';
+import { EmployeeRole } from '../../employee-roles/entities/employee-role.entity';
 
 @Entity({
   schema: 'gps',
@@ -96,4 +98,8 @@ export class Employee {
   @OneToOne(() => Account, (account) => account.employee)
   @JoinColumn({ name: 'account_id' })
   account: Account;
+
+  // Связь: один сотрудник — много ролей сотрудника
+  @OneToMany(() => EmployeeRole, (employeeRole) => employeeRole.employee)
+  employeeRoles: EmployeeRole[];
 }

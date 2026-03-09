@@ -9,6 +9,7 @@ import {
 } from './types';
 
 export const ROLE_TO_PAGE: { [key: string]: string } = {
+  SECTION_HEAD: '/timesheet',
   SECTION_MASTER: '/timesheet',
   PACKER: '/timesheet',
   DIRECTOR: '/dashboard',
