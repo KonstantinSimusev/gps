@@ -1,46 +1,3 @@
-INSERT INTO gps.positions (position_code, workshop_id)
-SELECT
-  pos_code,
-  (SELECT id FROM gps.workshops WHERE workshop_code = ws_code)
-FROM (
-  VALUES
-    ('10000001', 'ЛПЦ-4'),
-    ('10000002', 'ЛПЦ-5'),
-    ('10000003', 'ЛПЦ-7'),
-    ('10000004', 'ЛПЦ-8'),
-    ('10000005', 'ЛПЦ-10'),
-    ('10000006', 'ЛПЦ-11'),
-    ('10000011', 'ЛПЦ-11'),
-    ('10000007', 'ПМП (ЮБ)'),
-    ('10000008', 'ПМП (СБ)'),
-    ('10000009', 'УВС'),
-    ('10000010', 'Управление')
-) pos_code, ws_code;
-
-INSERT INTO gps.positions (position_code, workshop_id)
-VALUES
-    ('10000001', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-4')),
-    ('10000002', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5')),
-    ('10000003', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-7')),
-    ('10000004', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8')),
-    ('10000005', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-10')),
-    ('10000006', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11')),
-    ('10000011', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11')),
-    ('10000007', (SELECT id FROM gps.workshops WHERE workshop_code = 'ПМП (ЮБ)')),
-    ('10000008', (SELECT id FROM gps.workshops WHERE workshop_code = 'ПМП (СБ)')),
-    ('10000009', (SELECT id FROM gps.workshops WHERE workshop_code = 'УВС')),
-    ('10000010', (SELECT id FROM gps.workshops WHERE workshop_code = 'Управление'))
-ON CONFLICT (position_code) DO NOTHING;
-
-DROP TABLE gps.employees; 
-DROP TABLE gps.positions;
-DROP TABLE gps.workshops;
-DROP TABLE gps.professions;
-DROP TABLE gps.grades;
-DROP TABLE gps.schedules;
-DROP TABLE gps.roles;
-DROP TABLE gps.teams;
-
 DROP TYPE IF EXISTS gps.workshop_type;
 DROP TYPE IF EXISTS gps.position_type;
 
@@ -58,9 +15,13 @@ JOIN gps.positions ON employees.position_id = positions.id
 JOIN gps.workshops ON positions.workshop_id = workshops.id
 WHERE workshops.workshop_code = 'ЛПЦ-11';
 
-
 SELECT
-    p.name AS профессия,
+    CASE
+        WHEN p.name = 'Бригадир на отделке, сортировке, приёмке, сдаче, пакетировке и упаковке металла и готовой продукции'
+        THEN 'Бригадир на отделке'
+        ELSE p.name
+    END AS профессия,
+    g.grade_code AS разряд,
     COUNT(CASE WHEN t.team_number = '1' THEN e.id END) AS бр1,
     COUNT(CASE WHEN t.team_number = '2' THEN e.id END) AS бр2,
     COUNT(CASE WHEN t.team_number = '3' THEN e.id END) AS бр3,
@@ -70,7 +31,54 @@ FROM gps.employees e
 JOIN gps.teams t ON e.team_id = t.id
 JOIN gps.positions pos ON e.position_id = pos.id
 JOIN gps.professions p ON pos.profession_id = p.id
+JOIN gps.grades g ON pos.grade_id = g.id
 WHERE t.team_number <> '5'
   AND t.team_number IN ('1', '2', '3', '4')
-GROUP BY p.name
-ORDER BY p.name;
+GROUP BY
+    CASE
+        WHEN p.name = 'Бригадир на отделке, сортировке, приёмке, сдаче, пакетировке и упаковке металла и готовой продукции'
+        THEN 'Бригадир на отделке'
+        ELSE p.name
+    END,
+    g.grade_code
+ORDER BY
+    CAST(g.grade_code AS INTEGER) DESC,
+    CASE
+        WHEN p.name = 'Бригадир на отделке, сортировке, приёмке, сдаче, пакетировке и упаковке металла и готовой продукции'
+        THEN 'Бригадир на отделке'
+        ELSE p.name
+    END ASC;
+
+
+
+-- Вставляем роль в таблицу
+INSERT INTO gps.employee_roles (role_id, employee_id)
+VALUES 
+    (
+    'e13d87cc-717a-4f1a-affb-441f6cbbb102', -- role_id роли PACKER
+    '3afeac57-a89a-4315-8d22-48faa4234140' -- employee_id Константина Симусева
+    );
+
+INSERT INTO gps.employee_roles (role_id, employee_id)
+VALUES 
+    (
+        (SELECT id FROM gps.roles WHERE name = 'SECTION_MASTER'), -- получаем role_id через подзапрос
+        (SELECT id FROM gps.employees WHERE first_name = 'Константин' AND last_name = 'Симусев') -- получаем employee_id через подзапрос
+    );
+
+UPDATE gps.employee_roles
+SET role_id = (SELECT id FROM gps.roles WHERE name = 'SECTION_MASTER')
+WHERE role_id = (SELECT id FROM gps.roles WHERE name = 'PACKER')
+  AND employee_id = (
+    SELECT id
+    FROM gps.employees
+    WHERE first_name = 'Константин' AND last_name = 'Симусев'
+  );
+
+DELETE FROM gps.employee_roles
+WHERE role_id = (SELECT id FROM gps.roles WHERE name = 'SECTION_MASTER')
+  AND employee_id = (
+    SELECT id
+    FROM gps.employees
+    WHERE first_name = 'Константин' AND last_name = 'Симусев'
+  );

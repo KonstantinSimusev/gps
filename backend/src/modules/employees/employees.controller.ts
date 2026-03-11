@@ -30,19 +30,6 @@ export class EmployeesController {
     return this.employeesService.createMany(dtos);
   }
 
-  @Get()
-  async getByWorkshopAndTeam(): Promise<IList<IEmployee>> {
-    return this.employeesService.getByWorkshopAndTeam();
-  }
-
-  // @Get('professions')
-  // async getProfessions(
-  //   @Req() req: Request,
-  //   @Res({ passthrough: true }) res: Response,
-  // ): Promise<IList<IProfession>> {
-  //   return this.userService.getProfessions(req, res);
-  // }
-
   // @Get(':id')
   // async getUser(@Param('id') id: string): Promise<IUser> {
   //   return this.userService.getUser(id);

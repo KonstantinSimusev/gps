@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useDispatch, useSelector } from '../../../services/store';
 
-import { logoutUser } from '../../../services/slices/auth/actions';
+import { logoutEmployee } from '../../../services/slices/auth/actions';
 import { selectIsLoading } from '../../../services/slices/auth/slice';
 import { resetShift } from '../../../services/slices/shift/slice';
 
@@ -25,7 +25,7 @@ export const LogoutForm = () => {
   const handleClickLogout = async () => {
     try {
       // Диспачим действие выхода
-      await dispatch(logoutUser());
+      await dispatch(logoutEmployee());
 
       // Отчищаем смены
       dispatch(resetShift());

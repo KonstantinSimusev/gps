@@ -15,10 +15,10 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 import { Account } from '../account/entities/account.entity';
-import { Employee } from '../employees/entities/employee.entity';
 
 import { AccountsRepository } from '../account/accounts.repository';
 import { EmployeesRepository } from '../employees/employees.repository';
+import { RolesRepository } from '../roles/roles.repository';
 
 import {
   ITokenOptions,
@@ -26,6 +26,7 @@ import {
   ISuccess,
   IJwtPayload,
 } from '../../shared/interfaces/api.interface';
+import { EmployeeRolesRepository } from '../employee-roles/employee-roles.repository';
 
 @Injectable()
 export class AuthService {
@@ -34,6 +35,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly accountsRepository: AccountsRepository,
     private readonly employeesRepository: EmployeesRepository,
+    private readonly employeeRolesRepository: EmployeeRolesRepository,
+    private readonly rolesRepository: RolesRepository,
   ) {}
 
   // === ПУБЛИЧНЫЕ МЕТОДЫ ===
@@ -90,16 +93,46 @@ export class AuthService {
       'REFRESH_TOKEN_EXPIRATION',
     );
 
-    // Ищем сотрудника по accountId
-    const employee = await this.employeesRepository.findByAccountId(account.id);
-
+    const employee = await this.employeesRepository.findByAccount(account.id);
+console.log(employee)
     if (!employee) {
       throw new NotFoundException('Сотрудник не найден');
     }
 
-    const apiEmployee = this.toApiEmployee(employee);
+    const employeeRole =
+      await this.employeesRepository.findEmployeeRoleByAccount(account.id);
+console.log(employeeRole)
+    if (employeeRole) {
+      console.log({
+        id: employee.id,
+        role: employeeRole.role,
+        isActive: employeeRole.isActive,
+      });
 
-    return apiEmployee;
+      return {
+        id: employee.id,
+        role: employeeRole.role,
+        isActive: employeeRole.isActive,
+      };
+    }
+
+    const role = await this.employeesRepository.findRoleByAccount(account.id);
+console.log(role)
+    if (!role) {
+      throw new UnauthorizedException('Роль отсутствует');
+    }
+
+    console.log({
+      id: employee.id,
+      role: role.role,
+      isActive: true,
+    });
+
+    return {
+      id: employee.id,
+      role: role.role,
+      isActive: true,
+    };
   }
 
   async checkAccessToken(req: Request, res: Response): Promise<ISuccess> {
@@ -203,7 +236,7 @@ export class AuthService {
     }
 
     // Ищем сотрудника по accountId
-    const employee = await this.employeesRepository.findByAccountId(accountId);
+    const employee = await this.employeesRepository.findByAccount(accountId);
 
     if (!employee) {
       throw new NotFoundException('Сотрудник не найден');
@@ -327,9 +360,9 @@ export class AuthService {
 
   // === ПРИВАТНЫЕ МЕТОДЫ: РАБОТА С ДАННЫМИ ===
 
-  private toApiEmployee(employee: Employee): IEmployee {
-    const { account, ...apiEmployee } = employee;
+  // private toApiEmployee(employee: Employee): IEmployee {
+  //   const { account, ...apiEmployee } = employee;
 
-    return apiEmployee;
-  }
+  //   return apiEmployee;
+  // }
 }

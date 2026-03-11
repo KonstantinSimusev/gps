@@ -2,20 +2,20 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import {
   checkAccessTokenApi,
-  loginUserApi,
-  logoutUserApi,
+  loginEmployeeApi,
+  logoutEmployeeApi,
 } from '../../../utils/api/auth.api';
 
 import { IEmployee, ILoginData, ISuccess } from '../../../utils/api.interface';
 
 import { delay } from '../../../utils/utils';
 
-export const loginUser = createAsyncThunk(
+export const loginEmployee = createAsyncThunk(
   'auth/login',
   async (data: ILoginData): Promise<IEmployee> => {
     try {
       // Вызываем API функцию
-      const response = await loginUserApi(data);
+      const response = await loginEmployeeApi(data);
 
       // Добавляем задержку кода
       await delay();
@@ -26,29 +26,6 @@ export const loginUser = createAsyncThunk(
       await delay();
 
       throw new Error('Неверный логин или пароль');
-    }
-  },
-);
-
-export const logoutUser = createAsyncThunk(
-  'auth/logout',
-  async (): Promise<ISuccess> => {
-    try {
-      const response = await logoutUserApi();
-
-      // Добавляем задержку кода
-      await delay();
-
-      if (!response) {
-        throw new Error();
-      }
-
-      return response;
-    } catch (error) {
-      // Добавляем задержку кода
-      await delay();
-
-      throw error;
     }
   },
 );
@@ -72,6 +49,29 @@ export const checkAccessToken = createAsyncThunk(
       // await delay();
 
       // Пойдет в checkAccessToken.rejected в authSlice
+      throw error;
+    }
+  },
+);
+
+export const logoutEmployee = createAsyncThunk(
+  'auth/logout',
+  async (): Promise<ISuccess> => {
+    try {
+      const response = await logoutEmployeeApi();
+
+      // Добавляем задержку кода
+      await delay();
+
+      if (!response) {
+        throw new Error();
+      }
+
+      return response;
+    } catch (error) {
+      // Добавляем задержку кода
+      await delay();
+
       throw error;
     }
   },

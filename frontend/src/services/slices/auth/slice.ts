@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { checkAccessToken, loginUser, logoutUser } from './actions';
+import { checkAccessToken, loginEmployee, logoutEmployee } from './actions';
 
 import { IEmployee } from '../../../utils/api.interface';
 
@@ -38,12 +38,12 @@ export const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // Обработчик для loginUser
-      .addCase(loginUser.pending, (state) => {
+      .addCase(loginEmployee.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
       .addCase(
-        loginUser.fulfilled,
+        loginEmployee.fulfilled,
         (state, action: PayloadAction<IEmployee>) => {
           state.employee = action.payload;
           state.isAuthenticated = true;
@@ -51,24 +51,24 @@ export const authSlice = createSlice({
           state.error = null;
         },
       )
-      .addCase(loginUser.rejected, (state, action) => {
+      .addCase(loginEmployee.rejected, (state, action) => {
         state.employee = null;
         state.isAuthenticated = false;
         state.isLoading = false;
         state.error = action.error.message ?? 'Неверный логин или пароль';
       })
       // Обработчик для logoutUser
-      .addCase(logoutUser.pending, (state) => {
+      .addCase(logoutEmployee.pending, (state) => {
         state.isLoading = true;
         state.error = null; // Очищаем ошибку при начале выхода
       })
-      .addCase(logoutUser.fulfilled, (state) => {
+      .addCase(logoutEmployee.fulfilled, (state) => {
         state.employee = null;
         state.isAuthenticated = false;
         state.isLoading = false;
         state.error = null;
       })
-      .addCase(logoutUser.rejected, (state, action) => {
+      .addCase(logoutEmployee.rejected, (state, action) => {
         state.isAuthenticated = false;
         state.isLoading = false;
         state.error = action.error.message ?? 'Ошибка при выходе из системы';

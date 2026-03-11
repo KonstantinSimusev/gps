@@ -9,13 +9,19 @@ import {
 } from './types';
 
 export const ROLE_TO_PAGE: { [key: string]: string } = {
-  SECTION_HEAD: '/timesheet',
+  // SECTION_HEAD: '/timesheet',
   SECTION_MASTER: '/timesheet',
-  PACKER: '/timesheet',
+  // PACKER: '/timesheet',
   DIRECTOR: '/dashboard',
   PRODUCTION_MANAGER: '/production-overview',
   SENIOR_MANAGER: '/management',
   DEFAULT: '/home',
+};
+
+export const ROLE: { [key: string]: string } = {
+  SECTION_HEAD: 'SECTION_HEAD',
+  SECTION_MASTER: 'SECTION_MASTER',
+  PACKER: 'PACKER',
 };
 
 export const formatDate = (date: Date) => {

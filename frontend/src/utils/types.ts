@@ -1,4 +1,6 @@
-export type TRole = 'MANAGER' | 'MASTER' | 'ADMIN' | 'USER';
+export type TRole = 'ADMIN' | 'SECTION_MASTER' | 'PACKER' | 'MASTER';
+
+export const SECTION_MASTER_ROLE: TRole = 'SECTION_MASTER';
 
 // export type TWorker =
 //   | 'Упаковщик'

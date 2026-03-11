@@ -27,7 +27,6 @@ export class AccountsRepository {
           isActive: true,
         },
       },
-      relations: ['employee'],
     });
   }
 
@@ -40,7 +39,6 @@ export class AccountsRepository {
           isActive: true,
         },
       },
-      relations: ['employee'],
     });
   }
 }

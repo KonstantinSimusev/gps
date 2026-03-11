@@ -61,7 +61,8 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
   -- Создание таблицы schedules
   CREATE TABLE IF NOT EXISTS gps.schedules (
     id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
-    schedule_code VARCHAR(20) NOT NULL UNIQUE
+    schedule_code VARCHAR(20) NOT NULL UNIQUE,
+    duration TIME NOT NULL
   );
 
   -- Создание таблицы roles
@@ -114,7 +115,7 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
   -- Создание таблицы employee_roles
   CREATE TABLE IF NOT EXISTS gps.employee_roles (
     id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
-    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    is_active BOOLEAN NOT NULL DEFAULT FALSE,
 
     role_id UUID NOT NULL,
     employee_id UUID NOT NULL,
@@ -184,6 +185,7 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     ('Газорезчик'),
     ('Машинист крана'),
     ('Ведущий инженер по автоматизации и механизации производственных процессов'),
+    ('Оператор поста управления (старший)'),
     ('Оператор поста управления'),
     ('Электромонтер по ремонту и обслуживанию электрооборудования'),
     ('Бригадир по перемещению сырья, полуфабрикатов и готовой продукции в процессе производства'),
@@ -210,12 +212,12 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     ('3');
 
   -- Вставляем графики в таблицу
-  INSERT INTO gps.schedules (schedule_code)
+  INSERT INTO gps.schedules (schedule_code, duration)
   VALUES
-    ('5-Б-1'),
-    ('2-А'),
-    ('9'),
-    ('2');
+    ('5-Б-1', '08:15'),
+    ('2-А', '11:30'),
+    ('9', '11:00'),
+    ('2', '12:00');
 
   -- Вставляем роли в таблицу
   INSERT INTO gps.roles (name)
@@ -241,10 +243,10 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     ('FIRST_ENGINEER'), -- Инженер‑технолог первой категории
     ('SECTION_HEAD'), -- Начальник участка (в промышленности)
     ('SECTION_MASTER'), -- Мастер участка
-    ('BRIGADE_LEADER'), -- Бригадир на участках основного производства
-    ('FINISHING_LEADER'), -- Бригадир на отделке, сортировке, приёмке, сдаче, пакетировке и упаковке металла и готовой продукции
+    ('FOREMAN_UOP'), -- Бригадир на участках основного производства
+    ('FOREMAN_OGP'), -- Бригадир на отделке, сортировке, приёмке, сдаче, пакетировке и упаковке металла и готовой продукции
     ('PACKER'), -- Укладчик‑упаковщик
-    ('LUM_PACKER'), -- Укладчик‑упаковщик
+    ('PACKER_LUM'), -- Укладчик‑упаковщик ЛУМ
     ('REPAIR_MECHANIC'), -- Слесарь‑ремонтник
     ('METAL_STACKER'), -- Штабелировщик металла
     ('STAMPER'), -- Штамповщик
@@ -254,6 +256,7 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     ('FLAME_CUTTER'), -- Газорезчик
     ('CRANE_OPERATOR'), -- Машинист крана
     ('AUTOMATION_ENGINEER'), -- Ведущий инженер по автоматизации и механизации производственных процессов
+    ('SENIOR_CONTROL_OPERATOR'), -- Оператор поста управления (старший)
     ('CONTROL_OPERATOR'), -- Оператор поста управления
     ('ELECTRICAL_TECHNICIAN'), -- Электромонтёр по ремонту и обслуживанию электрооборудования
     ('MOVEMENT_LEADER'), -- Бригадир по перемещению сырья, полуфабрикатов и готовой продукции в процессе производства
@@ -298,21 +301,21 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
       (SELECT id FROM gps.professions WHERE name = 'Бригадир на участках основного производства'),
       (SELECT id FROM gps.grades WHERE grade_code = '5'),
       (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
-      (SELECT id FROM gps.roles WHERE name = 'BRIGADE_LEADER')
+      (SELECT id FROM gps.roles WHERE name = 'FOREMAN_UOP')
     ),
     ('643853',
       (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'),
       (SELECT id FROM gps.professions WHERE name = 'Бригадир на участках основного производства'),
       (SELECT id FROM gps.grades WHERE grade_code = '5'),
       (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
-      (SELECT id FROM gps.roles WHERE name = 'BRIGADE_LEADER')
+      (SELECT id FROM gps.roles WHERE name = 'FOREMAN_UOP')
     ),
     ('643847',
       (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'),
-      (SELECT id FROM gps.professions WHERE name = 'Оператор поста управления'),
+      (SELECT id FROM gps.professions WHERE name = 'Оператор поста управления (старший)'),
       (SELECT id FROM gps.grades WHERE grade_code = '5'),
       (SELECT id FROM gps.schedules WHERE schedule_code = '2'),
-      (SELECT id FROM gps.roles WHERE name = 'CONTROL_OPERATOR')
+      (SELECT id FROM gps.roles WHERE name = 'SENIOR_CONTROL_OPERATOR')
     ),
     ('643848',
       (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'),
@@ -326,14 +329,14 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
       (SELECT id FROM gps.professions WHERE name = 'Бригадир на отделке, сортировке, приёмке, сдаче, пакетировке и упаковке металла и готовой продукции'),
       (SELECT id FROM gps.grades WHERE grade_code = '4'),
       (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
-      (SELECT id FROM gps.roles WHERE name = 'FINISHING_LEADER')
+      (SELECT id FROM gps.roles WHERE name = 'FOREMAN_OGP')
     ),
     ('643984',
       (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'),
       (SELECT id FROM gps.professions WHERE name = 'Бригадир на отделке, сортировке, приёмке, сдаче, пакетировке и упаковке металла и готовой продукции'),
       (SELECT id FROM gps.grades WHERE grade_code = '4'),
       (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
-      (SELECT id FROM gps.roles WHERE name = 'FINISHING_LEADER')
+      (SELECT id FROM gps.roles WHERE name = 'FOREMAN_OGP')
     ),
     ('643854',
       (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'),
@@ -361,7 +364,7 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
       (SELECT id FROM gps.professions WHERE name = 'Укладчик-упаковщик ЛУМ'),
       (SELECT id FROM gps.grades WHERE grade_code = '3'),
       (SELECT id FROM gps.schedules WHERE schedule_code = '2'),
-      (SELECT id FROM gps.roles WHERE name = 'LUM_PACKER')
+      (SELECT id FROM gps.roles WHERE name = 'PACKER_LUM')
     ),
     ('643845',
       (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'),

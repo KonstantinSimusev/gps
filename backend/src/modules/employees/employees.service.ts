@@ -93,65 +93,6 @@ export class EmployeesService {
     }
   }
 
-  async getByWorkshopAndTeam() // dto: SearchEmployeeDTO,
-  // @Req() req: Request,
-  // @Res({ passthrough: true }) res: Response,
-  : Promise<IList<IEmployee>> {
-    try {
-      // await this.authService.validateAccessToken(req, res);
-
-      const workshop = 'ЛПЦ-11';
-      const team = '3';
-
-      const employees = await this.employeesRepository.findByWorkshopAndTeam(
-        workshop,
-        team,
-      );
-
-      return {
-        total: employees.length,
-        items: employees,
-      };
-    } catch (error) {
-      throw new InternalServerErrorException(
-        `Произошла ошибка при получении списка сотрудников: ${error.message}`,
-      );
-    }
-  }
-
-  // async getProfessions(
-  //   req: Request,
-  //   res: Response,
-  // ): Promise<IList<IProfession>> {
-  //   await this.authService.validateAccessToken(req, res);
-
-  //   const LPC11Users = await this.userRepository.findLPC11All();
-  //   const professions = getProfessionCounts(LPC11Users);
-
-  //   return {
-  //     total: professions.length,
-  //     items: professions,
-  //   };
-  // }
-
-  // async getUser(id: string): Promise<IUser> {
-  //   try {
-  //     const user = await this.userRepository.findById(id);
-
-  //     if (!user) {
-  //       throw new NotFoundException('Пользователь не найден');
-  //     }
-
-  //     const apiUser = this.transformUser(user);
-
-  //     return apiUser;
-  //   } catch (error) {
-  //     throw new InternalServerErrorException(
-  //       'Произошла ошибка при получении пользователя',
-  //     );
-  //   }
-  // }
-
   // async update(id: string, dto: UpdateEmployeeDTO): Promise<IEmployee> {
   //   try {
   //     const employee = await this.employeesRepository.findById(id);

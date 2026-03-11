@@ -5,16 +5,8 @@ export interface IList<T> {
 
 export interface IEmployee {
   id: string;
-  lastName: string;
-  firstName: string;
-  patronymic: string;
-  personalNumber: string;
-  birthDay: Date;
-  startDate: Date;
-  endDate: Date | null;
+  role: string;
   isActive: boolean;
-  position: IPosition;
-  team: ITeam;
 }
 
 export interface IPosition {

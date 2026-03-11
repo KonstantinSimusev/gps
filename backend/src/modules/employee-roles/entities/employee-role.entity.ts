@@ -6,7 +6,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 
-import { Role } from '../../roles/entities/roles.entity';
+import { Role } from '../../roles/entities/role.entity';
 import { Employee } from '../../employees/entities/employee.entity';
 
 @Entity({

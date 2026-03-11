@@ -21,58 +21,49 @@ export interface IJwtPayload {
 
 export interface IEmployee {
   id: string;
-  lastName: string;
-  firstName: string;
-  patronymic: string;
-  personalNumber: string;
-  birthDay: Date;
-  startDate: Date;
-  endDate: Date | null;
+  role: string;
   isActive: boolean;
-  position: IPosition;
-  team: ITeam;
-  // account: IAccount;
 }
 
-export interface IPosition {
-  id: string;
-  positionCode: string;
-  workshop: IWorkshop;
-  profession: IProfession;
-  grade: IGrade;
-  schedule: ISchedule;
-  role: IRole;
-}
+// export interface IPosition {
+//   id: string;
+//   positionCode: string;
+//   workshop: IWorkshop;
+//   profession: IProfession;
+//   grade: IGrade;
+//   schedule: ISchedule;
+//   role: IRole;
+// }
 
-export interface IWorkshop {
-  id: string;
-  workshopCode: string;
-}
+// export interface IWorkshop {
+//   id: string;
+//   workshopCode: string;
+// }
 
-export interface IProfession {
-  id: string;
-  name: string;
-}
+// export interface IProfession {
+//   id: string;
+//   name: string;
+// }
 
-export interface IGrade {
-  id: string;
-  gradeCode: string;
-}
+// export interface IGrade {
+//   id: string;
+//   gradeCode: string;
+// }
 
-export interface ISchedule {
-  id: string;
-  scheduleCode: string;
-}
+// export interface ISchedule {
+//   id: string;
+//   scheduleCode: string;
+// }
 
-export interface IRole {
-  id: string;
-  name: string;
-}
+// export interface IRole {
+//   id: string;
+//   name: string;
+// }
 
-export interface ITeam {
-  id: string;
-  teamNumber: string;
-}
+// export interface ITeam {
+//   id: string;
+//   teamNumber: string;
+// }
 
 export interface IAccountAPI {
   lastName: string;

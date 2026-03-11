@@ -9,7 +9,7 @@ import {
   clearError,
 } from '../../../services/slices/auth/slice';
 
-import { loginUser } from '../../../services/slices/auth/actions';
+import { loginEmployee } from '../../../services/slices/auth/actions';
 
 import { LayerContext } from '../../../contexts/layer/layerContext';
 
@@ -106,13 +106,13 @@ export const LoginForm = () => {
     // Если форма валидна, можно отправить данные на сервер
     if (Object.keys(formErrors).length === 0) {
       try {
-        const response = await dispatch(loginUser(formData));
+        const response = await dispatch(loginEmployee(formData));
 
         // Проверяем, было ли действие успешно выполнено
-        if (loginUser.fulfilled.match(response)) {
+        if (loginEmployee.fulfilled.match(response)) {
           const employee = response.payload;
 
-          const targetPage = ROLE_TO_PAGE[employee.position.role.name] || ROLE_TO_PAGE.DEFAULT;
+          const targetPage = ROLE_TO_PAGE[employee.role] || ROLE_TO_PAGE.DEFAULT;
 
           navigate(targetPage);
 

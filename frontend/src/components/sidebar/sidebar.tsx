@@ -9,11 +9,12 @@ import { CloseButton } from '../buttons/close/close';
 import { LayerContext } from '../../contexts/layer/layerContext';
 
 import { useSelector } from '../../services/store';
+
 import {
   selectIsAuthenticated,
   selectEmployee,
 } from '../../services/slices/auth/slice';
-import { type TRole } from '../../utils/types';
+import { SECTION_MASTER_ROLE } from '../../utils/types';
 
 export const Sidebar = () => {
   const {
@@ -27,8 +28,6 @@ export const Sidebar = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const employee = useSelector(selectEmployee);
   const location = useLocation(); // Получаем текущий путь
-
-  const master: TRole = 'MASTER';
 
   const hanldeClick = () => {
     setIsOpenOverlay(false);
@@ -75,7 +74,7 @@ export const Sidebar = () => {
             </li>
           )}
 
-          {isAuthenticated && employee?.position.role.name === master && (
+          {isAuthenticated && employee?.role === SECTION_MASTER_ROLE && (
             <li
               className={clsx(
                 styles.link,
@@ -86,7 +85,7 @@ export const Sidebar = () => {
               <Link to="/timesheet">Табель</Link>
             </li>
           )}
-
+{/*  
           {isAuthenticated &&
             employee?.position.role.name === master &&
             (employee?.team.teamNumber === '1' ||
@@ -135,7 +134,7 @@ export const Sidebar = () => {
                 </li>
               </>
             )}
-
+*/}
           {isAuthenticated && (
             <li className={clsx(styles.link)} onClick={hanldeClickLogout}>
               Выйти

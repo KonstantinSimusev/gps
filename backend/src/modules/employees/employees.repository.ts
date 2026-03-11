@@ -15,62 +15,49 @@ export class EmployeesRepository {
     return this.employeesRepository.save(employee);
   }
 
-  async findByAccountId(id: string): Promise<Employee> {
+  async findByAccount(id: string): Promise<Employee | null> {
     return this.employeesRepository.findOne({
       where: {
         account: { id },
         isActive: true,
       },
-      relations: [
-        'account',
-        'team',
-        'position',
-        'position.workshop',
-        'position.profession',
-        'position.grade',
-        'position.schedule',
-        'position.role',
-      ],
+      select: {
+        id: true,
+      },
     });
   }
 
-  async findByWorkshopAndTeam(
-    workshopCode: string,
-    teamNumber: string,
-  ): Promise<Employee[]> {
-    return this.employeesRepository.find({
-      where: {
-        position: { workshop: { workshopCode } },
-        team: { teamNumber },
-        isActive: true,
-      },
-      relations: [
-        'account',
-        'position',
-        'team',
-        'position.workshop',
-        'position.profession',
-        'position.grade',
-        'position.schedule',
-        'position.role',
-      ],
-      // select: {
-      //   id: true,
-      //   lastName: true,
-      //   firstName: true,
-      //   patronymic: true,
-      //   personalNumber: true,
-      //   position: {
-      //     positionCode: true,
-      //     workshop: {
-      //       workshopCode: true
-      //     },
-      //   },
-      //   team: {
-      //     teamNumber: true,
-      //   },
-      // },
-    });
+  async findRoleByAccount(
+    accountId: string,
+  ): Promise<{ employeeId: string; role: string } | null> {
+    return await this.employeesRepository
+      .createQueryBuilder('employee')
+      .select('employee.id', 'employeeId') // OK: employee уже есть
+      // Сначала выполняем все JOIN, чтобы подключить таблицу role
+      .innerJoin('employee.account', 'account')
+      .where('account.id = :accountId', { accountId })
+      .andWhere('employee.isActive = true')
+      .innerJoin('employee.position', 'position')
+      .innerJoin('position.role', 'role') // Подключаем role
+      // Только после этого выбираем поле role.name
+      .addSelect('role.name', 'role') // OK: role уже подключена
+      .getRawOne();
+  }
+
+  async findEmployeeRoleByAccount(
+    accountId: string,
+  ): Promise<{ employeeId: string; role: string; isActive: boolean } | null> {
+    return await this.employeesRepository
+      .createQueryBuilder('employee')
+      .select('employee.id', 'employeeId')
+      .innerJoin('employee.account', 'account')
+      .where('account.id = :accountId', { accountId })
+      .andWhere('employee.isActive = true')
+      .innerJoin('employee.employeeRoles', 'employeeRole')
+      .innerJoin('employeeRole.role', 'role')
+      .addSelect('role.name', 'role')
+      .addSelect('employeeRole.is_active', 'isActive')
+      .getRawOne();
   }
 
   // async findAll(): Promise<Employee[]> {

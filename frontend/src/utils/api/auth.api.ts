@@ -3,7 +3,9 @@ import type { IEmployee, ILoginData, ISuccess } from '../api.interface';
 // Используем переменную окружения
 export const URL = import.meta.env.VITE_API_URL ?? '/api/gps';
 
-export const loginUserApi = async (data: ILoginData): Promise<IEmployee> => {
+export const loginEmployeeApi = async (
+  data: ILoginData,
+): Promise<IEmployee> => {
   try {
     const response = await fetch(`${URL}/auth/login`, {
       method: 'POST',
@@ -22,26 +24,6 @@ export const loginUserApi = async (data: ILoginData): Promise<IEmployee> => {
     return await response.json();
   } catch (error) {
     throw new Error();
-  }
-};
-
-export const logoutUserApi = async (): Promise<ISuccess> => {
-  try {
-    const response = await fetch(`${URL}/auth/logout`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include', // Важно для работы с cookie
-    });
-
-    if (!response.ok) {
-      throw new Error('Ошибка при выходе из системы');
-    }
-
-    return await response.json();
-  } catch (error) {
-    throw error;
   }
 };
 
@@ -65,6 +47,26 @@ export const checkAccessTokenApi = async (): Promise<ISuccess> => {
     return await response.json();
   } catch (error) {
     // Сюда попадаем при любом throw new Error
+    throw error;
+  }
+};
+
+export const logoutEmployeeApi = async (): Promise<ISuccess> => {
+  try {
+    const response = await fetch(`${URL}/auth/logout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // Важно для работы с cookie
+    });
+
+    if (!response.ok) {
+      throw new Error('Ошибка при выходе из системы');
+    }
+
+    return await response.json();
+  } catch (error) {
     throw error;
   }
 };
