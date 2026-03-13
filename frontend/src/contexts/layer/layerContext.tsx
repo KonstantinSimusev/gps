@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { IUser } from '../../utils/api.interface';
+// import { IUser } from '../../utils/api.interface';
 
 interface ILayerContextValue {
   isAgreed: boolean;
@@ -20,7 +20,7 @@ interface ILayerContextValue {
   selectedId: string;
   selectedScrollPosition: number;
   selectedButtonActionType: string;
-  selectedUser: IUser | null;
+  // selectedUser: IUser | null;
   setIsAgreed: (value: boolean) => void;
   setIsOpenOverlay: (value: boolean) => void;
   setIsOpenMenu: (value: boolean) => void;
@@ -39,7 +39,7 @@ interface ILayerContextValue {
   setSelectedId: (value: string) => void;
   setSelectedScrollPosition: (value: number) => void;
   setSelectedButtonActionType: (value: string) => void;
-  setSelectedUser: (value: IUser) => void;
+  // setSelectedUser: (value: IUser) => void;
 }
 
 export const LayerContext = createContext<ILayerContextValue>({
@@ -61,7 +61,7 @@ export const LayerContext = createContext<ILayerContextValue>({
   selectedId: '',
   selectedScrollPosition: 0,
   selectedButtonActionType: '',
-  selectedUser: null,
+  // selectedUser: null,
   setIsAgreed: () => {},
   setIsOpenOverlay: () => {},
   setIsOpenMenu: () => {},
@@ -80,5 +80,5 @@ export const LayerContext = createContext<ILayerContextValue>({
   setSelectedId: () => {},
   setSelectedScrollPosition: () => {},
   setSelectedButtonActionType: () => {},
-  setSelectedUser: () => {},
+  // setSelectedUser: () => {},
 });

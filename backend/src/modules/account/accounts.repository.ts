@@ -19,13 +19,17 @@ export class AccountsRepository {
     this.accountsRepository.update(id, updateData);
   }
 
-  async findByLogin(login: string): Promise<Account | null> {
+  async findAccountByLogin(login: string): Promise<Account | null> {
     return this.accountsRepository.findOne({
       where: {
         login,
         employee: {
           isActive: true,
         },
+      },
+      select: {
+        id: true,
+        hashedPassword: true,
       },
     });
   }

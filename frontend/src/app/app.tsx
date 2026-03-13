@@ -4,53 +4,52 @@ import { Route, Routes } from 'react-router-dom';
 import clsx from 'clsx';
 
 import { Cover } from '../components/cover/cover';
-// import { Home } from '../../pages/home/home';
 import { Timesheet } from '../pages/master/timesheet/timesheet';
 import { DefaultPage } from '../components/../pages/default/default';
 // import { NotFound } from '../../pages/not-found/not-found';
 import { Overlay } from '../components/overlay/overlay';
 import { Modal } from '../components/modal/modal';
 import { LoginForm } from '../components/forms/login-form/login-form';
-import { ShiftForm } from '../components/forms/shift-form/shift-form';
-import { AddWorkerForm } from '../components/forms/add-worker-form/add-worker-form';
+// import { ShiftForm } from '../components/forms/shift-form/shift-form';
+// import { AddWorkerForm } from '../components/forms/add-worker-form/add-worker-form';
 import { LogoutForm } from '../components/forms/loguot-form/logout-form';
 import { ProtectedRoute } from '../components/protected-route/protected-route';
 import { checkAccessToken } from '../components/../services/slices/auth/actions';
 import { useDispatch } from '../components/../services/store';
-import { UpdateWorkerForm } from '../components/forms/update-worker-form/update-worker-form';
-import { AddWorkerInfo } from '../components/add-worker-info/add-worker-info';
+// import { UpdateWorkerForm } from '../components/forms/update-worker-form/update-worker-form';
 // import { HomeShift } from '../../pages/home-shift/home-shift';
 // import { Shipment } from '../../pages/shipment/shipment';
 // import { Pack } from '../../pages/pack/pack';
 // import { Residue } from '../../pages/residue/residue';
 // import { Fix } from '../../pages/fix/fix';
-import { ProductionForm } from '../components/forms/production/production.form';
-import { ShipmentForm } from '../components/forms/shipment/shipment.form';
+// import { ProductionForm } from '../components/forms/production/production.form';
+// import { ShipmentForm } from '../components/forms/shipment/shipment.form';
 // import { Production } from '../../pages/production/production';
-import { PackForm } from '../components/forms/pack/pack.form';
-import { FixForm } from '../components/forms/fix/fix.form';
+// import { PackForm } from '../components/forms/pack/pack.form';
+// import { FixForm } from '../components/forms/fix/fix.form';
 import { Footer } from '../components/footer/footer';
 import { Header } from '../components/header/header';
 import { LayerContext } from '../contexts/layer/layerContext';
 import { DeleteForm } from '../components/forms/delete-form/delete-form';
 
 import styles from './app.module.css';
-import { Production } from '../pages/master/production/production';
+import { Admin } from '../pages/admin/admin';
+import { Home } from '../pages/home/home';
+// import { Production } from '../pages/master/production/production';
 
 const App = () => {
   const {
     isOpenOverlay,
     isLoginModalOpen,
     isLogoutOpenModal,
-    isAddWorkerOpenModall,
-    isUpdateWorkerOpenModall,
-    isAddShiftOpenModall,
+    // isAddWorkerOpenModall,
+    // isUpdateWorkerOpenModall,
+    // isAddShiftOpenModall,
     isDeleteOpenModall,
-    isUserShiftInfoOpenModal,
-    isProductionOpenMdal,
-    isShipmentOpenMdal,
-    isPackOpenMdal,
-    isFixOpenMdal,
+    // isProductionOpenMdal,
+    // isShipmentOpenMdal,
+    // isPackOpenMdal,
+    // isFixOpenMdal,
     selectedScrollPosition,
     setSelectedScrollPosition,
   } = useContext(LayerContext);
@@ -99,10 +98,11 @@ const App = () => {
       <Routes>
         <Route path='/' element={<DefaultPage />} />
         <Route element={<ProtectedRoute />}>
-          {/* <Route path="/home" element={<Home />} /> */}
+        <Route path='/admin' element={<Admin />} />
+          <Route path="/home" element={<Home />} />
           {/* <Route path="/home/shifts/:shiftId" element={<HomeShift />} /> */}
           <Route path='/timesheet' element={<Timesheet />} />
-          <Route path='/production' element={<Production />} />
+          {/* <Route path='/production' element={<Production />} /> */}
           {/* <Route path="/shipment" element={<Shipment />} /> */}
           {/* <Route path="/pack" element={<Pack />} /> */}
           {/* <Route path="/fix" element={<Fix />} /> */}
@@ -120,7 +120,7 @@ const App = () => {
         </Modal>
       )}
 
-      {isAddWorkerOpenModall && (
+      {/* {isAddWorkerOpenModall && (
         <Modal>
           <AddWorkerForm />
         </Modal>
@@ -160,7 +160,7 @@ const App = () => {
         <Modal>
           <FixForm />
         </Modal>
-      )}
+      )} */}
 
       {isDeleteOpenModall && (
         <Modal>
@@ -174,11 +174,6 @@ const App = () => {
         </Modal>
       )}
 
-      {isUserShiftInfoOpenModal && (
-        <Modal>
-          <AddWorkerInfo />
-        </Modal>
-      )}
     </div>
   );
 };

@@ -3,7 +3,6 @@
 :root {
   --font-family-default: 'Montserrat', arial, helvetica, sans-serif;
   --font-family-logo: 'Raleway', arial, helvetica, sans-serif;
-  --font-family-banner: 'Dancing Script', arial, helvetica, sans-serif;
   --horizontal-margin: clamp(1.875rem, -8.406rem + 38.255vw, 37.5rem);
   --color-default: rgba(255 255 255 / 0.8);
   --color-icon: rgba(255 255 255 / 0.8);

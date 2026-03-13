@@ -11,33 +11,16 @@ export class RolesRepository {
     private readonly rolesRepository: Repository<Role>,
   ) {}
 
-  // async findRoleByEmployee(id: string): Promise<Role | null> {
-  //   return this.rolesRepository.findOne({
-  //     where: {
-  //       positions: {
-  //         employees: {
-  //           id,
-  //           isActive: true,
-  //         },
-  //       },
-  //     },
-  //     select: {
-  //       id: true, // обязательно для JOIN
-  //       name: true, // нужное поле
-  //     },
-  //     relations: ['positions', 'positions.employees'], // явные связи
-  //   });
-  // }
-
-  async findRoleByEmployee(id: string): Promise<{ name: string } | null> {
+  async findRoleByAccount(accountId: string): Promise<{ name: string } | null> {
     return await this.rolesRepository
       .createQueryBuilder('role')
+      .select('role.name', 'name')
       .innerJoin('role.positions', 'position')
       .innerJoin('position.employees', 'employee')
-      .where('employee.id = :id', { id })
+      .innerJoin('employee.account', 'account')
+      .where('account.id = :accountId', { accountId })
       .andWhere('employee.isActive = true')
-      .select('role.name')
-      .getOne();
+      .getRawOne();
   }
 
   // async findAll(): Promise<Employee[]> {

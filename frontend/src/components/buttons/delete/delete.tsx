@@ -39,7 +39,7 @@ export const DeleteButton = ({
   };
 
   return (
-    <button className={styles.container} type="button" onClick={handleClick}>
+    <button className={styles.container} type='button' onClick={handleClick}>
       {label}
       <DeleteIcon width={iconWidth} height={iconHeight} />
     </button>

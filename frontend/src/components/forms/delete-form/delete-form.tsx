@@ -1,44 +1,44 @@
 import { useContext } from 'react';
-import { useDispatch, useSelector } from '../../../services/store';
+// import { useDispatch, useSelector } from '../../../services/store';
 
 import { LayerContext } from '../../../contexts/layer/layerContext';
 
-import {
-  deleteUserShift,
-  getUsersShifts,
-} from '../../../services/slices/user-shift/actions';
+// import {
+//   deleteUserShift,
+//   getUsersShifts,
+// } from '../../../services/slices/user-shift/actions';
 
-import { selectIsLoadingUserShift } from '../../../services/slices/user-shift/slice';
-import { selectLastShift } from '../../../services/slices/shift/slice';
+// import { selectIsLoadingUserShift } from '../../../services/slices/user-shift/slice';
+// import { selectLastShift } from '../../../services/slices/shift/slice';
 
 import { Form } from '../../ui/form/form';
-import { Spinner } from '../../ui/spinner/spinner';
+// import { Spinner } from '../../ui/spinner/spinner';
 import { Button } from '../../ui/button/button';
 
 import styles from './delete-form.module.css';
 
 export const DeleteForm = () => {
   const {
-    selectedId,
+    // selectedId,
     selectedButtonActionType,
     setIsOpenOverlay,
     setIsDeleteOpenModall,
   } = useContext(LayerContext);
 
-  const dispatch = useDispatch();
-  const lastShift = useSelector(selectLastShift);
-  const isLoading = useSelector(selectIsLoadingUserShift);
+  // const dispatch = useDispatch();
+  // const lastShift = useSelector(selectLastShift);
+  // const isLoading = useSelector(selectIsLoadingUserShift);
 
-  if (!lastShift) {
-    console.error('Не удалось получить смену');
-    return;
-  }
+  // if (!lastShift) {
+  //   console.error('Не удалось получить смену');
+  //   return;
+  // }
 
   const handleClickDelete = async () => {
     try {
       if (selectedButtonActionType === 'userShift') {
-        await dispatch(deleteUserShift(selectedId));
-        await dispatch(getUsersShifts(lastShift.id));
+        // await dispatch(deleteUserShift(selectedId));
+        // await dispatch(getUsersShifts(lastShift.id));
       }
 
       // Очищаем состояние оверлеев и модальных окон
@@ -57,7 +57,7 @@ export const DeleteForm = () => {
 
   return (
     <Form title='Удалить работника?' titleClassName={styles.title}>
-      <Spinner isLoading={isLoading} className={styles.spinner} />
+      {/* <Spinner isLoading={isLoading} className={styles.spinner} /> */}
 
       <div className={styles.buttons__wrapper}>
         <Button

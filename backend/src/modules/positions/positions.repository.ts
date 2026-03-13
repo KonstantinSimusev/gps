@@ -11,7 +11,7 @@ export class PositionsRepository {
     private readonly positionsRepository: Repository<Position>,
   ) {}
 
-  async findByPosition(code: string): Promise<Position> {
+  async findPositionByCode(code: string): Promise<Position> {
     return this.positionsRepository.findOne({
       where: { positionCode: code },
     });

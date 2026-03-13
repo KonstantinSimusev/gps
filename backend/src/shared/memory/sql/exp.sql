@@ -62,13 +62,13 @@ VALUES
 INSERT INTO gps.employee_roles (role_id, employee_id)
 VALUES 
     (
-        (SELECT id FROM gps.roles WHERE name = 'SECTION_MASTER'), -- получаем role_id через подзапрос
+        (SELECT id FROM gps.roles WHERE name = 'ADMIN'), -- получаем role_id через подзапрос
         (SELECT id FROM gps.employees WHERE first_name = 'Константин' AND last_name = 'Симусев') -- получаем employee_id через подзапрос
     );
 
 UPDATE gps.employee_roles
 SET role_id = (SELECT id FROM gps.roles WHERE name = 'SECTION_MASTER')
-WHERE role_id = (SELECT id FROM gps.roles WHERE name = 'PACKER')
+WHERE role_id = (SELECT id FROM gps.roles WHERE name = 'ADMIN')
   AND employee_id = (
     SELECT id
     FROM gps.employees

@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from '../../../services/store';
 
 import { logoutEmployee } from '../../../services/slices/auth/actions';
 import { selectIsLoading } from '../../../services/slices/auth/slice';
-import { resetShift } from '../../../services/slices/shift/slice';
+// import { resetShift } from '../../../services/slices/shift/slice';
 
 import { LayerContext } from '../../../contexts/layer/layerContext';
 
@@ -28,7 +28,7 @@ export const LogoutForm = () => {
       await dispatch(logoutEmployee());
 
       // Отчищаем смены
-      dispatch(resetShift());
+      // dispatch(resetShift());
 
       // Очищаем состояние оверлеев и модальных окон
       setIsOpenOverlay(false);

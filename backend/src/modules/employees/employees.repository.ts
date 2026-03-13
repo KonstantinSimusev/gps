@@ -15,7 +15,7 @@ export class EmployeesRepository {
     return this.employeesRepository.save(employee);
   }
 
-  async findByAccount(id: string): Promise<Employee | null> {
+  async findByAccount(id: string): Promise<{ id: string } | null> {
     return this.employeesRepository.findOne({
       where: {
         account: { id },
@@ -27,38 +27,40 @@ export class EmployeesRepository {
     });
   }
 
-  async findRoleByAccount(
-    accountId: string,
-  ): Promise<{ employeeId: string; role: string } | null> {
+  async findEmployeeByAccount(accountId: string): Promise<{
+    id: string;
+    workshopCode: string;
+    teamNumber: string;
+  } | null> {
     return await this.employeesRepository
       .createQueryBuilder('employee')
-      .select('employee.id', 'employeeId') // OK: employee уже есть
-      // Сначала выполняем все JOIN, чтобы подключить таблицу role
-      .innerJoin('employee.account', 'account')
-      .where('account.id = :accountId', { accountId })
-      .andWhere('employee.isActive = true')
-      .innerJoin('employee.position', 'position')
-      .innerJoin('position.role', 'role') // Подключаем role
-      // Только после этого выбираем поле role.name
-      .addSelect('role.name', 'role') // OK: role уже подключена
+      .innerJoin('employee.account', 'account') // Связываем сотрудника с аккаунтом
+      .where('account.id = :accountId', { accountId }) // Фильтруем по ID аккаунта
+      .andWhere('employee.isActive = true') // Учитываем только активных сотрудников
+      .select('employee.id', 'id') // Выбираем ID сотрудника
+      .innerJoin('employee.team', 'team') // Присоединяем бригаду (Team)
+      .addSelect('team.teamNumber', 'teamNumber') // Выбираем номер бригады
+      .innerJoin('employee.position', 'position') // Присоединяем позицию (Position) — промежуточное звено
+      .innerJoin('position.workshop', 'workshop') // Теперь можем присоединить цех (Workshop) через позицию
+      .addSelect('workshop.workshopCode', 'workshopCode') // Выбираем код цеха
       .getRawOne();
   }
 
-  async findEmployeeRoleByAccount(
-    accountId: string,
-  ): Promise<{ employeeId: string; role: string; isActive: boolean } | null> {
-    return await this.employeesRepository
-      .createQueryBuilder('employee')
-      .select('employee.id', 'employeeId')
-      .innerJoin('employee.account', 'account')
-      .where('account.id = :accountId', { accountId })
-      .andWhere('employee.isActive = true')
-      .innerJoin('employee.employeeRoles', 'employeeRole')
-      .innerJoin('employeeRole.role', 'role')
-      .addSelect('role.name', 'role')
-      .addSelect('employeeRole.is_active', 'isActive')
-      .getRawOne();
-  }
+  // async findEmployeeRoleByAccount(
+  //   accountId: string,
+  // ): Promise<{ employeeId: string; role: string; isActive: boolean } | null> {
+  //   return await this.employeesRepository
+  //     .createQueryBuilder('employee')
+  //     .select('employee.id', 'employeeId')
+  //     .innerJoin('employee.account', 'account')
+  //     .where('account.id = :accountId', { accountId })
+  //     .andWhere('employee.isActive = true')
+  //     .innerJoin('employee.employeeRoles', 'employeeRole')
+  //     .innerJoin('employeeRole.role', 'role')
+  //     .addSelect('role.name', 'role')
+  //     .addSelect('employeeRole.is_active', 'isActive')
+  //     .getRawOne();
+  // }
 
   // async findAll(): Promise<Employee[]> {
   //   return this.employeesRepository.find({});

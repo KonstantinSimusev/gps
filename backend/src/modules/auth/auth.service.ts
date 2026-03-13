@@ -19,6 +19,7 @@ import { Account } from '../account/entities/account.entity';
 import { AccountsRepository } from '../account/accounts.repository';
 import { EmployeesRepository } from '../employees/employees.repository';
 import { RolesRepository } from '../roles/roles.repository';
+import { EmployeeRolesRepository } from '../employee-roles/employee-roles.repository';
 
 import {
   ITokenOptions,
@@ -26,7 +27,6 @@ import {
   ISuccess,
   IJwtPayload,
 } from '../../shared/interfaces/api.interface';
-import { EmployeeRolesRepository } from '../employee-roles/employee-roles.repository';
 
 @Injectable()
 export class AuthService {
@@ -47,7 +47,7 @@ export class AuthService {
     res: Response,
   ): Promise<IEmployee> {
     // Проверка аккаунта
-    const account = await this.accountsRepository.findByLogin(login);
+    const account = await this.accountsRepository.findAccountByLogin(login);
 
     if (!account) {
       throw new NotFoundException('Аккаунт не найден');
@@ -93,44 +93,34 @@ export class AuthService {
       'REFRESH_TOKEN_EXPIRATION',
     );
 
-    const employee = await this.employeesRepository.findByAccount(account.id);
-console.log(employee)
+    const employee = await this.employeesRepository.findEmployeeByAccount(
+      account.id,
+    );
+
     if (!employee) {
       throw new NotFoundException('Сотрудник не найден');
     }
 
     const employeeRole =
-      await this.employeesRepository.findEmployeeRoleByAccount(account.id);
-console.log(employeeRole)
-    if (employeeRole) {
-      console.log({
-        id: employee.id,
-        role: employeeRole.role,
-        isActive: employeeRole.isActive,
-      });
+      await this.employeeRolesRepository.findEmployeeRoleByAccount(account.id);
 
+    if (employeeRole) {
       return {
-        id: employee.id,
-        role: employeeRole.role,
+        ...employee,
+        role: employeeRole.name,
         isActive: employeeRole.isActive,
       };
     }
 
-    const role = await this.employeesRepository.findRoleByAccount(account.id);
-console.log(role)
+    const role = await this.rolesRepository.findRoleByAccount(account.id);
+
     if (!role) {
       throw new UnauthorizedException('Роль отсутствует');
     }
 
-    console.log({
-      id: employee.id,
-      role: role.role,
-      isActive: true,
-    });
-
     return {
-      id: employee.id,
-      role: role.role,
+      ...employee,
+      role: role.name,
       isActive: true,
     };
   }
@@ -233,13 +223,6 @@ console.log(role)
       throw new UnauthorizedException(
         'Обязательное поле sub в payload JWT-токена отсутствует или пусто',
       );
-    }
-
-    // Ищем сотрудника по accountId
-    const employee = await this.employeesRepository.findByAccount(accountId);
-
-    if (!employee) {
-      throw new NotFoundException('Сотрудник не найден');
     }
 
     return {

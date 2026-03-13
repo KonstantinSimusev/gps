@@ -33,7 +33,7 @@ export class EmployeesService {
   ) {}
 
   async create(dto: CreateEmployeeDTO): Promise<IAccountAPI> {
-    const position = await this.positionsRepository.findByPosition(
+    const position = await this.positionsRepository.findPositionByCode(
       dto.positionCode,
     );
 
@@ -43,7 +43,9 @@ export class EmployeesService {
       );
     }
 
-    const team = await this.teamsRepository.findByTeam(dto.teamNumber);
+    const team = await this.teamsRepository.findTeamByTeamNumber(
+      dto.teamNumber,
+    );
 
     if (!team) {
       throw new NotFoundException(`Номер бригады ${dto.teamNumber} не найден`);

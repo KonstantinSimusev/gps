@@ -11,7 +11,7 @@ export class TeamsRepository {
     private readonly teamsRepository: Repository<Team>,
   ) {}
 
-  async findByTeam(teamNumber: string): Promise<Team> {
+  async findTeamByTeamNumber(teamNumber: string): Promise<Team> {
     return this.teamsRepository.findOne({
       where: { teamNumber },
     });
