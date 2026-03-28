@@ -1,18 +1,19 @@
+import { useContext } from 'react';
+
+import { LayerContext } from '../../../contexts/layer/layerContext';
+import { BurgerIcon } from '../../ui/icons/burger/burger';
+
 import styles from './burger.module.css';
 
-import { useContext } from 'react';
-import { BurgerIcon } from '../../ui/icons/burger/burger';
-import { LayerContext } from '../../../contexts/layer/layerContext';
-
 export const BurgerButton = () => {
-  const { setIsOpenMenu, setIsOpenOverlay } = useContext(LayerContext);
+  const { setIsOverlayOpen, setIsMenuOpen } = useContext(LayerContext);
 
   const handleClick = () => {
-    setIsOpenMenu(true);
-    setIsOpenOverlay(true);
+    setIsMenuOpen(true);
+    setIsOverlayOpen(true);
   };
   return (
-    <button className={styles.container} type="button" onClick={handleClick}>
+    <button className={styles.container} type='button' onClick={handleClick}>
       <BurgerIcon />
     </button>
   );

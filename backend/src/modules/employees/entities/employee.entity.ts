@@ -84,6 +84,11 @@ export class Employee {
   })
   isActive: boolean;
 
+  // Связь: один сотрудник — один аккаунт
+  @OneToOne(() => Account, (account) => account.employee)
+  @JoinColumn({ name: 'account_id' })
+  account: Account;
+
   // Связь: много сотрудников — одна позиция
   @ManyToOne(() => Position, (position) => position.employees)
   @JoinColumn({ name: 'position_id' })
@@ -93,11 +98,6 @@ export class Employee {
   @ManyToOne(() => Team, (team) => team.employees)
   @JoinColumn({ name: 'team_id' })
   team: Team;
-
-  // Связь: один сотрудник — один аккаунт
-  @OneToOne(() => Account, (account) => account.employee)
-  @JoinColumn({ name: 'account_id' })
-  account: Account;
 
   // Связь: один сотрудник — много ролей сотрудника
   @OneToMany(() => EmployeeRole, (employeeRole) => employeeRole.employee)

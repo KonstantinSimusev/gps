@@ -7,104 +7,70 @@ import styles from './overlay.module.css';
 
 export const Overlay = () => {
   const {
-    isOpenOverlay,
-    isOpenMenu,
-    isLoginModalOpen,
-    isLogoutOpenModal,
-    isAddWorkerOpenModall,
-    isUpdateWorkerOpenModall,
-    isAddShiftOpenModall,
-    isDeleteOpenModall,
-    isUserShiftInfoOpenModal,
-    isProductionOpenMdal,
-    isShipmentOpenMdal,
-    isPackOpenMdal,
-    isFixOpenMdal,
-    setIsOpenOverlay,
-    setIsOpenMenu,
-    setIsLoginModalOpen,
-    setIsLogoutOpenModal,
-    setIsAddWorkerOpenModall,
-    setIsUpdateWorkerOpenModall,
-    setIsAddShiftOpenModall,
-    setIsDeleteOpenModall,
-    setIsUserShiftInfoOpenModal,
-    setIsProductionOpenMdal,
-    setIsShipmentOpenMdal,
-    setIsPackOpenMdal,
-    setIsFixOpenMdal,
+    isOverlayOpen,
+    isMenuOpen,
+    isLoginOpen,
+    isLogoutOpen,
+    isEmployeeSearchOpen,
+    isEmployeeCreateOpen,
+    isEmployeeEditOpen,
+    isEmployeeDeleteOpen,
+
+    setIsOverlayOpen,
+    setIsMenuOpen,
+    setIsLoginOpen,
+    setIsLogoutOpen,
+    setIsEmployeeSearchOpen,
+    setIsEmployeeCreateOpen,
+    setIsEmployeeEditOpen,
+    setIsEmployeeDeleteOpen,
   } = useContext(LayerContext);
 
   useEscapeHandler(() => {
-    if (isOpenOverlay) {
-      setIsOpenOverlay(false);
+    if (isOverlayOpen) {
+      setIsOverlayOpen(false);
     }
 
-    if (isOpenMenu) {
-      setIsOpenMenu(false);
+    if (isMenuOpen) {
+      setIsMenuOpen(false);
     }
 
-    if (isLoginModalOpen) {
-      setIsLoginModalOpen(false);
+    if (isLoginOpen) {
+      setIsLoginOpen(false);
     }
 
-    if (isLogoutOpenModal) {
-      setIsLogoutOpenModal(false);
+    if (isLogoutOpen) {
+      setIsLogoutOpen(false);
     }
 
-    if (isAddWorkerOpenModall) {
-      setIsAddWorkerOpenModall(false);
+    if (isEmployeeSearchOpen) {
+      setIsEmployeeSearchOpen(false);
     }
 
-    if (isUpdateWorkerOpenModall) {
-      setIsUpdateWorkerOpenModall(false);
+    if (isEmployeeCreateOpen) {
+      setIsEmployeeCreateOpen(false);
     }
 
-    if (isAddShiftOpenModall) {
-      setIsAddShiftOpenModall(false);
+    if (isEmployeeEditOpen) {
+      setIsEmployeeEditOpen(false);
     }
 
-    if (isDeleteOpenModall) {
-      setIsDeleteOpenModall(false);
-    }
-
-    if (isUserShiftInfoOpenModal) {
-      setIsUserShiftInfoOpenModal(false);
-    }
-
-    if (isProductionOpenMdal) {
-      setIsProductionOpenMdal(false);
-    }
-
-    if (isShipmentOpenMdal) {
-      setIsShipmentOpenMdal(false);
-    }
-
-    if (isPackOpenMdal) {
-      setIsPackOpenMdal(false);
-    }
-
-    if (isFixOpenMdal) {
-      setIsFixOpenMdal(false);
+    if (isEmployeeDeleteOpen) {
+      setIsEmployeeDeleteOpen(false);
     }
   });
 
   const handleClick = (event: React.MouseEvent) => {
     // Проверяем, был ли клик по самому оверлею
     if (event.target === event.currentTarget) {
-      setIsOpenOverlay(false);
-      setIsOpenMenu(false);
-      setIsLoginModalOpen(false);
-      setIsLogoutOpenModal(false);
-      setIsAddWorkerOpenModall(false);
-      setIsUpdateWorkerOpenModall(false);
-      setIsAddShiftOpenModall(false);
-      setIsDeleteOpenModall(false);
-      setIsUserShiftInfoOpenModal(false);
-      setIsProductionOpenMdal(false);
-      setIsShipmentOpenMdal(false);
-      setIsPackOpenMdal(false);
-      setIsFixOpenMdal(false);
+      setIsOverlayOpen(false);
+      setIsMenuOpen(false);
+      setIsLoginOpen(false);
+      setIsLogoutOpen(false);
+      setIsEmployeeSearchOpen(false);
+      setIsEmployeeCreateOpen(false);
+      setIsEmployeeEditOpen(false);
+      setIsEmployeeDeleteOpen(false);
     }
   };
 

@@ -5,7 +5,6 @@ import { plainToInstance } from 'class-transformer';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
 import { Account } from './entities/account.entity';
-
 import { AccountsRepository } from './accounts.repository';
 
 @Injectable()

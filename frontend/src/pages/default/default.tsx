@@ -8,11 +8,11 @@ import { Button } from '../../components/ui/button/button';
 import styles from './default.module.css';
 
 export const DefaultPage = () => {
-  const { setIsOpenOverlay, setIsLoginModalOpen } = useContext(LayerContext);
+  const { setIsOverlayOpen, setIsLoginOpen } = useContext(LayerContext);
 
   const handleClick = () => {
-    setIsOpenOverlay(true);
-    setIsLoginModalOpen(true);
+    setIsOverlayOpen(true);
+    setIsLoginOpen(true);
   };
 
   return (

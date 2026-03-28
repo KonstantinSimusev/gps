@@ -11,11 +11,10 @@ import { PageTitle } from '../ui/page-title/page-title';
 
 export const Cover = () => {
   const { pathname } = useLocation();
-  const isAdmin = pathname === '/admin';
+  const isAdmin = pathname.startsWith('/admin');
   const isHome = pathname === '/home';
-  const isTimesheet = pathname === '/timesheet';
-  const isProduction = pathname === '/production';
-  const isShipment = pathname === '/shipment';
+  const isMasterTimesheet = pathname === '/master/timesheet';
+  const isPackerScan = pathname === '/packer/scan';
 
   const { isAgreed } = useContext(LayerContext);
   const isAuthenticated = useSelector(selectIsAuthenticated);
@@ -24,11 +23,10 @@ export const Cover = () => {
     <>
       {isAuthenticated && isAgreed && (
         <div className={styles.container}>
-          {isAdmin && <PageTitle title='ADMIN' />}
+          {isAdmin && <PageTitle title='ПОЛЬЗОВАТЕЛИ' />}
           {isHome && <PageTitle title='ГЛАВНАЯ' />}
-          {isTimesheet && <PageTitle title='ТАБЕЛЬ' />}
-          {isProduction && <PageTitle title='ПРОИЗВОДСТВО' />}
-          {isShipment && <PageTitle title='ОТГРУЗКА' />}
+          {isMasterTimesheet && <PageTitle title='ТАБЕЛЬ' />}
+          {isPackerScan && <PageTitle title='СКАНИРОВАНИЕ' />}
         </div>
       )}
     </>

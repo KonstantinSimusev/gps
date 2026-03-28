@@ -19,13 +19,14 @@ import {
   validationRules,
 } from '../../../utils/validation';
 
+import { ROLE_TO_PAGE } from '../../../utils/utils';
+
 import { Form } from '../../ui/form/form';
 import { TextInput } from '../../ui/inputs/text-input/text-input';
 import { Spinner } from '../../ui/spinner/spinner';
 import { Button } from '../../ui/button/button';
 
 import styles from './login-form.module.css';
-import { ROLE_TO_PAGE } from '../../../utils/utils';
 
 interface IFormData extends Record<string, string> {
   login: string;
@@ -39,7 +40,7 @@ export const LoginForm = () => {
   const isLoading = useSelector(selectIsLoading);
   const serverError = useSelector(selectError);
 
-  const { isLoginModalOpen, setIsOpenOverlay, setIsLoginModalOpen } =
+  const { isLoginOpen, setIsOverlayOpen, setIsLoginOpen } =
     useContext(LayerContext);
 
   // Состояние для хранения значений полей формы
@@ -55,10 +56,10 @@ export const LoginForm = () => {
   });
 
   useEffect(() => {
-    if (isLoginModalOpen) {
+    if (isLoginOpen) {
       dispatch(clearError());
     }
-  }, [isLoginModalOpen]);
+  }, [isLoginOpen]);
 
   // Обработчик изменения поля ввода
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,27 +104,23 @@ export const LoginForm = () => {
     // Сохраняем все ошибки в состояние
     setErrors(formErrors);
 
-    // Если форма валидна, можно отправить данные на сервер
-    if (Object.keys(formErrors).length === 0) {
+    // Если форма невалидна, выход
+    if (Object.keys(formErrors).length > 0) {
+      return;
+    }
+
+    {
       try {
-        const response = await dispatch(loginEmployee(formData));
+        const employee = await dispatch(loginEmployee(formData)).unwrap();
+        const targetPage = ROLE_TO_PAGE[employee.role || '/'];
 
-        // Проверяем, было ли действие успешно выполнено
-        if (loginEmployee.fulfilled.match(response)) {
-          const employee = response.payload;
+        navigate(targetPage);
 
-          const targetPage = ROLE_TO_PAGE[employee.role] || ROLE_TO_PAGE.DEFAULT;
+        setIsLoginOpen(false);
+        setIsOverlayOpen(false);
 
-          navigate(targetPage);
-
-          setIsLoginModalOpen(false);
-          setIsOpenOverlay(false);
-          setFormData({ login: '', password: '' });
-          setErrors({ login: '', password: '' });
-        } else {
-          setFormData({ login: '', password: '' });
-          throw new Error();
-        }
+        setFormData({ login: '', password: '' });
+        setErrors({ login: '', password: '' });
       } catch (error) {
         throw new Error();
       }

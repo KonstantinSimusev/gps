@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Employee } from './entities/employee.entity';
+import { IEmployeeInfo } from 'src/shared/interfaces/api.interface';
 
 @Injectable()
 export class EmployeesRepository {
@@ -15,20 +16,8 @@ export class EmployeesRepository {
     return this.employeesRepository.save(employee);
   }
 
-  async findByAccount(id: string): Promise<{ id: string } | null> {
-    return this.employeesRepository.findOne({
-      where: {
-        account: { id },
-        isActive: true,
-      },
-      select: {
-        id: true,
-      },
-    });
-  }
-
   async findEmployeeByAccount(accountId: string): Promise<{
-    id: string;
+    employeeId: string;
     workshopCode: string;
     teamNumber: string;
   } | null> {
@@ -37,7 +26,7 @@ export class EmployeesRepository {
       .innerJoin('employee.account', 'account') // Связываем сотрудника с аккаунтом
       .where('account.id = :accountId', { accountId }) // Фильтруем по ID аккаунта
       .andWhere('employee.isActive = true') // Учитываем только активных сотрудников
-      .select('employee.id', 'id') // Выбираем ID сотрудника
+      .select('employee.id', 'employeeId') // Выбираем ID сотрудника
       .innerJoin('employee.team', 'team') // Присоединяем бригаду (Team)
       .addSelect('team.teamNumber', 'teamNumber') // Выбираем номер бригады
       .innerJoin('employee.position', 'position') // Присоединяем позицию (Position) — промежуточное звено
@@ -46,20 +35,56 @@ export class EmployeesRepository {
       .getRawOne();
   }
 
-  // async findEmployeeRoleByAccount(
-  //   accountId: string,
-  // ): Promise<{ employeeId: string; role: string; isActive: boolean } | null> {
-  //   return await this.employeesRepository
-  //     .createQueryBuilder('employee')
-  //     .select('employee.id', 'employeeId')
-  //     .innerJoin('employee.account', 'account')
-  //     .where('account.id = :accountId', { accountId })
-  //     .andWhere('employee.isActive = true')
-  //     .innerJoin('employee.employeeRoles', 'employeeRole')
-  //     .innerJoin('employeeRole.role', 'role')
-  //     .addSelect('role.name', 'role')
-  //     .addSelect('employeeRole.is_active', 'isActive')
-  //     .getRawOne();
+  async findEmployeeByPersonalNumber(
+    number: string,
+  ): Promise<IEmployeeInfo | null> {
+    return await this.employeesRepository
+      .createQueryBuilder('employee')
+      // Основные соединения: данные, гарантированно присутствующие у каждого сотрудника
+      .innerJoin('employee.position', 'position')
+      .innerJoin('position.workshop', 'workshop')
+      .innerJoin('employee.team', 'team')
+      // Дополнительные соединения: атрибуты позиции
+      .innerJoin('position.profession', 'profession')
+      .innerJoin('position.grade', 'grade')
+      .innerJoin('position.schedule', 'schedule')
+      // Опциональное соединение: роли (может отсутствовать у сотрудника)
+      .leftJoin('employee.employeeRoles', 'employeeRole')
+      .leftJoin('employeeRole.role', 'role')
+      // Выбираем первое поле (обязательно для TypeORM)
+      .select('employee.id', 'id')
+      // Добавляем остальные поля — каждое на отдельной строке для удобства редактирования
+      .addSelect('employee.lastName', 'lastName')
+      .addSelect('employee.firstName', 'firstName')
+      .addSelect('employee.patronymic', 'patronymic')
+      .addSelect('employee.personalNumber', 'personalNumber')
+      .addSelect('employee.birthDay', 'birthDay')
+      .addSelect('employee.startDate', 'startDate')
+      .addSelect('employee.endDate', 'endDate')
+      .addSelect('workshop.workshopCode', 'workshop')
+      .addSelect('team.teamNumber', 'team')
+      .addSelect('profession.name', 'profession')
+      .addSelect('position.positionCode', 'positionCode')
+      .addSelect('grade.gradeCode', 'grade')
+      .addSelect('schedule.scheduleCode', 'schedule')
+      .addSelect('role.name', 'role')
+      // Условия фильтрации
+      .where('employee.personalNumber = :number', { number })
+      .andWhere('employee.isActive = true')
+      // Выполняем запрос и возвращаем результат
+      .getRawOne();
+  }
+
+  // async findByAccount(id: string): Promise<{ id: string } | null> {
+  //   return this.employeesRepository.findOne({
+  //     where: {
+  //       account: { id },
+  //       isActive: true,
+  //     },
+  //     select: {
+  //       id: true,
+  //     },
+  //   });
   // }
 
   // async findAll(): Promise<Employee[]> {

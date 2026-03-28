@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -18,8 +17,8 @@ import { TeamsRepository } from '../teams/teams.repository';
 import { AccountsService } from '../account/accounts.service';
 
 import {
-  IEmployee,
-  IAccountAPI,
+  IAccountInfo,
+  IEmployeeInfo,
   IList,
 } from '../../shared/interfaces/api.interface';
 
@@ -32,7 +31,7 @@ export class EmployeesService {
     private readonly accountsService: AccountsService,
   ) {}
 
-  async create(dto: CreateEmployeeDTO): Promise<IAccountAPI> {
+  async create(dto: CreateEmployeeDTO): Promise<IAccountInfo> {
     const position = await this.positionsRepository.findPositionByCode(
       dto.positionCode,
     );
@@ -78,7 +77,7 @@ export class EmployeesService {
     };
   }
 
-  async createMany(dtos: CreateEmployeesDTO): Promise<IList<IAccountAPI>> {
+  async createMany(dtos: CreateEmployeesDTO): Promise<IList<IAccountInfo>> {
     try {
       const employees = await Promise.all(
         dtos.employees.map((dto) => this.create(dto)),
@@ -95,52 +94,16 @@ export class EmployeesService {
     }
   }
 
-  // async update(id: string, dto: UpdateEmployeeDTO): Promise<IEmployee> {
-  //   try {
-  //     const employee = await this.employeesRepository.findById(id);
+  async getEmployeeInfo(number: string): Promise<IEmployeeInfo> {
+    const employeeInfo =
+      await this.employeesRepository.findEmployeeByPersonalNumber(number);
 
-  //     if (!employee) {
-  //       throw new NotFoundException('Работник не найден');
-  //     }
+    if (!employeeInfo) {
+      throw new NotFoundException(
+        'Сотрудник с указанным личным номером не найден или неактивен',
+      );
+    }
 
-  //     const updatedEmployee = await this.employeesRepository.update(employee, dto);
-
-  //     if (!updatedEmployee) {
-  //       throw new NotFoundException('Работник не обновлен');
-  //     }
-
-  //     return {
-  //       message: 'Пользователь успешно обновлен',
-  //     };
-  //   } catch (error) {
-  //     throw new InternalServerErrorException(
-  //       'Произошла ошибка при обновлении пользователя',
-  //     );
-  //   }
-  // }
-
-  // async deleteUser(id: string): Promise<ISuccess> {
-  //   try {
-  //     const user = await this.userRepository.findById(id);
-
-  //     if (!user) {
-  //       throw new NotFoundException('Пользователь не найден');
-  //     }
-
-  //     await this.userRepository.delete(id);
-
-  //     return {
-  //       message: 'Пользователь успешно удален',
-  //     };
-  //   } catch (error) {
-  //     throw new InternalServerErrorException(
-  //       'Произошла ошибка при удалении пользователя',
-  //     );
-  //   }
-  // }
-
-  // private transformUser(user: User): IUser {
-  //   const { login, hashedPassword, refreshToken, ...apiUser } = user;
-  //   return apiUser;
-  // }
+    return employeeInfo;
+  }
 }

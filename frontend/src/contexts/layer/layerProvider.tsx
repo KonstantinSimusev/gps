@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import { LayerContext } from './layerContext';
-// import { IUser } from '../../utils/api.interface';
 
 interface TLayerProviderProps {
   children: React.ReactNode;
@@ -8,84 +7,60 @@ interface TLayerProviderProps {
 
 export const LayerProvider = ({ children }: TLayerProviderProps) => {
   const [isAgreed, setIsAgreed] = useState(false);
-  const [isOpenOverlay, setIsOpenOverlay] = useState(false);
-  const [isOpenMenu, setIsOpenMenu] = useState(false);
-  const [isOpenModal, setIsOpenModal] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isLogoutOpenModal, setIsLogoutOpenModal] = useState(false);
-  const [isAddWorkerOpenModall, setIsAddWorkerOpenModall] = useState(false);
-  const [isUpdateWorkerOpenModall, setIsUpdateWorkerOpenModall] =
-    useState(false);
-  const [isAddShiftOpenModall, setIsAddShiftOpenModall] = useState(false);
-  const [isDeleteOpenModall, setIsDeleteOpenModall] = useState(false);
-  const [isUserShiftInfoOpenModal, setIsUserShiftInfoOpenModal] =
-    useState(false);
+  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
+  const [isEmployeeSearchOpen, setIsEmployeeSearchOpen] = useState(false);
+  const [isEmployeeCreateOpen, setIsEmployeeCreateOpen] = useState(false);
+  const [isEmployeeEditOpen, setIsEmployeeEditOpen] = useState(false);
+  const [isEmployeeDeleteOpen, setIsEmployeeDeleteOpen] = useState(false);
+
   const [selectedId, setSelectedId] = useState('');
   const [selectedScrollPosition, setSelectedScrollPosition] = useState(0);
-  const [selectedButtonActionType, setSelectedButtonActionType] = useState('');
-  const [isProductionOpenMdal, setIsProductionOpenMdal] = useState(false);
-  const [isShipmentOpenMdal, setIsShipmentOpenMdal] = useState(false);
-  const [isPackOpenMdal, setIsPackOpenMdal] = useState(false);
-  const [isFixOpenMdal, setIsFixOpenMdal] = useState(false);
-  // const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
 
   // Мемоизируем значение контекста
   const value = useMemo(
     () => ({
       isAgreed,
-      isOpenOverlay,
-      isOpenMenu,
-      isOpenModal,
-      isLoginModalOpen,
-      isLogoutOpenModal,
-      isAddWorkerOpenModall,
-      isUpdateWorkerOpenModall,
-      isAddShiftOpenModall,
-      isDeleteOpenModall,
-      isUserShiftInfoOpenModal,
-      isProductionOpenMdal,
-      isShipmentOpenMdal,
-      isPackOpenMdal,
-      isFixOpenMdal,
+      isOverlayOpen,
+      isMenuOpen,
+      isLoginOpen,
+      isLogoutOpen,
+      isEmployeeSearchOpen,
+      isEmployeeCreateOpen,
+      isEmployeeEditOpen,
+      isEmployeeDeleteOpen,
+
       selectedId,
       selectedScrollPosition,
-      selectedButtonActionType,
-      // selectedUser,
+
       setIsAgreed,
-      setIsOpenOverlay,
-      setIsOpenMenu,
-      setIsOpenModal,
-      setIsLoginModalOpen,
-      setIsLogoutOpenModal,
-      setIsAddWorkerOpenModall,
-      setIsUpdateWorkerOpenModall,
-      setIsAddShiftOpenModall,
-      setIsDeleteOpenModall,
-      setIsUserShiftInfoOpenModal,
-      setIsProductionOpenMdal,
-      setIsShipmentOpenMdal,
-      setIsPackOpenMdal,
-      setIsFixOpenMdal,
+      setIsOverlayOpen,
+      setIsMenuOpen,
+      setIsLoginOpen,
+      setIsLogoutOpen,
+      setIsEmployeeSearchOpen,
+      setIsEmployeeCreateOpen,
+      setIsEmployeeEditOpen,
+      setIsEmployeeDeleteOpen,
+
       setSelectedId,
       setSelectedScrollPosition,
-      setSelectedButtonActionType,
-      // setSelectedUser,
     }),
     [
       isAgreed,
-      isOpenOverlay,
-      isOpenMenu,
-      isOpenModal,
-      isLoginModalOpen,
-      isLogoutOpenModal,
-      isAddWorkerOpenModall,
-      isUpdateWorkerOpenModall,
-      isAddShiftOpenModall,
-      isDeleteOpenModall,
+      isOverlayOpen,
+      isMenuOpen,
+      isLoginOpen,
+      isLogoutOpen,
+      isEmployeeSearchOpen,
+      isEmployeeCreateOpen,
+      isEmployeeEditOpen,
+      isEmployeeDeleteOpen,
+
       selectedId,
       selectedScrollPosition,
-      selectedButtonActionType,
-      // selectedUser,
     ],
   );
 

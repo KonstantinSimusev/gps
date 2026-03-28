@@ -12,7 +12,7 @@
   gap: 30px;
 }
 
-.button__logout {
+.button__ok {
   color: var(--color-button);
   background-color: var(--bg-color-button);
 }

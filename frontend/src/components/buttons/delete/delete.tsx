@@ -6,11 +6,11 @@ import { DeleteIcon } from '../../ui/icons/delete/delete';
 import styles from './delete.module.css';
 
 interface IDeleteButtonProps {
-  id?: string;
+  id: string;
+  actionType: 'employee';
   label?: string;
   iconWidth?: number | string;
   iconHeight?: number | string;
-  actionType: 'shift' | 'userShift';
 }
 
 export const DeleteButton = ({
@@ -20,22 +20,19 @@ export const DeleteButton = ({
   iconHeight,
   actionType,
 }: IDeleteButtonProps) => {
-  if (!id) {
-    return null;
-  }
-
-  const {
-    setIsOpenOverlay,
-    setIsDeleteOpenModall,
-    setSelectedId,
-    setSelectedButtonActionType,
-  } = useContext(LayerContext);
+  const { setIsOverlayOpen, setIsEmployeeDeleteOpen, setSelectedId } =
+    useContext(LayerContext);
 
   const handleClick = () => {
-    setIsOpenOverlay(true);
-    setIsDeleteOpenModall(true);
-    setSelectedId(id);
-    setSelectedButtonActionType(actionType);
+    switch (actionType) {
+      case 'employee':
+        setSelectedId(id);
+        setIsOverlayOpen(true);
+        setIsEmployeeDeleteOpen(true);
+        break;
+      default:
+        break;
+    }
   };
 
   return (

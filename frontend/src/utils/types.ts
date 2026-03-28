@@ -1,5 +1,6 @@
-export type TRole = 'ADMIN' | 'SECTION_MASTER' | 'PACKER';
+export type TRole = 'ADMIN' | 'USER' | 'MASTER' | 'PACKER';
 
 export const ADMIN_ROLE: TRole = 'ADMIN';
-export const SECTION_MASTER_ROLE: TRole = 'SECTION_MASTER';
+export const USER_ROLE: TRole = 'USER';
+export const MASTER_ROLE: TRole = 'MASTER';
 export const PACKER_ROLE: TRole = 'PACKER';

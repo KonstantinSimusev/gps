@@ -4,8 +4,9 @@ import {
   useSelector as selectorHook,
 } from 'react-redux';
 import { authSlice } from './slices/auth/slice';
+import { employeeSlice } from './slices/employee/slice';
 
-export const rootReducer = combineSlices(authSlice);
+export const rootReducer = combineSlices(authSlice, employeeSlice);
 
 export const store = configureStore({
   reducer: rootReducer,

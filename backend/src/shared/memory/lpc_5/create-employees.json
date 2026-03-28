@@ -1,0 +1,1094 @@
+{
+    "employees": [
+        {
+            "lastName": "Баскаков",
+            "firstName": "Максим",
+            "patronymic": "Михайлович",
+            "personalNumber": "122953",
+            "birthDay": "09/07/1990",
+            "startDate": "09/01/2024",
+            "positionCode": "643776",
+            "teamNumber": "5"
+        },
+        {
+            "lastName": "Артамонов",
+            "firstName": "Николай",
+            "patronymic": "Павлович",
+            "personalNumber": "124435",
+            "birthDay": "05/19/1988",
+            "startDate": "01/01/2025",
+            "positionCode": "643777",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Киясь",
+            "firstName": "Олег",
+            "patronymic": "Николаевич",
+            "personalNumber": "135820",
+            "birthDay": "01/07/1975",
+            "startDate": "01/01/2025",
+            "positionCode": "643777",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Тюрин",
+            "firstName": "Константин",
+            "patronymic": "Олегович",
+            "personalNumber": "179850",
+            "birthDay": "05/13/1990",
+            "startDate": "12/01/2024",
+            "positionCode": "643777",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Авдеев",
+            "firstName": "Александр",
+            "patronymic": "Сергеевич",
+            "personalNumber": "179652",
+            "birthDay": "02/04/1993",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Агзамов",
+            "firstName": "Ратмир",
+            "patronymic": "Ренатович",
+            "personalNumber": "209925",
+            "birthDay": "12/02/2007",
+            "startDate": "02/13/2026",
+            "positionCode": "643779",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Афонин",
+            "firstName": "Олег",
+            "patronymic": "Игоревич",
+            "personalNumber": "179658",
+            "birthDay": "09/14/1988",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Ахудьянов",
+            "firstName": "Руслан",
+            "patronymic": "Мидахатович",
+            "personalNumber": "179660",
+            "birthDay": "07/22/1995",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Багаутдинов",
+            "firstName": "Урсал",
+            "patronymic": "Уралович",
+            "personalNumber": "194310",
+            "birthDay": "02/06/1998",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Батраев",
+            "firstName": "Андрей",
+            "patronymic": "Андреевич",
+            "personalNumber": "181233",
+            "birthDay": "01/27/1994",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Виденеев",
+            "firstName": "Олег",
+            "patronymic": "Сергеевич",
+            "personalNumber": "135735",
+            "birthDay": "06/18/1988",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Волынкин",
+            "firstName": "Максим",
+            "patronymic": "Александрович",
+            "personalNumber": "18425",
+            "birthDay": "11/04/1977",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Воропаев",
+            "firstName": "Дмитрий",
+            "patronymic": "Викторович",
+            "personalNumber": "180169",
+            "birthDay": "05/26/1995",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Гайнитдинов",
+            "firstName": "Загит",
+            "patronymic": "Ринатович",
+            "personalNumber": "183301",
+            "birthDay": "02/18/1999",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Галиакберов",
+            "firstName": "Ильсур",
+            "patronymic": "Жалилович",
+            "personalNumber": "183447",
+            "birthDay": "03/17/2000",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Гарипов",
+            "firstName": "Динар",
+            "patronymic": "Тангатарович",
+            "personalNumber": "184396",
+            "birthDay": "12/30/1995",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Гильманов",
+            "firstName": "Айгиз",
+            "patronymic": "Фаизрахманович",
+            "personalNumber": "143688",
+            "birthDay": "02/28/1990",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Григорьев",
+            "firstName": "Иван",
+            "patronymic": "Александрович",
+            "personalNumber": "143838",
+            "birthDay": "03/14/1993",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Гупалов",
+            "firstName": "Данил",
+            "patronymic": "Андреевич",
+            "personalNumber": "209714",
+            "birthDay": "02/15/2003",
+            "startDate": "01/28/2026",
+            "positionCode": "643779",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Денисов",
+            "firstName": "Дмитрий",
+            "patronymic": "Викторович",
+            "personalNumber": "109925",
+            "birthDay": "07/13/1981",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Джумагулов",
+            "firstName": "Темер",
+            "patronymic": "Сагындыкович",
+            "personalNumber": "179681",
+            "birthDay": "02/11/1992",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Добрынин",
+            "firstName": "Евгений",
+            "patronymic": "Константинович",
+            "personalNumber": "179682",
+            "birthDay": "06/05/1998",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Еремеев",
+            "firstName": "Александр",
+            "patronymic": "Николаевич",
+            "personalNumber": "118699",
+            "birthDay": "05/18/1984",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Ерков",
+            "firstName": "Яков",
+            "patronymic": "Александрович",
+            "personalNumber": "186121",
+            "birthDay": "06/17/1994",
+            "startDate": "01/22/2024",
+            "positionCode": "643779",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Житбисбаев",
+            "firstName": "Руслан",
+            "patronymic": "Барлыкович",
+            "personalNumber": "208126",
+            "birthDay": "11/13/1998",
+            "startDate": "10/14/2025",
+            "positionCode": "643779",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Иванов",
+            "firstName": "Игорь",
+            "patronymic": "Евгеньевич",
+            "personalNumber": "209837",
+            "birthDay": "03/12/2007",
+            "startDate": "02/07/2026",
+            "positionCode": "643779",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Изюмов",
+            "firstName": "Сергей",
+            "patronymic": "Сергеевич",
+            "personalNumber": "205504",
+            "birthDay": "06/15/1999",
+            "startDate": "05/29/2025",
+            "positionCode": "643779",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Ишимов",
+            "firstName": "Александр",
+            "patronymic": "Леонидович",
+            "personalNumber": "200390",
+            "birthDay": "10/07/1997",
+            "startDate": "08/02/2024",
+            "positionCode": "643779",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Калугин",
+            "firstName": "Александр",
+            "patronymic": "Викторович",
+            "personalNumber": "179634",
+            "birthDay": "10/27/1987",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Киселев",
+            "firstName": "Артем",
+            "patronymic": "Евгеньевич",
+            "personalNumber": "111661",
+            "birthDay": "12/03/1984",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Ковешников",
+            "firstName": "Александр",
+            "patronymic": "Владимирович",
+            "personalNumber": "135742",
+            "birthDay": "04/10/1989",
+            "startDate": "03/30/2024",
+            "positionCode": "643779",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Конон",
+            "firstName": "Дмитрий",
+            "patronymic": "Александрович",
+            "personalNumber": "183918",
+            "birthDay": "06/17/2001",
+            "startDate": "01/01/2025",
+            "positionCode": "643779",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Курюмов",
+            "firstName": "Евгений",
+            "patronymic": "Евгеньевич",
+            "personalNumber": "106372",
+            "birthDay": "10/28/1983",
+            "startDate": "01/11/2024",
+            "positionCode": "643779",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Кучер",
+            "firstName": "Владимир",
+            "patronymic": "Сергеевич",
+            "personalNumber": "184018",
+            "birthDay": "06/02/1996",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Легконогов",
+            "firstName": "Данил",
+            "patronymic": "Витальевич",
+            "personalNumber": "183240",
+            "birthDay": "12/01/2000",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Мужеловский",
+            "firstName": "Дмитрий",
+            "patronymic": "Сергеевич",
+            "personalNumber": "189359",
+            "birthDay": "10/25/1984",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Мулюков",
+            "firstName": "Галинур",
+            "patronymic": "Равилович",
+            "personalNumber": "205097",
+            "birthDay": "10/19/1996",
+            "startDate": "04/24/2025",
+            "positionCode": "643779",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Мухамедьянов",
+            "firstName": "Сарьян",
+            "patronymic": "Рафилович",
+            "personalNumber": "184574",
+            "birthDay": "08/01/1995",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Мухотьянов",
+            "firstName": "Бауржан",
+            "patronymic": "Сирькбаевич",
+            "personalNumber": "184097",
+            "birthDay": "07/05/1989",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Петров",
+            "firstName": "Данил",
+            "patronymic": "Игоревич",
+            "personalNumber": "179736",
+            "birthDay": "06/05/1991",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Петров",
+            "firstName": "Михаил",
+            "patronymic": "Юрьевич",
+            "personalNumber": "135817",
+            "birthDay": "02/06/1988",
+            "startDate": "02/19/2025",
+            "positionCode": "643779",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Пирятинский",
+            "firstName": "Вадим",
+            "patronymic": "Сергеевич",
+            "personalNumber": "199557",
+            "birthDay": "02/04/1994",
+            "startDate": "07/03/2024",
+            "positionCode": "643779",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Попов",
+            "firstName": "Антон",
+            "patronymic": "Андреевич",
+            "personalNumber": "192466",
+            "birthDay": "09/07/1995",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Прокуда",
+            "firstName": "Антон",
+            "patronymic": "Игоревич",
+            "personalNumber": "179741",
+            "birthDay": "05/22/1993",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Раенко",
+            "firstName": "Евгений",
+            "patronymic": "Алексеевич",
+            "personalNumber": "198939",
+            "birthDay": "01/29/2000",
+            "startDate": "01/02/2025",
+            "positionCode": "643779",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Рахимов",
+            "firstName": "Данил",
+            "patronymic": "Дамирович",
+            "personalNumber": "193377",
+            "birthDay": "01/01/2002",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Романов",
+            "firstName": "Юрий",
+            "patronymic": "Андреевич",
+            "personalNumber": "180892",
+            "birthDay": "03/26/1993",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Семченков",
+            "firstName": "Никита",
+            "patronymic": "Валерьевич",
+            "personalNumber": "179743",
+            "birthDay": "11/26/1991",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Тажиев",
+            "firstName": "Денис",
+            "patronymic": "Марсович",
+            "personalNumber": "179745",
+            "birthDay": "08/12/1991",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Танцеров",
+            "firstName": "Никита",
+            "patronymic": "Андреевич",
+            "personalNumber": "184852",
+            "birthDay": "02/26/2003",
+            "startDate": "08/01/2025",
+            "positionCode": "643779",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Татаркин",
+            "firstName": "Александр",
+            "patronymic": "Викторович",
+            "personalNumber": "135838",
+            "birthDay": "09/03/1974",
+            "startDate": "02/19/2024",
+            "positionCode": "643779",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Уткин",
+            "firstName": "Андрей",
+            "patronymic": "Сергеевич",
+            "personalNumber": "184540",
+            "birthDay": "02/29/2000",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Фатун",
+            "firstName": "Матвей",
+            "patronymic": "Сергеевич",
+            "personalNumber": "194361",
+            "birthDay": "03/05/2004",
+            "startDate": "04/25/2025",
+            "positionCode": "643779",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Халилов",
+            "firstName": "Айдар",
+            "patronymic": "Гафурович",
+            "personalNumber": "179746",
+            "birthDay": "12/01/1995",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Халисов",
+            "firstName": "Марат",
+            "patronymic": "Ямилевич",
+            "personalNumber": "179747",
+            "birthDay": "01/23/1994",
+            "startDate": "10/24/2024",
+            "positionCode": "643779",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Харчук",
+            "firstName": "Артем",
+            "patronymic": "Игоревич",
+            "personalNumber": "135788",
+            "birthDay": "04/02/1987",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Хусаинов",
+            "firstName": "Дамир",
+            "patronymic": "Мавлитович",
+            "personalNumber": "135848",
+            "birthDay": "12/02/1983",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Черный",
+            "firstName": "Михаил",
+            "patronymic": "Сергеевич",
+            "personalNumber": "200389",
+            "birthDay": "07/01/1987",
+            "startDate": "08/02/2024",
+            "positionCode": "643779",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Чикарев",
+            "firstName": "Игорь",
+            "patronymic": "Вячеславович",
+            "personalNumber": "135862",
+            "birthDay": "12/29/1973",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Шанюк",
+            "firstName": "Антон",
+            "patronymic": "Антонович",
+            "personalNumber": "182053",
+            "birthDay": "01/30/1994",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Щепетов",
+            "firstName": "Алексей",
+            "patronymic": "Сергеевич",
+            "personalNumber": "209082",
+            "birthDay": "05/02/2002",
+            "startDate": "12/10/2025",
+            "positionCode": "643779",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Якушов",
+            "firstName": "Сергей",
+            "patronymic": "Вячеславович",
+            "personalNumber": "189241",
+            "birthDay": "10/21/1995",
+            "startDate": "01/01/2024",
+            "positionCode": "643779",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Ялалов",
+            "firstName": "Инсаф",
+            "patronymic": "Иргалиевич",
+            "personalNumber": "202354",
+            "birthDay": "01/15/1997",
+            "startDate": "11/15/2024",
+            "positionCode": "643779",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Агапов",
+            "firstName": "Максим",
+            "patronymic": "Евгеньевич",
+            "personalNumber": "200634",
+            "birthDay": "02/10/2001",
+            "startDate": "09/28/2025",
+            "positionCode": "643780",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Воронин",
+            "firstName": "Богдан",
+            "patronymic": "Алексеевич",
+            "personalNumber": "201748",
+            "birthDay": "03/10/2003",
+            "startDate": "01/02/2026",
+            "positionCode": "643780",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Гайфуллин",
+            "firstName": "Ильнур",
+            "patronymic": "Вафирович",
+            "personalNumber": "184527",
+            "birthDay": "10/20/1993",
+            "startDate": "01/01/2024",
+            "positionCode": "643780",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Ганджук",
+            "firstName": "Андрей",
+            "patronymic": "Евгеньевич",
+            "personalNumber": "155204",
+            "birthDay": "11/16/1994",
+            "startDate": "01/01/2024",
+            "positionCode": "643780",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Гневнов",
+            "firstName": "Никита",
+            "patronymic": "Андреевич",
+            "personalNumber": "184861",
+            "birthDay": "05/13/1999",
+            "startDate": "01/21/2024",
+            "positionCode": "643780",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Гумеров",
+            "firstName": "Загит",
+            "patronymic": "Забирович",
+            "personalNumber": "178136",
+            "birthDay": "09/16/1996",
+            "startDate": "01/01/2024",
+            "positionCode": "643780",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Динисламов",
+            "firstName": "Азамат",
+            "patronymic": "Данисович",
+            "personalNumber": "190798",
+            "birthDay": "01/05/2001",
+            "startDate": "01/01/2024",
+            "positionCode": "643780",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Исламгулов",
+            "firstName": "Вильдан",
+            "patronymic": "Венерович",
+            "personalNumber": "197180",
+            "birthDay": "11/09/2004",
+            "startDate": "07/27/2025",
+            "positionCode": "643780",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Корбут",
+            "firstName": "Артем",
+            "patronymic": "Борисович",
+            "personalNumber": "140139",
+            "birthDay": "05/05/1992",
+            "startDate": "01/01/2024",
+            "positionCode": "643780",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Литвинов",
+            "firstName": "Богдан",
+            "patronymic": "Александрович",
+            "personalNumber": "176842",
+            "birthDay": "07/13/1998",
+            "startDate": "02/21/2025",
+            "positionCode": "643780",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Лысиков",
+            "firstName": "Евгений",
+            "patronymic": "Михайлович",
+            "personalNumber": "178822",
+            "birthDay": "08/07/2001",
+            "startDate": "05/08/2025",
+            "positionCode": "643780",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Попов",
+            "firstName": "Николай",
+            "patronymic": "Васильевич",
+            "personalNumber": "203801",
+            "birthDay": "10/20/1985",
+            "startDate": "01/02/2026",
+            "positionCode": "643780",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Сабитов",
+            "firstName": "Галим",
+            "patronymic": "Айдарович",
+            "personalNumber": "194587",
+            "birthDay": "11/22/1983",
+            "startDate": "01/01/2024",
+            "positionCode": "643780",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Слепцов",
+            "firstName": "Алексей",
+            "patronymic": "Анатольевич",
+            "personalNumber": "200990",
+            "birthDay": "09/20/2002",
+            "startDate": "01/01/2025",
+            "positionCode": "643780",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Соловьев",
+            "firstName": "Максим",
+            "patronymic": "Владиленович",
+            "personalNumber": "130516",
+            "birthDay": "10/02/1987",
+            "startDate": "01/01/2024",
+            "positionCode": "643780",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Утарбаев",
+            "firstName": "Серикпай",
+            "patronymic": "Туреханович",
+            "personalNumber": "210015",
+            "birthDay": "01/10/1994",
+            "startDate": "02/20/2026",
+            "positionCode": "643780",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Федоркин",
+            "firstName": "Игорь",
+            "patronymic": "Владимирович",
+            "personalNumber": "207741",
+            "birthDay": "04/06/1980",
+            "startDate": "09/20/2025",
+            "positionCode": "643780",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Ширяев",
+            "firstName": "Алексей",
+            "patronymic": "Сергеевич",
+            "personalNumber": "209772",
+            "birthDay": "01/23/1999",
+            "startDate": "02/01/2026",
+            "positionCode": "643780",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Ягудин",
+            "firstName": "Шамиль",
+            "patronymic": "Анварович",
+            "personalNumber": "199953",
+            "birthDay": "03/10/1981",
+            "startDate": "07/19/2024",
+            "positionCode": "643780",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Янгельский",
+            "firstName": "Георгий",
+            "patronymic": "Иванович",
+            "personalNumber": "200513",
+            "birthDay": "11/18/2003",
+            "startDate": "08/08/2024",
+            "positionCode": "643780",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Васильев",
+            "firstName": "Сергей",
+            "patronymic": "Анатольевич",
+            "personalNumber": "138683",
+            "birthDay": "09/11/1989",
+            "startDate": "05/01/2025",
+            "positionCode": "643795",
+            "teamNumber": "5"
+        },
+        {
+            "lastName": "Колесникова",
+            "firstName": "Елена",
+            "patronymic": "Васильевна",
+            "personalNumber": "179819",
+            "birthDay": "09/20/1991",
+            "startDate": "01/01/2024",
+            "positionCode": "643796",
+            "teamNumber": "5"
+        },
+        {
+            "lastName": "Кузнецова",
+            "firstName": "Анастасия",
+            "patronymic": "Сергеевна",
+            "personalNumber": "180965",
+            "birthDay": "10/10/1992",
+            "startDate": "01/01/2024",
+            "positionCode": "643796",
+            "teamNumber": "5"
+        },
+        {
+            "lastName": "Сюрсин",
+            "firstName": "Григорий",
+            "patronymic": "Геннадьевич",
+            "personalNumber": "183445",
+            "birthDay": "07/05/1991",
+            "startDate": "02/02/2025",
+            "positionCode": "643975",
+            "teamNumber": "5"
+        },
+        {
+            "lastName": "Хамидуллин",
+            "firstName": "Наиль",
+            "patronymic": "Ринадович",
+            "personalNumber": "117819",
+            "birthDay": "01/29/1977",
+            "startDate": "01/01/2024",
+            "positionCode": "643975",
+            "teamNumber": "5"
+        },
+        {
+            "lastName": "Шкилев",
+            "firstName": "Андрей",
+            "patronymic": "Викторович",
+            "personalNumber": "179791",
+            "birthDay": "01/30/1969",
+            "startDate": "01/01/2024",
+            "positionCode": "643975",
+            "teamNumber": "5"
+        },
+        {
+            "lastName": "Алчанов",
+            "firstName": "Бигежан",
+            "patronymic": "Амербекович",
+            "personalNumber": "139073",
+            "birthDay": "11/01/1984",
+            "startDate": "07/01/2025",
+            "positionCode": "643797",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Багрин",
+            "firstName": "Николай",
+            "patronymic": "Александрович",
+            "personalNumber": "43885",
+            "birthDay": "05/22/1965",
+            "startDate": "01/01/2024",
+            "positionCode": "643797",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Васильев",
+            "firstName": "Евгений",
+            "patronymic": "Анатольевич",
+            "personalNumber": "133485",
+            "birthDay": "06/04/1988",
+            "startDate": "09/04/2024",
+            "positionCode": "643797",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Гудович",
+            "firstName": "Евгений",
+            "patronymic": "Викторович",
+            "personalNumber": "179762",
+            "birthDay": "04/17/1991",
+            "startDate": "01/01/2024",
+            "positionCode": "643797",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Лыков",
+            "firstName": "Дмитрий",
+            "patronymic": "Юрьевич",
+            "personalNumber": "135801",
+            "birthDay": "02/09/1989",
+            "startDate": "01/01/2024",
+            "positionCode": "643797",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Пинегин",
+            "firstName": "Виталий",
+            "patronymic": "Витальевич",
+            "personalNumber": "179737",
+            "birthDay": "12/18/1986",
+            "startDate": "04/01/2025",
+            "positionCode": "643797",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Полукаров",
+            "firstName": "Рафик",
+            "patronymic": "Рафикович",
+            "personalNumber": "77412",
+            "birthDay": "10/03/1981",
+            "startDate": "01/01/2024",
+            "positionCode": "643797",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Савченко",
+            "firstName": "Евгений",
+            "patronymic": "Анатольевич",
+            "personalNumber": "125671",
+            "birthDay": "10/11/1983",
+            "startDate": "01/01/2024",
+            "positionCode": "643797",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Самохвалов",
+            "firstName": "Андрей",
+            "patronymic": "Валентинович",
+            "personalNumber": "16664",
+            "birthDay": "06/15/1966",
+            "startDate": "01/01/2024",
+            "positionCode": "643797",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Удовенко",
+            "firstName": "Дмитрий",
+            "patronymic": "Владимирович",
+            "personalNumber": "184060",
+            "birthDay": "05/23/1978",
+            "startDate": "01/01/2024",
+            "positionCode": "643797",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Федулкин",
+            "firstName": "Алексей",
+            "patronymic": "Александрович",
+            "personalNumber": "181067",
+            "birthDay": "09/15/1998",
+            "startDate": "01/01/2024",
+            "positionCode": "643797",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Шанюк",
+            "firstName": "Антон",
+            "patronymic": "Викторович",
+            "personalNumber": "185682",
+            "birthDay": "06/29/1971",
+            "startDate": "01/01/2024",
+            "positionCode": "643797",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Шаталов",
+            "firstName": "Павел",
+            "patronymic": "Олегович",
+            "personalNumber": "190727",
+            "birthDay": "10/15/1989",
+            "startDate": "01/01/2024",
+            "positionCode": "643797",
+            "teamNumber": "3"
+        },
+        {
+            "lastName": "Шекуров",
+            "firstName": "Валерий",
+            "patronymic": "Геннадьевич",
+            "personalNumber": "18423",
+            "birthDay": "11/03/1968",
+            "startDate": "01/01/2024",
+            "positionCode": "643797",
+            "teamNumber": "4"
+        },
+        {
+            "lastName": "Исхаков",
+            "firstName": "Ринат",
+            "patronymic": "Равилевич",
+            "personalNumber": "17282",
+            "birthDay": "08/04/1971",
+            "startDate": "01/01/2024",
+            "positionCode": "643799",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Сурков",
+            "firstName": "Дмитрий",
+            "patronymic": "Анатольевич",
+            "personalNumber": "179668",
+            "birthDay": "04/30/1982",
+            "startDate": "04/01/2025",
+            "positionCode": "643799",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Кошарнов",
+            "firstName": "Анатолий",
+            "patronymic": "Владимирович",
+            "personalNumber": "179783",
+            "birthDay": "10/24/1983",
+            "startDate": "01/01/2024",
+            "positionCode": "643800",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Нагимов",
+            "firstName": "Рэм",
+            "patronymic": "Римович",
+            "personalNumber": "179784",
+            "birthDay": "03/05/1986",
+            "startDate": "01/01/2024",
+            "positionCode": "643800",
+            "teamNumber": "2"
+        },
+        {
+            "lastName": "Чванов",
+            "firstName": "Александр",
+            "patronymic": "Алексеевич",
+            "personalNumber": "179787",
+            "birthDay": "12/28/1988",
+            "startDate": "02/12/2024",
+            "positionCode": "643800",
+            "teamNumber": "1"
+        },
+        {
+            "lastName": "Черкасова",
+            "firstName": "Надежда",
+            "patronymic": "Ефимовна",
+            "personalNumber": "135960",
+            "birthDay": "02/05/1971",
+            "startDate": "08/01/2024",
+            "positionCode": "643800",
+            "teamNumber": "2"
+        }
+    ]
+}

@@ -1,4 +1,3 @@
-import styles from './sidebar.module.css';
 import clsx from 'clsx';
 
 import { useContext } from 'react';
@@ -7,27 +6,33 @@ import { Link, useLocation } from 'react-router-dom';
 import { CloseButton } from '../buttons/close/close';
 
 import { LayerContext } from '../../contexts/layer/layerContext';
-
 import { useSelector } from '../../services/store';
+import { selectProfile } from '../../services/slices/auth/slice';
 
-import { selectEmployee } from '../../services/slices/auth/slice';
-import { ADMIN_ROLE, SECTION_MASTER_ROLE } from '../../utils/types';
+import {
+  ADMIN_ROLE,
+  MASTER_ROLE,
+  PACKER_ROLE,
+  USER_ROLE,
+} from '../../utils/types';
+
+import styles from './sidebar.module.css';
 
 export const Sidebar = () => {
-  const { isOpenMenu, setIsOpenOverlay, setIsOpenMenu, setIsLogoutOpenModal } =
+  const { isMenuOpen, setIsOverlayOpen, setIsMenuOpen, setIsLogoutOpen } =
     useContext(LayerContext);
 
-  const employee = useSelector(selectEmployee);
+  const profile = useSelector(selectProfile);
   const location = useLocation(); // Получаем текущий путь
 
   const handleClick = () => {
-    setIsOpenOverlay(false);
-    setIsOpenMenu(false);
+    setIsOverlayOpen(false);
+    setIsMenuOpen(false);
   };
 
   const handleClickLogout = () => {
-    setIsOpenMenu(false);
-    setIsLogoutOpenModal(true);
+    setIsMenuOpen(false);
+    setIsLogoutOpen(true);
   };
 
   // Функция для предотвращения закрытия при клике на элементы меню
@@ -38,35 +43,61 @@ export const Sidebar = () => {
 
   return (
     <div
-      className={clsx(styles.container, isOpenMenu && styles.menu__open)}
+      className={clsx(styles.container, isMenuOpen && styles.menu__open)}
       onClick={handleMenuClick}
     >
       <CloseButton />
 
       <nav className={styles.navigation}>
         <ul className={styles.navigation__list}>
-          {employee?.role === ADMIN_ROLE ||
-            (employee?.role === SECTION_MASTER_ROLE && (
-              <li
-                className={clsx(
-                  styles.link,
-                  location.pathname === '/home' && styles.link__active,
-                )}
-                onClick={handleClick}
-              >
-                <Link to='/home'>Главная</Link>
-              </li>
-            ))}
-
-          {employee?.role === SECTION_MASTER_ROLE && (
+          {(profile?.role === ADMIN_ROLE ||
+            profile?.role === USER_ROLE ||
+            profile?.role === MASTER_ROLE) && (
             <li
               className={clsx(
                 styles.link,
-                location.pathname === '/timesheet' && styles.link__active,
+                location.pathname === '/home' && styles.link__active,
               )}
               onClick={handleClick}
             >
-              <Link to='/timesheet'>Табель</Link>
+              <Link to='/home'>Главная</Link>
+            </li>
+          )}
+
+          {profile?.role === ADMIN_ROLE && (
+            <li
+              className={clsx(
+                styles.link,
+                location.pathname === '/admin' && styles.link__active,
+              )}
+              onClick={handleClick}
+            >
+              <Link to='/admin'>Пользователи</Link>
+            </li>
+          )}
+
+          {profile?.role === MASTER_ROLE && (
+            <li
+              className={clsx(
+                styles.link,
+                location.pathname === '/master/timesheet' &&
+                  styles.link__active,
+              )}
+              onClick={handleClick}
+            >
+              <Link to='/master/timesheet'>Табель</Link>
+            </li>
+          )}
+
+          {profile?.role === PACKER_ROLE && (
+            <li
+              className={clsx(
+                styles.link,
+                location.pathname === '/packer/scan' && styles.link__active,
+              )}
+              onClick={handleClick}
+            >
+              <Link to='/packer/scan'>Сканирование</Link>
             </li>
           )}
 

@@ -1,6 +1,28 @@
 .button__wrapper {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   flex-grow: 1;
+  gap: 30px;
+}
+
+.card__container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.buttons__wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.employee__wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 0.8944rem + 0.5282vw, 1.375rem);
+}
+
+.button:focus {
+  outline: none;
 }

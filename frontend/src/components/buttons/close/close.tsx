@@ -6,35 +6,25 @@ import styles from './close.module.css';
 
 export const CloseButton = () => {
   const {
-    setIsOpenMenu,
-    setIsOpenOverlay,
-    setIsLoginModalOpen,
-    setIsLogoutOpenModal,
-    setIsAddWorkerOpenModall,
-    setIsUpdateWorkerOpenModall,
-    setIsAddShiftOpenModall,
-    setIsDeleteOpenModall,
-    setIsUserShiftInfoOpenModal,
-    setIsProductionOpenMdal,
-    setIsShipmentOpenMdal,
-    setIsPackOpenMdal,
-    setIsFixOpenMdal,
+    setIsOverlayOpen,
+    setIsMenuOpen,
+    setIsLoginOpen,
+    setIsLogoutOpen,
+    setIsEmployeeSearchOpen,
+    setIsEmployeeCreateOpen,
+    setIsEmployeeEditOpen,
+    setIsEmployeeDeleteOpen,
   } = useContext(LayerContext);
 
   const handleClick = () => {
-    setIsOpenMenu(false);
-    setIsOpenOverlay(false);
-    setIsLoginModalOpen(false);
-    setIsLogoutOpenModal(false);
-    setIsAddWorkerOpenModall(false);
-    setIsUpdateWorkerOpenModall(false);
-    setIsAddShiftOpenModall(false);
-    setIsDeleteOpenModall(false);
-    setIsUserShiftInfoOpenModal(false);
-    setIsProductionOpenMdal(false);
-    setIsShipmentOpenMdal(false);
-    setIsPackOpenMdal(false);
-    setIsFixOpenMdal(false);
+    setIsOverlayOpen(false);
+    setIsMenuOpen(false);
+    setIsLoginOpen(false);
+    setIsLogoutOpen(false);
+    setIsEmployeeSearchOpen(false);
+    setIsEmployeeCreateOpen(false);
+    setIsEmployeeEditOpen(false);
+    setIsEmployeeDeleteOpen(false);
   };
 
   return (

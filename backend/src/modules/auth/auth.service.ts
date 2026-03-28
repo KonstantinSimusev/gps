@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { Response, Request } from 'express';
 
 import {
-  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -18,12 +17,11 @@ import { Account } from '../account/entities/account.entity';
 
 import { AccountsRepository } from '../account/accounts.repository';
 import { EmployeesRepository } from '../employees/employees.repository';
-import { RolesRepository } from '../roles/roles.repository';
 import { EmployeeRolesRepository } from '../employee-roles/employee-roles.repository';
 
 import {
   ITokenOptions,
-  IEmployee,
+  IProfile,
   ISuccess,
   IJwtPayload,
 } from '../../shared/interfaces/api.interface';
@@ -36,21 +34,25 @@ export class AuthService {
     private readonly accountsRepository: AccountsRepository,
     private readonly employeesRepository: EmployeesRepository,
     private readonly employeeRolesRepository: EmployeeRolesRepository,
-    private readonly rolesRepository: RolesRepository,
   ) {}
-
-  // === ПУБЛИЧНЫЕ МЕТОДЫ ===
 
   async login(
     login: string,
     password: string,
     res: Response,
-  ): Promise<IEmployee> {
+  ): Promise<IProfile> {
     // Проверка аккаунта
     const account = await this.accountsRepository.findAccountByLogin(login);
 
     if (!account) {
-      throw new NotFoundException('Аккаунт не найден');
+      throw new UnauthorizedException('Доступ запрещён');
+    }
+
+    const employeeRole =
+      await this.employeeRolesRepository.findEmployeeRoleByAccount(account.id);
+
+    if (!employeeRole) {
+      throw new UnauthorizedException('Доступ запрещён');
     }
 
     // Проверка пароля
@@ -60,7 +62,7 @@ export class AuthService {
     );
 
     if (!isPasswordValid) {
-      throw new BadRequestException('Неверный пароль');
+      throw new UnauthorizedException('Доступ запрещён');
     }
 
     // Генерируем accessToken
@@ -81,9 +83,10 @@ export class AuthService {
     const hashedRefreshToken = await bcrypt.hash(refreshToken, salt);
 
     // Обновили refreshToken в базе данных
-    await this.accountsRepository.update(account.id, {
+    await this.accountsRepository.updateHashedRefreshToken(
+      account.id,
       hashedRefreshToken,
-    });
+    );
 
     // Установили refreshToken в куки
     this.setCookie(
@@ -98,34 +101,17 @@ export class AuthService {
     );
 
     if (!employee) {
-      throw new NotFoundException('Сотрудник не найден');
-    }
-
-    const employeeRole =
-      await this.employeeRolesRepository.findEmployeeRoleByAccount(account.id);
-
-    if (employeeRole) {
-      return {
-        ...employee,
-        role: employeeRole.name,
-        isActive: employeeRole.isActive,
-      };
-    }
-
-    const role = await this.rolesRepository.findRoleByAccount(account.id);
-
-    if (!role) {
-      throw new UnauthorizedException('Роль отсутствует');
+      throw new UnauthorizedException('Доступ запрещён');
     }
 
     return {
       ...employee,
-      role: role.name,
-      isActive: true,
+      roleId: employeeRole.id,
+      role: employeeRole.name,
     };
   }
 
-  async checkAccessToken(req: Request, res: Response): Promise<ISuccess> {
+  async checkAccessToken(req: Request, res: Response): Promise<IProfile> {
     try {
       // Сначала пробуем проверить access token
       return await this.validateAccessToken(req);
@@ -180,13 +166,9 @@ export class AuthService {
     );
 
     if (account) {
-      await this.accountsRepository.update(account.id, {
-        hashedRefreshToken: null,
-      });
+      await this.accountsRepository.updateHashedRefreshToken(account.id, null);
     }
   }
-
-  // === ПРИВАТНЫЕ МЕТОДЫ: РАБОТА С ТОКЕНАМИ ===
 
   private async generateToken(
     options: ITokenOptions<IJwtPayload>,
@@ -209,7 +191,7 @@ export class AuthService {
     return this.jwtService.signAsync(options.payload, { secret, expiresIn });
   }
 
-  private async validateAccessToken(req: Request): Promise<ISuccess> {
+  private async validateAccessToken(req: Request): Promise<IProfile> {
     const accessToken = await this.getAccessToken(req);
 
     // Проверяем токен (подпись и срок действия), возвращаем обьект payload
@@ -225,15 +207,31 @@ export class AuthService {
       );
     }
 
+    const employeeRole =
+      await this.employeeRolesRepository.findEmployeeRoleByAccount(accountId);
+
+    if (!employeeRole) {
+      throw new UnauthorizedException('Роль отсутствует');
+    }
+
+    const employee =
+      await this.employeesRepository.findEmployeeByAccount(accountId);
+
+    if (!employee) {
+      throw new NotFoundException('Сотрудник не найден');
+    }
+
     return {
-      message: 'Access token проверен успешно',
+      ...employee,
+      roleId: employeeRole.id,
+      role: employeeRole.name,
     };
   }
 
   private async refreshAccessToken(
     req: Request,
     res: Response,
-  ): Promise<ISuccess> {
+  ): Promise<IProfile> {
     try {
       const refreshToken = req.cookies.refresh_token;
 
@@ -255,8 +253,17 @@ export class AuthService {
         throw new UnauthorizedException('Неверный refresh token');
       }
 
-      // Генерируем новый accessToken
-      const newAccessToken = await this.generateToken({
+      const employeeRole =
+        await this.employeeRolesRepository.findEmployeeRoleByAccount(
+          account.id,
+        );
+
+      if (!employeeRole) {
+        throw new UnauthorizedException('Роль отсутствует');
+      }
+
+      // Генерируем accessToken
+      const accessToken = await this.generateToken({
         payload: { sub: account.id },
         secretKey: 'ACCESS_TOKEN_SECRET',
         expiresInKey: 'ACCESS_TOKEN_EXPIRATION',
@@ -266,12 +273,22 @@ export class AuthService {
       this.setCookie(
         res,
         'access_token',
-        newAccessToken,
+        accessToken,
         'ACCESS_TOKEN_EXPIRATION',
       );
 
+      const employee = await this.employeesRepository.findEmployeeByAccount(
+        account.id,
+      );
+
+      if (!employee) {
+        throw new NotFoundException('Сотрудник не найден');
+      }
+
       return {
-        message: 'Access token успешно обновлен',
+        ...employee,
+        roleId: employeeRole.id,
+        role: employeeRole.name,
       };
     } catch (error) {
       if (error instanceof UnauthorizedException) {
@@ -284,7 +301,7 @@ export class AuthService {
     }
   }
 
-  private async getAccessToken(req: Request): Promise<string> {
+  async getAccessToken(req: Request): Promise<string> {
     const accessToken = req.cookies.access_token;
 
     if (!accessToken || accessToken.trim() === '') {
@@ -294,7 +311,7 @@ export class AuthService {
     return accessToken;
   }
 
-  private async findAccountByRefreshToken(
+  async findAccountByRefreshToken(
     accounts: Account[],
     refreshToken: string,
   ): Promise<Account | null> {
@@ -311,8 +328,6 @@ export class AuthService {
 
     return null;
   }
-
-  // === ПРИВАТНЫЕ МЕТОДЫ: РАБОТА С КУКАМИ ===
 
   private setCookie(
     res: Response,
@@ -340,12 +355,4 @@ export class AuthService {
       expires: new Date(0),
     });
   }
-
-  // === ПРИВАТНЫЕ МЕТОДЫ: РАБОТА С ДАННЫМИ ===
-
-  // private toApiEmployee(employee: Employee): IEmployee {
-  //   const { account, ...apiEmployee } = employee;
-
-  //   return apiEmployee;
-  // }
 }

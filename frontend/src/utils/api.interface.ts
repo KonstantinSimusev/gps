@@ -12,8 +12,28 @@ export interface ILoginData {
   password: string;
 }
 
-export interface IEmployee {
-  id: string;
+export interface IProfile {
+  employeeId: string;
+  workshopCode: string;
+  teamNumber: string;
+  roleId: string;
   role: string;
-  isActive: boolean;
+}
+
+export interface IEmployeeInfo {
+  id: string;
+  lastName: string;
+  firstName: string;
+  patronymic: string;
+  workshop: string;
+  team: string;
+  profession: string;
+  personalNumber: string;
+  positionCode: string;
+  grade: string;
+  schedule: string;
+  birthDay: string;
+  startDate: string;
+  endDate: string | null;
+  role: string | null;
 }

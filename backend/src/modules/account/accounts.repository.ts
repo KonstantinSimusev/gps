@@ -15,8 +15,13 @@ export class AccountsRepository {
     return this.accountsRepository.save(account);
   }
 
-  async update(id: string, updateData: Partial<Account>): Promise<void> {
-    this.accountsRepository.update(id, updateData);
+  async updateHashedRefreshToken(
+    id: string,
+    hashedRefreshToken: string,
+  ): Promise<void> {
+    await this.accountsRepository.update(id, {
+      hashedRefreshToken,
+    });
   }
 
   async findAccountByLogin(login: string): Promise<Account | null> {

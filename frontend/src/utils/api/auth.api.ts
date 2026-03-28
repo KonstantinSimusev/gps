@@ -1,11 +1,9 @@
-import type { IEmployee, ILoginData, ISuccess } from '../api.interface';
+import type { IProfile, ILoginData, ISuccess } from '../api.interface';
 
 // Используем переменную окружения
 export const URL = import.meta.env.VITE_API_URL ?? '/api/gps';
 
-export const loginEmployeeApi = async (
-  data: ILoginData,
-): Promise<IEmployee> => {
+export const loginEmployeeApi = async (data: ILoginData): Promise<IProfile> => {
   try {
     const response = await fetch(`${URL}/auth/login`, {
       method: 'POST',
@@ -27,10 +25,10 @@ export const loginEmployeeApi = async (
   }
 };
 
-export const checkAccessTokenApi = async (): Promise<ISuccess> => {
+export const checkAccessTokenApi = async (): Promise<IProfile> => {
   try {
     // Здесь происходит запрос к серверу
-    const response = await fetch(`${URL}/auth/token`, {
+    const response = await fetch(`${URL}/auth/profile`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',

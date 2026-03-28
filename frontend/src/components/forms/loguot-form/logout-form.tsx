@@ -2,12 +2,10 @@ import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useDispatch, useSelector } from '../../../services/store';
+import { LayerContext } from '../../../contexts/layer/layerContext';
 
 import { logoutEmployee } from '../../../services/slices/auth/actions';
 import { selectIsLoading } from '../../../services/slices/auth/slice';
-// import { resetShift } from '../../../services/slices/shift/slice';
-
-import { LayerContext } from '../../../contexts/layer/layerContext';
 
 import { Form } from '../../ui/form/form';
 import { Spinner } from '../../ui/spinner/spinner';
@@ -16,37 +14,35 @@ import { Button } from '../../ui/button/button';
 import styles from './logout-form.module.css';
 
 export const LogoutForm = () => {
-  const dispatch = useDispatch();
+  const { setIsAgreed, setIsOverlayOpen, setIsLogoutOpen } =
+  useContext(LayerContext);
+
   const navigate = useNavigate();
-  const { setIsAgreed, setIsOpenOverlay, setIsLogoutOpenModal } =
-    useContext(LayerContext);
+  const dispatch = useDispatch();
   const isLoading = useSelector(selectIsLoading);
 
-  const handleClickLogout = async () => {
+  const handleLogoutClick = async () => {
     try {
       // Диспачим действие выхода
       await dispatch(logoutEmployee());
 
-      // Отчищаем смены
-      // dispatch(resetShift());
-
       // Очищаем состояние оверлеев и модальных окон
-      setIsOpenOverlay(false);
-      setIsLogoutOpenModal(false);
+      setIsOverlayOpen(false);
+      setIsLogoutOpen(false);
       setIsAgreed(false);
 
       // После успешного выхода перенаправляем на главную страницу
       navigate('/');
     } catch (error) {
-      setIsOpenOverlay(false);
-      setIsLogoutOpenModal(false);
+      setIsOverlayOpen(false);
+      setIsLogoutOpen(false);
       navigate('/');
     }
   };
 
-  const handleClickReturn = () => {
-    setIsLogoutOpenModal(false);
-    setIsOpenOverlay(false);
+  const handleReturnClick = () => {
+    setIsOverlayOpen(false);
+    setIsLogoutOpen(false);
   };
 
   return (
@@ -57,14 +53,14 @@ export const LogoutForm = () => {
         <Button
           type='button'
           label='Да'
-          onClick={handleClickLogout}
-          className={styles.button__logout}
+          onClick={handleLogoutClick}
+          className={styles.button__ok}
         />
 
         <Button
           type='button'
           label='Отменить'
-          onClick={handleClickReturn}
+          onClick={handleReturnClick}
           className={styles.button__return}
         />
       </div>

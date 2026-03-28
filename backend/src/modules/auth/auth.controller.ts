@@ -6,7 +6,7 @@ import { AuthDTO } from './dto/auth.dto';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './guards/auth.guard';
 
-import { IEmployee, ISuccess } from '../../shared/interfaces/api.interface';
+import { IProfile, ISuccess } from '../../shared/interfaces/api.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -16,17 +16,16 @@ export class AuthController {
   async login(
     @Body() dto: AuthDTO,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<IEmployee> {
+  ): Promise<IProfile> {
     return this.authService.login(dto.login, dto.password, res);
   }
 
-  @Post('token')
+  @Post('profile')
   @UseGuards(AuthGuard)
   async checkAccessToken(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<ISuccess> {
-    return this.authService.checkAccessToken(req, res);
+    @Req() req: Request & { profile: IProfile },
+  ): Promise<IProfile> {
+    return req.profile;
   }
 
   @Post('logout')

@@ -1,55 +1,42 @@
+import clsx from 'clsx';
+
 import { useContext, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-import clsx from 'clsx';
+import { useDispatch } from '../components/../services/store';
 
-import { Cover } from '../components/cover/cover';
+import { checkAccessToken } from '../components/../services/slices/auth/actions';
+
+import { LayerContext } from '../contexts/layer/layerContext';
+
+import { ProtectedRoute } from '../components/protected-route/protected-route';
+
+import { Home } from '../pages/home/home';
+import { Admin } from '../pages/admin/admin';
+import { Packer } from '../pages/packer/packer';
 import { Timesheet } from '../pages/master/timesheet/timesheet';
 import { DefaultPage } from '../components/../pages/default/default';
-// import { NotFound } from '../../pages/not-found/not-found';
+import { NotFound } from '../pages/not-found/not-found';
+
+import { Cover } from '../components/cover/cover';
+import { Footer } from '../components/footer/footer';
+import { Header } from '../components/header/header';
 import { Overlay } from '../components/overlay/overlay';
 import { Modal } from '../components/modal/modal';
 import { LoginForm } from '../components/forms/login-form/login-form';
-// import { ShiftForm } from '../components/forms/shift-form/shift-form';
-// import { AddWorkerForm } from '../components/forms/add-worker-form/add-worker-form';
 import { LogoutForm } from '../components/forms/loguot-form/logout-form';
-import { ProtectedRoute } from '../components/protected-route/protected-route';
-import { checkAccessToken } from '../components/../services/slices/auth/actions';
-import { useDispatch } from '../components/../services/store';
-// import { UpdateWorkerForm } from '../components/forms/update-worker-form/update-worker-form';
-// import { HomeShift } from '../../pages/home-shift/home-shift';
-// import { Shipment } from '../../pages/shipment/shipment';
-// import { Pack } from '../../pages/pack/pack';
-// import { Residue } from '../../pages/residue/residue';
-// import { Fix } from '../../pages/fix/fix';
-// import { ProductionForm } from '../components/forms/production/production.form';
-// import { ShipmentForm } from '../components/forms/shipment/shipment.form';
-// import { Production } from '../../pages/production/production';
-// import { PackForm } from '../components/forms/pack/pack.form';
-// import { FixForm } from '../components/forms/fix/fix.form';
-import { Footer } from '../components/footer/footer';
-import { Header } from '../components/header/header';
-import { LayerContext } from '../contexts/layer/layerContext';
-import { DeleteForm } from '../components/forms/delete-form/delete-form';
+import { SearchForm } from '../components/forms/search-form/search-form';
 
 import styles from './app.module.css';
-import { Admin } from '../pages/admin/admin';
-import { Home } from '../pages/home/home';
-// import { Production } from '../pages/master/production/production';
+import { EmployeeDeleteForm } from '../components/forms/employee-delete-form/employee-delete-form';
 
 const App = () => {
   const {
-    isOpenOverlay,
-    isLoginModalOpen,
-    isLogoutOpenModal,
-    // isAddWorkerOpenModall,
-    // isUpdateWorkerOpenModall,
-    // isAddShiftOpenModall,
-    isDeleteOpenModall,
-    // isProductionOpenMdal,
-    // isShipmentOpenMdal,
-    // isPackOpenMdal,
-    // isFixOpenMdal,
+    isOverlayOpen,
+    isLoginOpen,
+    isLogoutOpen,
+    isEmployeeSearchOpen,
+    isEmployeeDeleteOpen,
     selectedScrollPosition,
     setSelectedScrollPosition,
   } = useContext(LayerContext);
@@ -60,7 +47,7 @@ const App = () => {
   const scrollPosition = window.scrollY;
 
   useEffect(() => {
-    if (isOpenOverlay) {
+    if (isOverlayOpen) {
       // Устанвливаем в контекст значение
       setSelectedScrollPosition(scrollPosition);
       // Фиксируем контент
@@ -77,7 +64,7 @@ const App = () => {
       // Скролим до этой точки где находились
       window.scrollTo(0, selectedScrollPosition);
     }
-  }, [isOpenOverlay]);
+  }, [isOverlayOpen]);
 
   useEffect(() => {
     console.log('✅ App смонтирован');
@@ -90,7 +77,7 @@ const App = () => {
     <div
       className={clsx(
         styles.container,
-        isOpenOverlay && styles.container__fixed,
+        isOverlayOpen && styles.container__fixed,
       )}
     >
       <Header />
@@ -98,82 +85,40 @@ const App = () => {
       <Routes>
         <Route path='/' element={<DefaultPage />} />
         <Route element={<ProtectedRoute />}>
-        <Route path='/admin' element={<Admin />} />
-          <Route path="/home" element={<Home />} />
-          {/* <Route path="/home/shifts/:shiftId" element={<HomeShift />} /> */}
-          <Route path='/timesheet' element={<Timesheet />} />
-          {/* <Route path='/production' element={<Production />} /> */}
-          {/* <Route path="/shipment" element={<Shipment />} /> */}
-          {/* <Route path="/pack" element={<Pack />} /> */}
-          {/* <Route path="/fix" element={<Fix />} /> */}
-          {/* <Route path="/residue" element={<Residue />} /> */}
+          <Route path='/admin' element={<Admin />} />
+          <Route path='/home' element={<Home />} />
+          <Route path='/master/timesheet' element={<Timesheet />} />
+          <Route path='/packer/scan' element={<Packer />} />
         </Route>
-        {/* <Route path="*" element={<NotFound />} /> */}
+        <Route path='*' element={<NotFound />} />
       </Routes>
       <Footer />
 
-      {isOpenOverlay && <Overlay />}
+      {isOverlayOpen && <Overlay />}
 
-      {isLoginModalOpen && (
+      {isLoginOpen && (
         <Modal>
           <LoginForm />
         </Modal>
       )}
 
-      {/* {isAddWorkerOpenModall && (
+      {isEmployeeSearchOpen && (
         <Modal>
-          <AddWorkerForm />
+          <SearchForm />
         </Modal>
       )}
 
-      {isUpdateWorkerOpenModall && (
+      {isEmployeeDeleteOpen && (
         <Modal>
-          <UpdateWorkerForm />
+          <EmployeeDeleteForm />
         </Modal>
       )}
 
-      {isAddShiftOpenModall && (
-        <Modal>
-          <ShiftForm />
-        </Modal>
-      )}
-
-      {isProductionOpenMdal && (
-        <Modal>
-          <ProductionForm />
-        </Modal>
-      )}
-
-      {isShipmentOpenMdal && (
-        <Modal>
-          <ShipmentForm />
-        </Modal>
-      )}
-
-      {isPackOpenMdal && (
-        <Modal>
-          <PackForm />
-        </Modal>
-      )}
-
-      {isFixOpenMdal && (
-        <Modal>
-          <FixForm />
-        </Modal>
-      )} */}
-
-      {isDeleteOpenModall && (
-        <Modal>
-          <DeleteForm />
-        </Modal>
-      )}
-
-      {isLogoutOpenModal && (
+      {isLogoutOpen && (
         <Modal>
           <LogoutForm />
         </Modal>
       )}
-
     </div>
   );
 };

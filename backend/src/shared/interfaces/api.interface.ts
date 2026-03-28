@@ -19,18 +19,36 @@ export interface IJwtPayload {
   exp?: number;
 }
 
-export interface IEmployee {
-  id: string;
+export interface IProfile {
+  employeeId: string;
   workshopCode: string;
   teamNumber: string;
+  roleId: string;
   role: string;
-  isActive: boolean;
 }
 
-export interface IAccountAPI {
+export interface IAccountInfo {
   lastName: string;
   firstName: string;
   patronymic: string;
   login: string;
   password: string;
+}
+
+export interface IEmployeeInfo {
+  id: string;
+  lastName: string;
+  firstName: string;
+  patronymic: string;
+  workshop: string;
+  team: string;
+  profession: string;
+  personalNumber: string;
+  positionCode: string;
+  grade: string;
+  schedule: string;
+  birthDay: string;
+  startDate: string;
+  endDate: string | null;
+  role: string | null;
 }

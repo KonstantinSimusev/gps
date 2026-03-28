@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 
 import { CreateEmployeeDTO } from './dto/create-employee.dto';
 import { CreateEmployeesDTO } from './dto/create-employees.dto';
@@ -8,10 +16,10 @@ import { EmployeesService } from './employees.service';
 
 import {
   IList,
-  IEmployee,
-  IAccountAPI,
+  IProfile,
+  IAccountInfo,
+  IEmployeeInfo,
 } from '../../shared/interfaces/api.interface';
-
 
 @Controller('employees')
 export class EmployeesController {
@@ -19,21 +27,24 @@ export class EmployeesController {
 
   @Post()
   // @UseGuards(AuthGuard)
-  async create(@Body() dto: CreateEmployeeDTO): Promise<IAccountAPI> {
+  async create(@Body() dto: CreateEmployeeDTO): Promise<IAccountInfo> {
     return this.employeesService.create(dto);
   }
 
   @Post('many')
   async createMany(
     @Body() dtos: CreateEmployeesDTO,
-  ): Promise<IList<IAccountAPI>> {
+  ): Promise<IList<IAccountInfo>> {
     return this.employeesService.createMany(dtos);
   }
 
-  // @Get(':id')
-  // async getUser(@Param('id') id: string): Promise<IUser> {
-  //   return this.userService.getUser(id);
-  // }
+  @Get(':personalNumber')
+  @UseGuards(AuthGuard)
+  async getEmployeeInfo(
+    @Param('personalNumber') personalNumber: string,
+  ): Promise<IEmployeeInfo> {
+    return this.employeesService.getEmployeeInfo(personalNumber);
+  }
 
   // @Put(':id')
   // async updateUser(

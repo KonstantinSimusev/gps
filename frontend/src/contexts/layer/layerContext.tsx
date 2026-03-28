@@ -1,84 +1,57 @@
 import { createContext } from 'react';
-// import { IUser } from '../../utils/api.interface';
 
 interface ILayerContextValue {
   isAgreed: boolean;
-  isOpenOverlay: boolean;
-  isOpenMenu: boolean;
-  isOpenModal: boolean;
-  isLoginModalOpen: boolean;
-  isLogoutOpenModal: boolean;
-  isAddWorkerOpenModall: boolean;
-  isUpdateWorkerOpenModall: boolean;
-  isAddShiftOpenModall: boolean;
-  isDeleteOpenModall: boolean;
-  isUserShiftInfoOpenModal: boolean;
-  isProductionOpenMdal: boolean;
-  isShipmentOpenMdal: boolean;
-  isPackOpenMdal: boolean;
-  isFixOpenMdal: boolean;
+  isOverlayOpen: boolean;
+  isMenuOpen: boolean;
+  isLoginOpen: boolean;
+  isLogoutOpen: boolean;
+  isEmployeeSearchOpen: boolean;
+  isEmployeeCreateOpen: boolean;
+  isEmployeeEditOpen: boolean;
+  isEmployeeDeleteOpen: boolean;
+
   selectedId: string;
   selectedScrollPosition: number;
-  selectedButtonActionType: string;
-  // selectedUser: IUser | null;
+
   setIsAgreed: (value: boolean) => void;
-  setIsOpenOverlay: (value: boolean) => void;
-  setIsOpenMenu: (value: boolean) => void;
-  setIsOpenModal: (value: boolean) => void;
-  setIsLoginModalOpen: (value: boolean) => void;
-  setIsLogoutOpenModal: (value: boolean) => void;
-  setIsAddWorkerOpenModall: (value: boolean) => void;
-  setIsUpdateWorkerOpenModall: (value: boolean) => void;
-  setIsAddShiftOpenModall: (value: boolean) => void;
-  setIsDeleteOpenModall: (value: boolean) => void;
-  setIsUserShiftInfoOpenModal: (value: boolean) => void;
-  setIsProductionOpenMdal: (value: boolean) => void;
-  setIsShipmentOpenMdal: (value: boolean) => void;
-  setIsPackOpenMdal: (value: boolean) => void;
-  setIsFixOpenMdal: (value: boolean) => void;
+  setIsOverlayOpen: (value: boolean) => void;
+  setIsMenuOpen: (value: boolean) => void;
+  setIsLoginOpen: (value: boolean) => void;
+  setIsLogoutOpen: (value: boolean) => void;
+  setIsEmployeeSearchOpen: (value: boolean) => void;
+  setIsEmployeeCreateOpen: (value: boolean) => void;
+  setIsEmployeeEditOpen: (value: boolean) => void;
+  setIsEmployeeDeleteOpen: (value: boolean) => void;
+
   setSelectedId: (value: string) => void;
   setSelectedScrollPosition: (value: number) => void;
-  setSelectedButtonActionType: (value: string) => void;
-  // setSelectedUser: (value: IUser) => void;
 }
 
 export const LayerContext = createContext<ILayerContextValue>({
   isAgreed: false,
-  isOpenOverlay: false,
-  isOpenMenu: false,
-  isOpenModal: false,
-  isLoginModalOpen: false,
-  isLogoutOpenModal: false,
-  isAddWorkerOpenModall: false,
-  isUpdateWorkerOpenModall: false,
-  isAddShiftOpenModall: false,
-  isDeleteOpenModall: false,
-  isUserShiftInfoOpenModal: false,
-  isProductionOpenMdal: false,
-  isShipmentOpenMdal: false,
-  isPackOpenMdal: false,
-  isFixOpenMdal: false,
+  isOverlayOpen: false,
+  isMenuOpen: false,
+  isLoginOpen: false,
+  isLogoutOpen: false,
+  isEmployeeSearchOpen: false,
+  isEmployeeCreateOpen: false,
+  isEmployeeEditOpen: false,
+  isEmployeeDeleteOpen: false,
+
   selectedId: '',
   selectedScrollPosition: 0,
-  selectedButtonActionType: '',
-  // selectedUser: null,
+
   setIsAgreed: () => {},
-  setIsOpenOverlay: () => {},
-  setIsOpenMenu: () => {},
-  setIsOpenModal: () => {},
-  setIsLoginModalOpen: () => {},
-  setIsLogoutOpenModal: () => {},
-  setIsAddWorkerOpenModall: () => {},
-  setIsUpdateWorkerOpenModall: () => {},
-  setIsAddShiftOpenModall: () => {},
-  setIsDeleteOpenModall: () => {},
-  setIsUserShiftInfoOpenModal: () => {},
-  setIsProductionOpenMdal: () => {},
-  setIsShipmentOpenMdal: () => {},
-  setIsPackOpenMdal: () => {},
-  setIsFixOpenMdal: () => {},
+  setIsOverlayOpen: () => {},
+  setIsMenuOpen: () => {},
+  setIsLoginOpen: () => {},
+  setIsLogoutOpen: () => {},
+  setIsEmployeeSearchOpen: () => {},
+  setIsEmployeeCreateOpen: () => {},
+  setIsEmployeeEditOpen: () => {},
+  setIsEmployeeDeleteOpen: () => {},
+
   setSelectedId: () => {},
   setSelectedScrollPosition: () => {},
-  setSelectedButtonActionType: () => {},
-  // setSelectedUser: () => {},
 });

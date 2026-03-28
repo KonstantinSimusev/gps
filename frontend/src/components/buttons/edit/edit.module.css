@@ -1,0 +1,21 @@
+.container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.container:focus {
+  outline: none;
+}
+
+.container:active {
+  transition: transform 0.2s ease;
+  transform: scale(0.9);
+}
+
+.container:hover {
+  opacity: 0.6;
+}

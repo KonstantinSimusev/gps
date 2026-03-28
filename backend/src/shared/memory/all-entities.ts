@@ -142,6 +142,11 @@ export class Employee {
   })
   isActive: boolean;
 
+  // Связь: один сотрудник — один аккаунт
+  @OneToOne(() => Account, (account) => account.employee)
+  @JoinColumn({ name: 'account_id' })
+  account: Account;
+
   // Связь: много сотрудников — одна позиция
   @ManyToOne(() => Position, (position) => position.employees)
   @JoinColumn({ name: 'position_id' })
@@ -151,11 +156,6 @@ export class Employee {
   @ManyToOne(() => Team, (team) => team.employees)
   @JoinColumn({ name: 'team_id' })
   team: Team;
-
-  // Связь: один сотрудник — один аккаунт
-  @OneToOne(() => Account, (account) => account.employee)
-  @JoinColumn({ name: 'account_id' })
-  account: Account;
 
   // Связь: один сотрудник — много ролей сотрудника
   @OneToMany(() => EmployeeRole, (employeeRole) => employeeRole.employee)
@@ -224,11 +224,6 @@ export class Position {
   @ManyToOne(() => Schedule, (schedule) => schedule.positions)
   @JoinColumn({ name: 'schedule_id' })
   schedule: Schedule;
-
-  // Связь: много позиций — одна роль
-  @ManyToOne(() => Role, (role) => role.positions)
-  @JoinColumn({ name: 'role_id' })
-  role: Role;
 }
 
 @Entity({
@@ -269,10 +264,6 @@ export class Role {
     unique: true,
   })
   name: string;
-
-  // Связь: одна роль — много штатных позиций
-  @OneToMany(() => Position, (position) => position.role)
-  positions: Position[];
 
   // Связь: одна роль — много ролей сотрудника
   @OneToMany(() => EmployeeRole, (employeeRole) => employeeRole.role)

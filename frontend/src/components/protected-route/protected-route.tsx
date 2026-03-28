@@ -4,7 +4,6 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useSelector } from '../../services/store';
 
 import { LayerContext } from '../../contexts/layer/layerContext';
-
 import { MainLayout } from '../ui/layouts/main/main-layout';
 
 import {
