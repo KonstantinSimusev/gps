@@ -10,6 +10,7 @@ interface ILayerContextValue {
   isEmployeeCreateOpen: boolean;
   isEmployeeEditOpen: boolean;
   isEmployeeDeleteOpen: boolean;
+  isAccountInfoOpen: boolean;
 
   selectedId: string;
   selectedScrollPosition: number;
@@ -23,6 +24,7 @@ interface ILayerContextValue {
   setIsEmployeeCreateOpen: (value: boolean) => void;
   setIsEmployeeEditOpen: (value: boolean) => void;
   setIsEmployeeDeleteOpen: (value: boolean) => void;
+  setIsAccountInfoOpen: (value: boolean) => void;
 
   setSelectedId: (value: string) => void;
   setSelectedScrollPosition: (value: number) => void;
@@ -38,6 +40,7 @@ export const LayerContext = createContext<ILayerContextValue>({
   isEmployeeCreateOpen: false,
   isEmployeeEditOpen: false,
   isEmployeeDeleteOpen: false,
+  isAccountInfoOpen: false,
 
   selectedId: '',
   selectedScrollPosition: 0,
@@ -51,6 +54,7 @@ export const LayerContext = createContext<ILayerContextValue>({
   setIsEmployeeCreateOpen: () => {},
   setIsEmployeeEditOpen: () => {},
   setIsEmployeeDeleteOpen: () => {},
+  setIsAccountInfoOpen: () => {},
 
   setSelectedId: () => {},
   setSelectedScrollPosition: () => {},

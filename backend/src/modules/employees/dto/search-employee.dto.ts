@@ -10,15 +10,10 @@ import {
 
 export class SearchEmployeeDTO {
   @Transform(({ value }) => value.trim())
-  @IsNotEmpty({ message: 'Цех не может быть пустым' })
-  @IsString({ message: 'Цех должен быть строкой' })
-  @MinLength(1, { message: 'Цех должен быть от 1 символа' })
-  @MaxLength(50, { message: 'Цех не может превышать 50 символов' })
-  workshopCode: string;
-
-  @Transform(({ value }) => value.trim())
-  @IsNotEmpty({ message: 'Номер бригады не может быть пустым' })
-  @IsString({ message: 'Номер бригады должен быть строкой' })
-  @Matches(/^[1-5]$/, { message: 'Номер бригады должен быть от 1 до 5' })
-  teamNumber: string;
+  @IsNotEmpty({ message: 'Личный номер не может быть пустым' })
+  @IsString({ message: 'Личный номер должен быть строкой' })
+  @Matches(/^\d+$/, { message: 'Личный номер должен содержать только цифры' })
+  @MinLength(1, { message: 'Личный номер должен быть от 1 символа' })
+  @MaxLength(10, { message: 'Личный номер не может превышать 10 символов' })
+  personalNumber: string;
 }

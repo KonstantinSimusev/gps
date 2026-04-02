@@ -1,6 +1,7 @@
 export const ROLE_TO_PAGE: { [key: string]: string } = {
   ADMIN: '/admin',
   USER: '/home',
+  HEAD: '/home',
   MASTER: '/master/timesheet',
   PACKER: '/packer/scan',
 };
@@ -13,7 +14,7 @@ export const delay = (ms: number = 500): Promise<void> =>
     }, ms);
   });
 
-export const formatDate = (date: string | Date | null | undefined): string => {
+export const formatDateForUI = (date: string | Date | null | undefined): string => {
   // Обработка отсутствующих данных
   if (!date) return 'Некорректные данные';
 
@@ -30,5 +31,27 @@ export const formatDate = (date: string | Date | null | undefined): string => {
     day: '2-digit',
     month: 'long',
     year: 'numeric',
-  }); // Добавляем «г.» после года
+  });
+};
+
+export const formatDateForInput = (
+  date: string | Date | null | undefined,
+): string => {
+  // Обработка отсутствующих данных
+  if (!date) return '';
+
+  // Преобразуем вход в Date — работает и для строки, и для объекта Date
+  const parsedDate = date instanceof Date ? date : new Date(date);
+
+  // Проверка валидности даты
+  if (isNaN(parsedDate.getTime())) {
+    return '';
+  }
+
+  // Форматирование в формат YYYY-MM-DD для input[type="date"]
+  const year = parsedDate.getFullYear();
+  const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+  const day = String(parsedDate.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
 };

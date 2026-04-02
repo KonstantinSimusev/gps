@@ -6,6 +6,8 @@ import styles from './close.module.css';
 
 export const CloseButton = () => {
   const {
+    isAccountInfoOpen,
+
     setIsOverlayOpen,
     setIsMenuOpen,
     setIsLoginOpen,
@@ -17,6 +19,10 @@ export const CloseButton = () => {
   } = useContext(LayerContext);
 
   const handleClick = () => {
+    if (isAccountInfoOpen) {
+      return;
+    }
+
     setIsOverlayOpen(false);
     setIsMenuOpen(false);
     setIsLoginOpen(false);

@@ -12,6 +12,7 @@ import { Workshop } from '../../workshops/entities/workshop.entity';
 import { Profession } from '../../professions/entities/profession.entity';
 import { Grade } from '../../grades/entities/grade.entity';
 import { Schedule } from '../../schedules/entities/schedule.entity';
+import { Role } from '../../roles/entities/role.entity';
 
 @Entity({
   schema: 'gps',
@@ -53,4 +54,9 @@ export class Position {
   @ManyToOne(() => Schedule, (schedule) => schedule.positions)
   @JoinColumn({ name: 'schedule_id' })
   schedule: Schedule;
+
+  // Связь: много позиций — одна роль
+  @ManyToOne(() => Role, (role) => role.positions)
+  @JoinColumn({ name: 'role_id' })
+  role: Role;
 }

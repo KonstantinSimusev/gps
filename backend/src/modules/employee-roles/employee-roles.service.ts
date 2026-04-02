@@ -5,6 +5,8 @@ import {
 } from '@nestjs/common';
 
 import { EmployeeRolesRepository } from './employee-roles.repository';
+import { plainToInstance } from 'class-transformer';
+import { EmployeeRole } from './entities/employee-role.entity';
 
 @Injectable()
 export class EmployeeRolesService {

@@ -10,8 +10,10 @@ import { Button } from '../../ui/button/button';
 import styles from './employee-delete-form.module.css';
 
 export const EmployeeDeleteForm = () => {
-  const { setIsOverlayOpen, setIsEmployeeDeleteOpen } =
+  const { selectedId, setIsOverlayOpen, setIsEmployeeDeleteOpen } =
   useContext(LayerContext);
+
+  console.log(selectedId)
 
   // const dispatch = useDispatch();
   const isLoading = true;

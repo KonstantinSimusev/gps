@@ -11,9 +11,23 @@ export class EmployeeRolesRepository {
     private readonly employeeRolesRepository: Repository<EmployeeRole>,
   ) {}
 
+  async create(employeeId: string, roleId: string): Promise<EmployeeRole> {
+    // Создаём новую запись о связи сотрудника с ролью
+    const employeeRole = this.employeeRolesRepository.create({
+      employee: { id: employeeId },
+      role: { id: roleId },
+    });
+
+    return this.employeeRolesRepository.save(employeeRole);
+  }
+
+  async delete(employeeRoleId: string): Promise<void> {
+    await this.employeeRolesRepository.delete(employeeRoleId);
+  }
+
   async findEmployeeRoleByAccount(
     accountId: string,
-  ): Promise<{ id: string; name: string; } | null> {
+  ): Promise<{ id: string; name: string } | null> {
     return await this.employeeRolesRepository
       .createQueryBuilder('employeeRole')
       .innerJoin('employeeRole.employee', 'employee') // Связываем роль с сотрудником

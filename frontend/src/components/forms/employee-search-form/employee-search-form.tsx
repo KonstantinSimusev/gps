@@ -1,9 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
-
-// import { useDispatch, useSelector } from '../../../services/store';
 
 import { LayerContext } from '../../../contexts/layer/layerContext';
+import { useDispatch, useSelector } from '../../../services/store';
 
 import {
   validateField,
@@ -11,33 +9,32 @@ import {
   validationRules,
 } from '../../../utils/validation';
 
+import { searchEmployee } from '../../../services/slices/employee/actions';
+
+import {
+  clearSearchEmployeeError,
+  selectSearchEmployeeError,
+  selectIsSearchEmployeeLoading,
+} from '../../../services/slices/employee/slice';
+
 import { Form } from '../../ui/form/form';
 import { TextInput } from '../../ui/inputs/text-input/text-input';
 import { Spinner } from '../../ui/spinner/spinner';
 import { Button } from '../../ui/button/button';
 
-import styles from './seach-form.module.css';
-import { useDispatch, useSelector } from '../../../services/store';
-import {
-  clearError,
-  selectEmployeeError,
-  selectIsEmployeeLoading,
-} from '../../../services/slices/employee/slice';
-import { getEmployeeInfo } from '../../../services/slices/employee/actions';
+import styles from './employee-seach-form.module.css';
 
 interface IFormData extends Record<string, string> {
   personalNumber: string;
 }
 
-export const SearchForm = () => {
-  // const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  const isLoading = useSelector(selectIsEmployeeLoading);
-  const serverError = useSelector(selectEmployeeError);
-
+export const EmployeeSearchForm = () => {
   const { isEmployeeSearchOpen, setIsOverlayOpen, setIsEmployeeSearchOpen } =
     useContext(LayerContext);
+
+  const dispatch = useDispatch();
+  const isLoading = useSelector(selectIsSearchEmployeeLoading);
+  const serverError = useSelector(selectSearchEmployeeError);
 
   // Состояние для хранения значений полей формы
   const [formData, setFormData] = useState<IFormData>({
@@ -51,7 +48,7 @@ export const SearchForm = () => {
 
   useEffect(() => {
     if (isEmployeeSearchOpen) {
-      dispatch(clearError());
+      dispatch(clearSearchEmployeeError());
     }
   }, [isEmployeeSearchOpen]);
 
@@ -72,7 +69,7 @@ export const SearchForm = () => {
     });
 
     // Очищаем ошибки с сервера
-    dispatch(clearError());
+    dispatch(clearSearchEmployeeError());
   };
 
   // Обработчик потери фокуса для валидации
@@ -103,19 +100,17 @@ export const SearchForm = () => {
       return;
     }
 
-    const employee = await dispatch(
-      getEmployeeInfo(formData.personalNumber),
-    ).unwrap();
+    try {
+      await dispatch(searchEmployee(formData.personalNumber)).unwrap();
 
-    if (!employee) {
+      setIsEmployeeSearchOpen(false);
+      setIsOverlayOpen(false);
+
+      setFormData({ personalNumber: '' });
+      setErrors({ personalNumber: '' });
+    } catch (error) {
       throw new Error();
     }
-
-    setIsEmployeeSearchOpen(false);
-    setIsOverlayOpen(false);
-
-    setFormData({ personalNumber: '' });
-    setErrors({ personalNumber: '' });
   };
 
   // Определяем, заблокирована ли кнопка

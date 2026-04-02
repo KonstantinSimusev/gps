@@ -25,10 +25,13 @@ import { Overlay } from '../components/overlay/overlay';
 import { Modal } from '../components/modal/modal';
 import { LoginForm } from '../components/forms/login-form/login-form';
 import { LogoutForm } from '../components/forms/loguot-form/logout-form';
-import { SearchForm } from '../components/forms/search-form/search-form';
+import { EmployeeSearchForm } from '../components/forms/employee-search-form/employee-search-form';
+import { EmployeeCreateForm } from '../components/forms/employee-create-form/employee-create-form';
+import { EmployeeDeleteForm } from '../components/forms/employee-delete-form/employee-delete-form';
+import { EmployeeEditForm } from '../components/forms/employee-edit-form/employee-edit-form';
+import { AccountInfoForm } from '../components/forms/account-info-form/account-info-form';
 
 import styles from './app.module.css';
-import { EmployeeDeleteForm } from '../components/forms/employee-delete-form/employee-delete-form';
 
 const App = () => {
   const {
@@ -36,7 +39,10 @@ const App = () => {
     isLoginOpen,
     isLogoutOpen,
     isEmployeeSearchOpen,
+    isEmployeeCreateOpen,
+    isEmployeeEditOpen,
     isEmployeeDeleteOpen,
+    isAccountInfoOpen,
     selectedScrollPosition,
     setSelectedScrollPosition,
   } = useContext(LayerContext);
@@ -104,13 +110,31 @@ const App = () => {
 
       {isEmployeeSearchOpen && (
         <Modal>
-          <SearchForm />
+          <EmployeeSearchForm />
+        </Modal>
+      )}
+
+      {isEmployeeCreateOpen && (
+        <Modal>
+          <EmployeeCreateForm />
+        </Modal>
+      )}
+
+      {isEmployeeEditOpen && (
+        <Modal>
+          <EmployeeEditForm />
         </Modal>
       )}
 
       {isEmployeeDeleteOpen && (
         <Modal>
           <EmployeeDeleteForm />
+        </Modal>
+      )}
+
+      {isAccountInfoOpen && (
+        <Modal>
+          <AccountInfoForm />
         </Modal>
       )}
 

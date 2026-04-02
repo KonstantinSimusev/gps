@@ -10,6 +10,9 @@ import { EmployeesController } from './employees.controller';
 import { AccountsModule } from '../account/account.module';
 import { PositionsModule } from '../positions/positions.module';
 import { TeamsModule } from '../teams/teams.module';
+import { RolesModule } from '../roles/roles.module';
+import { EmployeeRolesModule } from '../employee-roles/employee-roles.module';
+import { WorkshopsModule } from '../workshops/workshops.module';
 
 @Module({
   imports: [
@@ -17,6 +20,9 @@ import { TeamsModule } from '../teams/teams.module';
     PositionsModule,
     TeamsModule,
     AccountsModule,
+    RolesModule,
+    EmployeeRolesModule,
+    WorkshopsModule,
   ],
   controllers: [EmployeesController],
   providers: [EmployeesRepository, EmployeesService],

@@ -1,56 +1,102 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { getEmployeeInfo } from './actions';
-import { IEmployeeInfo } from '../../../utils/api.interface';
+import { createEmployee, searchEmployee } from './actions';
+import { IAccountInfo, IEmployeeInfo } from '../../../utils/api.interface';
 
 interface IEmployeeState {
-  employee: IEmployeeInfo | null;
-  isLoading: boolean;
-  error: string | null;
+  employeeInfo: IEmployeeInfo | null;
+  isSearchEmployeeLoading: boolean;
+  searchEmployeeError: string | null;
+
+  accountInfo: IAccountInfo | null;
+  isCreateEmployeeLoading: boolean;
+  createEmployeeError: string | null;
 }
 
 const initialState: IEmployeeState = {
-  employee: null,
-  isLoading: false,
-  error: null,
+  employeeInfo: null,
+  isSearchEmployeeLoading: false,
+  searchEmployeeError: null,
+
+  accountInfo: null,
+  isCreateEmployeeLoading: false,
+  createEmployeeError: null,
 };
 
 export const employeeSlice = createSlice({
   name: 'employee',
   initialState,
   reducers: {
-    clearError: (state) => {
-      state.error = null;
+    clearSearchEmployeeError: (state) => {
+      state.searchEmployeeError = null;
+    },
+    clearCreateEmployeeError: (state) => {
+      state.createEmployeeError = null;
     },
   },
   selectors: {
-    selectEmployee: (state: IEmployeeState) => state.employee,
-    selectIsEmployeeLoading: (state: IEmployeeState) => state.isLoading,
-    selectEmployeeError: (state: IEmployeeState) => state.error,
+    selectSearсhEmployee: (state: IEmployeeState) => state.employeeInfo,
+    selectIsSearchEmployeeLoading: (state: IEmployeeState) =>
+      state.isSearchEmployeeLoading,
+    selectSearchEmployeeError: (state: IEmployeeState) =>
+      state.searchEmployeeError,
+
+    selectCreateEmployee: (state: IEmployeeState) => state.accountInfo,
+    selectIsCreateEmployeeLoading: (state: IEmployeeState) =>
+      state.isCreateEmployeeLoading,
+    selectCreateEmployeeError: (state: IEmployeeState) =>
+      state.createEmployeeError,
   },
   extraReducers: (builder) => {
     builder
-      // Обработчик для getEmployeeInfo
-      .addCase(getEmployeeInfo.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
+      // Обработчик для searchEmployee
+      .addCase(searchEmployee.pending, (state) => {
+        state.isSearchEmployeeLoading = true;
+        state.searchEmployeeError = null;
       })
       .addCase(
-        getEmployeeInfo.fulfilled,
+        searchEmployee.fulfilled,
         (state, action: PayloadAction<IEmployeeInfo>) => {
-          state.employee = action.payload;
-          state.isLoading = false;
-          state.error = null;
+          state.employeeInfo = action.payload;
+          state.isSearchEmployeeLoading = false;
+          state.searchEmployeeError = null;
         },
       )
-      .addCase(getEmployeeInfo.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.error.message ?? 'Ошибка получения данных';
+      .addCase(searchEmployee.rejected, (state, action) => {
+        state.isSearchEmployeeLoading = false;
+        state.searchEmployeeError =
+          action.error.message ?? 'Ошибка получения данных';
+      })
+      // Обработчик для createEmployee
+      .addCase(createEmployee.pending, (state) => {
+        state.isCreateEmployeeLoading = true;
+        state.createEmployeeError = null;
+      })
+      .addCase(
+        createEmployee.fulfilled,
+        (state, action: PayloadAction<IAccountInfo>) => {
+          state.accountInfo = action.payload;
+          state.isCreateEmployeeLoading = false;
+          state.createEmployeeError = null;
+        },
+      )
+      .addCase(createEmployee.rejected, (state, action) => {
+        state.isCreateEmployeeLoading = false;
+        state.createEmployeeError =
+          action.error.message ?? 'Ошибка получения данных';
       });
   },
 });
 
-export const { clearError } = employeeSlice.actions;
+export const { clearSearchEmployeeError, clearCreateEmployeeError } =
+  employeeSlice.actions;
 
-export const { selectEmployee, selectIsEmployeeLoading, selectEmployeeError } =
-  employeeSlice.selectors;
+export const {
+  selectSearсhEmployee,
+  selectIsSearchEmployeeLoading,
+  selectSearchEmployeeError,
+
+  selectCreateEmployee,
+  selectIsCreateEmployeeLoading,
+  selectCreateEmployeeError,
+} = employeeSlice.selectors;

@@ -77,11 +77,13 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     profession_id UUID NOT NULL,
     grade_id UUID NOT NULL,
     schedule_id UUID NOT NULL,
+    role_id UUID NOT NULL,
 
     CONSTRAINT fk__workshop FOREIGN KEY (workshop_id) REFERENCES gps.workshops(id),
     CONSTRAINT fk__profession FOREIGN KEY (profession_id) REFERENCES gps.professions(id),
     CONSTRAINT fk__grade FOREIGN KEY (grade_id) REFERENCES gps.grades(id),
-    CONSTRAINT fk__schedule FOREIGN KEY (schedule_id) REFERENCES gps.schedules(id)
+    CONSTRAINT fk__schedule FOREIGN KEY (schedule_id) REFERENCES gps.schedules(id),
+    CONSTRAINT fk__role FOREIGN KEY (role_id) REFERENCES gps.roles(id)
   );
 
   -- Создание таблицы employees
@@ -220,35 +222,47 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
   VALUES
     ('ADMIN'), -- Администратор
     ('USER'), -- Пользователь
-    ('MASTER'), -- Мастер
-    ('PACKER'); -- Упаковщик
+    ('HEAD'), -- Начальник участка (в промышленности)
+    ('DETAIL_MASTER'), -- Мастер участка реквизитов
+    ('MASTER'), -- Мастер участка
+    ('MECHANIC'), -- Слесарь
+    ('PRODUCTION_FOREMAN'), -- Бригадир на участках основного производства
+    ('PACKING_FOREMAN'), -- Бригадир на отделке, сортировке, приёмке, сдаче, пакетировке и упаковке металла и готовой продукции
+    ('LEAD_OPERATOR'), -- Оператор поста управления (старший)
+    ('OPERATOR'), -- Оператор поста управления
+    ('DRIVER'), -- Водитель погрузчика
+    ('STAMPER'), -- Штамповщик
+    ('PACKER'), -- Укладчик‑упаковщик
+    ('UNIT_PACKER'), -- Укладчик‑упаковщик ЛУМ
+    ('STACKER'), -- Штабелировщик металла
+    ('CUTTER'); -- Резчик холодного металла
 
   -- Вставляем позиции в таблицу
-  INSERT INTO gps.positions (position_code, workshop_id, profession_id, grade_id, schedule_id)
+  INSERT INTO gps.positions (position_code, workshop_id, profession_id, grade_id, schedule_id, role_id)
   VALUES
-    ('643776', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Начальник участка (в промышленности)'), (SELECT id FROM gps.grades WHERE grade_code = '17'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1')),
-    ('643777', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Мастер участка'), (SELECT id FROM gps.grades WHERE grade_code = '12'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А')),
-    ('643795', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Мастер участка'), (SELECT id FROM gps.grades WHERE grade_code = '13'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1')),
-    ('643799', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Слесарь-ремонтник'), (SELECT id FROM gps.grades WHERE grade_code = '6'), (SELECT id FROM gps.schedules WHERE schedule_code = '9')),
-    ('643796', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Бригадир на участках основного производства'), (SELECT id FROM gps.grades WHERE grade_code = '5'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1')),
-    ('643797', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Штамповщик'), (SELECT id FROM gps.grades WHERE grade_code = '5'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А')),
-    ('643975', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Бригадир на отделке, сортировке, приёмке, сдаче, пакетировке и упаковке металла и готовой продукции'), (SELECT id FROM gps.grades WHERE grade_code = '4'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1')),
-    ('643800', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Водитель погрузчика'), (SELECT id FROM gps.grades WHERE grade_code = '4'), (SELECT id FROM gps.schedules WHERE schedule_code = '9')),
-    ('643779', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Укладчик-упаковщик'), (SELECT id FROM gps.grades WHERE grade_code = '3'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А')),
-    ('643780', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Штабелировщик металла'), (SELECT id FROM gps.grades WHERE grade_code = '3'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А')),
-    ('643842', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Начальник участка (в промышленности)'), (SELECT id FROM gps.grades WHERE grade_code = '17'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1')),
-    ('643850', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Мастер участка'), (SELECT id FROM gps.grades WHERE grade_code = '13'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1')),
-    ('643843', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Мастер участка'), (SELECT id FROM gps.grades WHERE grade_code = '12'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А')),
-    ('643852', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Бригадир на участках основного производства'), (SELECT id FROM gps.grades WHERE grade_code = '5'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1')),
-    ('643853', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Бригадир на участках основного производства'), (SELECT id FROM gps.grades WHERE grade_code = '5'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1')),
-    ('643847', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Оператор поста управления (старший)'), (SELECT id FROM gps.grades WHERE grade_code = '5'), (SELECT id FROM gps.schedules WHERE schedule_code = '2')),
-    ('643848', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Оператор поста управления'), (SELECT id FROM gps.grades WHERE grade_code = '4'), (SELECT id FROM gps.schedules WHERE schedule_code = '2')),
-    ('643985', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Бригадир на отделке, сортировке, приёмке, сдаче, пакетировке и упаковке металла и готовой продукции'), (SELECT id FROM gps.grades WHERE grade_code = '4'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1')),
-    ('643984', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Бригадир на отделке, сортировке, приёмке, сдаче, пакетировке и упаковке металла и готовой продукции'), (SELECT id FROM gps.grades WHERE grade_code = '4'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А')),
-    ('643854', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Водитель погрузчика'), (SELECT id FROM gps.grades WHERE grade_code = '4'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1')),
-    ('643856', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Водитель погрузчика'), (SELECT id FROM gps.grades WHERE grade_code = '4'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А')),
-    ('643844', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Укладчик-упаковщик'), (SELECT id FROM gps.grades WHERE grade_code = '3'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А')),
-    ('643849', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Укладчик-упаковщик ЛУМ'), (SELECT id FROM gps.grades WHERE grade_code = '3'), (SELECT id FROM gps.schedules WHERE schedule_code = '2')),
-    ('643845', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Штабелировщик металла'), (SELECT id FROM gps.grades WHERE grade_code = '3'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А')),
-    ('643857', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Резчик холодного металла'), (SELECT id FROM gps.grades WHERE grade_code = '3'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'));
+    ('643776', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Начальник участка (в промышленности)'), (SELECT id FROM gps.grades WHERE grade_code = '17'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'), (SELECT id FROM gps.roles WHERE name = 'HEAD')),
+    ('643795', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Мастер участка'), (SELECT id FROM gps.grades WHERE grade_code = '13'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'), (SELECT id FROM gps.roles WHERE name = 'DETAIL_MASTER')),
+    ('643777', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Мастер участка'), (SELECT id FROM gps.grades WHERE grade_code = '12'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'), (SELECT id FROM gps.roles WHERE name = 'MASTER')),
+    ('643799', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Слесарь-ремонтник'), (SELECT id FROM gps.grades WHERE grade_code = '6'), (SELECT id FROM gps.schedules WHERE schedule_code = '9'), (SELECT id FROM gps.roles WHERE name = 'MECHANIC')),
+    ('643796', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Бригадир на участках основного производства'), (SELECT id FROM gps.grades WHERE grade_code = '5'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'), (SELECT id FROM gps.roles WHERE name = 'PRODUCTION_FOREMAN')),
+    ('643975', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Бригадир на отделке, сортировке, приёмке, сдаче, пакетировке и упаковке металла и готовой продукции'), (SELECT id FROM gps.grades WHERE grade_code = '4'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'), (SELECT id FROM gps.roles WHERE name = 'PACKING_FOREMAN')),
+    ('643800', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Водитель погрузчика'), (SELECT id FROM gps.grades WHERE grade_code = '4'), (SELECT id FROM gps.schedules WHERE schedule_code = '9'), (SELECT id FROM gps.roles WHERE name = 'DRIVER')),
+    ('643797', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Штамповщик'), (SELECT id FROM gps.grades WHERE grade_code = '5'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'), (SELECT id FROM gps.roles WHERE name = 'STAMPER')),
+    ('643779', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Укладчик-упаковщик'), (SELECT id FROM gps.grades WHERE grade_code = '3'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'), (SELECT id FROM gps.roles WHERE name = 'PACKER')),
+    ('643780', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'), (SELECT id FROM gps.professions WHERE name = 'Штабелировщик металла'), (SELECT id FROM gps.grades WHERE grade_code = '3'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'), (SELECT id FROM gps.roles WHERE name = 'STACKER')),
+    ('643842', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Начальник участка (в промышленности)'), (SELECT id FROM gps.grades WHERE grade_code = '17'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'), (SELECT id FROM gps.roles WHERE name = 'HEAD')),
+    ('643850', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Мастер участка'), (SELECT id FROM gps.grades WHERE grade_code = '13'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'), (SELECT id FROM gps.roles WHERE name = 'DETAIL_MASTER')),
+    ('643843', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Мастер участка'), (SELECT id FROM gps.grades WHERE grade_code = '12'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'), (SELECT id FROM gps.roles WHERE name = 'MASTER')),
+    ('643852', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Бригадир на участках основного производства'), (SELECT id FROM gps.grades WHERE grade_code = '5'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'), (SELECT id FROM gps.roles WHERE name = 'PRODUCTION_FOREMAN')),
+    ('643853', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Бригадир на участках основного производства'), (SELECT id FROM gps.grades WHERE grade_code = '5'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'), (SELECT id FROM gps.roles WHERE name = 'PRODUCTION_FOREMAN')),
+    ('643847', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Оператор поста управления (старший)'), (SELECT id FROM gps.grades WHERE grade_code = '5'), (SELECT id FROM gps.schedules WHERE schedule_code = '2'), (SELECT id FROM gps.roles WHERE name = 'LEAD_OPERATOR')),
+    ('643848', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Оператор поста управления'), (SELECT id FROM gps.grades WHERE grade_code = '4'), (SELECT id FROM gps.schedules WHERE schedule_code = '2'), (SELECT id FROM gps.roles WHERE name = 'OPERATOR')),
+    ('643985', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Бригадир на отделке, сортировке, приёмке, сдаче, пакетировке и упаковке металла и готовой продукции'), (SELECT id FROM gps.grades WHERE grade_code = '4'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'), (SELECT id FROM gps.roles WHERE name = 'PACKING_FOREMAN')),
+    ('643984', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Бригадир на отделке, сортировке, приёмке, сдаче, пакетировке и упаковке металла и готовой продукции'), (SELECT id FROM gps.grades WHERE grade_code = '4'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'), (SELECT id FROM gps.roles WHERE name = 'PACKING_FOREMAN')),
+    ('643854', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Водитель погрузчика'), (SELECT id FROM gps.grades WHERE grade_code = '4'), (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'), (SELECT id FROM gps.roles WHERE name = 'DRIVER')),
+    ('643856', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Водитель погрузчика'), (SELECT id FROM gps.grades WHERE grade_code = '4'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'), (SELECT id FROM gps.roles WHERE name = 'DRIVER')),
+    ('643844', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Укладчик-упаковщик'), (SELECT id FROM gps.grades WHERE grade_code = '3'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'), (SELECT id FROM gps.roles WHERE name = 'PACKER')),
+    ('643849', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Укладчик-упаковщик ЛУМ'), (SELECT id FROM gps.grades WHERE grade_code = '3'), (SELECT id FROM gps.schedules WHERE schedule_code = '2'), (SELECT id FROM gps.roles WHERE name = 'UNIT_PACKER')),
+    ('643845', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Штабелировщик металла'), (SELECT id FROM gps.grades WHERE grade_code = '3'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'), (SELECT id FROM gps.roles WHERE name = 'STACKER')),
+    ('643857', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Резчик холодного металла'), (SELECT id FROM gps.grades WHERE grade_code = '3'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'), (SELECT id FROM gps.roles WHERE name = 'CUTTER'))
 EOSQL

@@ -2,24 +2,30 @@ import { useContext } from 'react';
 
 import { LayerContext } from '../../contexts/layer/layerContext';
 import { useSelector } from '../../services/store';
-import { selectEmployee } from '../../services/slices/employee/slice';
+import { selectProfile } from '../../services/slices/auth/slice';
+import { selectSearсhEmployee } from '../../services/slices/employee/slice';
 
 import { MainLayout } from '../../components/ui/layouts/main/main-layout';
 import { Button } from '../../components/ui/button/button';
 import { CardContainer } from '../../components/ui/card-container/card-container';
 import { InfoBlock } from '../../components/ui/info-block/info-block';
-import { EditButton } from '../../components/buttons/edit/edit';
-import { DeleteButton } from '../../components/buttons/delete/delete';
 
-import { formatDate } from '../../utils/utils';
+import { formatDateForUI } from '../../utils/utils';
 
 import styles from './admin.module.css';
 
 export const Admin = () => {
-  const { setIsOverlayOpen, setIsEmployeeSearchOpen, setIsEmployeeCreateOpen } =
-    useContext(LayerContext);
+  const {
+    setIsOverlayOpen,
+    setIsEmployeeSearchOpen,
+    setIsEmployeeCreateOpen,
+    setIsEmployeeEditOpen,
+    setIsEmployeeDeleteOpen,
+    setSelectedId,
+  } = useContext(LayerContext);
 
-  const employee = useSelector(selectEmployee);
+  const profile = useSelector(selectProfile);
+  const employee = useSelector(selectSearсhEmployee);
 
   const searchEmployee = () => {
     setIsOverlayOpen(true);
@@ -31,9 +37,36 @@ export const Admin = () => {
     setIsEmployeeCreateOpen(true);
   };
 
+  const deleteRole = () => {
+    setIsOverlayOpen(true);
+    setIsEmployeeCreateOpen(true);
+  };
+  const updatePassword = () => {
+    setIsOverlayOpen(true);
+    setIsEmployeeCreateOpen(true);
+  };
+
+  const updateProfile = () => {
+    if (!employee) {
+      return;
+    }
+    setSelectedId(employee.id);
+    setIsOverlayOpen(true);
+    setIsEmployeeEditOpen(true);
+  };
+
+  const deleteProfile = () => {
+    if (!employee) {
+      return;
+    }
+    setSelectedId(employee.id);
+    setIsOverlayOpen(true);
+    setIsEmployeeDeleteOpen(true);
+  };
+
   return (
     <MainLayout>
-      <div className={styles.button__wrapper}>
+      <div className={styles.buttons__wrapper}>
         <Button type='button' label='Поиск' onClick={searchEmployee} />
         <Button type='button' label='Создать' onClick={createEmployee} />
       </div>
@@ -43,7 +76,7 @@ export const Admin = () => {
           <div className={styles.employee__wrapper}>
             <InfoBlock
               title='ФИО'
-              text={`${employee.lastName}\n${employee.firstName}\n${employee.patronymic}`}
+              text={`${employee.lastName} ${employee.firstName} ${employee.patronymic}`}
             />
 
             <InfoBlock title='Профессия' text={employee.profession} />
@@ -57,42 +90,58 @@ export const Admin = () => {
             {employee.birthDay && (
               <InfoBlock
                 title='Дата рождения'
-                text={formatDate(employee.birthDay)}
+                text={formatDateForUI(employee.birthDay)}
               />
             )}
 
             {employee.startDate && (
               <InfoBlock
                 title='Дата назначения'
-                text={formatDate(employee.startDate)}
+                text={formatDateForUI(employee.startDate)}
               />
             )}
 
             {employee.endDate && (
               <InfoBlock
                 title='Дата увольнения'
-                text={formatDate(employee.endDate)}
+                text={formatDateForUI(employee.endDate)}
               />
             )}
 
             {employee.role && <InfoBlock title='Роль' text={employee.role} />}
           </div>
 
-          <div className={styles.buttons__wrapper}>
-            <EditButton
-              actionType='employee'
-              iconWidth={24}
-              iconHeight={24}
-              id={employee.id}
-            />
+          {profile?.workshopCode === employee.workshop && (
+            <div className={styles.buttons__wrapper}>
+              <Button
+                type='button'
+                label='Редактировать профиль'
+                onClick={updateProfile}
+                className={styles.button}
+              />
 
-            <DeleteButton
-              actionType='employee'
-              iconWidth={24}
-              iconHeight={24}
-              id={employee.id}
-            />
-          </div>
+              <Button
+                type='button'
+                label='Обновить пароль'
+                onClick={updatePassword}
+                className={styles.button}
+              />
+
+              <Button
+                type='button'
+                label='Удалить роль'
+                onClick={deleteRole}
+                className={styles.button}
+              />
+
+              <Button
+                type='button'
+                label='Удалить профиль'
+                onClick={deleteProfile}
+                className={styles.button}
+              />
+            </div>
+          )}
         </CardContainer>
       )}
     </MainLayout>

@@ -106,18 +106,72 @@ export const validationRules: IValidationRules = {
       {
         type: 'length',
         pattern: /^.{8,50}$/,
-        message: 'Введите 8-30 символов',
-      },
-      {
-        type: 'uuidOrPassword',
-        pattern:
-          /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[^\s]+)$/i,
-        message: 'Введите корректный пароль или UUID',
+        message: 'Введите 8-50 символов',
       },
       {
         type: 'noSpaces',
         pattern: /^\S+$/,
         message: 'Введите корректный пароль',
+      },
+    ],
+  },
+  lastName: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
+      },
+      {
+        type: 'length',
+        pattern: /^.{2,50}$/,
+        message: 'Введите 2-50 символов',
+      },
+      {
+        type: 'noSpaces',
+        pattern: /^\S+$/,
+        message: 'Введите корректную фамилию',
+      },
+    ],
+  },
+  firstName: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
+      },
+      {
+        type: 'length',
+        pattern: /^.{2,30}$/,
+        message: 'Введите 2-30 символов',
+      },
+      {
+        type: 'noSpaces',
+        pattern: /^\S+$/,
+        message: 'Введите корректное имя',
+      },
+    ],
+  },
+  patronymic: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
+      },
+      {
+        type: 'length',
+        pattern: /^.{2,40}$/,
+        message: 'Введите 2-40 символов',
+      },
+      {
+        type: 'noSpaces',
+        pattern: /^\S+$/,
+        message: 'Введите корректное отчество',
       },
     ],
   },
@@ -135,24 +189,74 @@ export const validationRules: IValidationRules = {
         message: 'Введите только цифры',
       },
       {
-        type: 'minLength',
-        pattern: /^\d{3,}$/,
-        message: 'Введите минимум 3 цифры',
-      },
-      {
-        type: 'maxLength',
-        pattern: /^\d{1,10}$/,
-        message: 'Введите не более 10 цифр',
+        type: 'length',
+        pattern: /^.{3,10}$/,
+        message: 'Введите 3-10 символов',
       },
     ],
   },
-  date: {
+  teamNumber: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
+      },
+      {
+        type: 'length',
+        pattern: /^(1|2|3|4|5)$/,
+        message: 'Введите чило от 1 до 5',
+      },
+    ],
+  },
+  position: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
+      },
+      {
+        type: 'number',
+        pattern: /^\d+$/,
+        message: 'Введите только цифры',
+      },
+      {
+        type: 'length',
+        pattern: /^.{3,10}$/,
+        message: 'Введите 3-10 символов',
+      },
+    ],
+  },
+  birthDay: {
     required: true,
     validators: [
       {
         type: 'required',
         pattern: /^.+$/,
         message: 'Выберите дату',
+      },
+    ],
+  },
+  startDate: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Выберите дату',
+      },
+    ],
+  },
+  role: {
+    required: false,
+    validators: [
+      {
+        type: 'length',
+        pattern: /^.{2,20}$/,
+        message: 'Введите 2-20 символов',
       },
     ],
   },
@@ -173,21 +277,6 @@ export const validationRules: IValidationRules = {
         type: 'length',
         pattern: /^(1|2)$/,
         message: 'Введите число 1 или 2',
-      },
-    ],
-  },
-  teamNumber: {
-    required: true,
-    validators: [
-      {
-        type: 'required',
-        pattern: /^.+$/,
-        message: 'Это поле обязательно',
-      },
-      {
-        type: 'length',
-        pattern: /^(1|2|3|4|5)$/,
-        message: 'Введите чило от 1 до 5',
       },
     ],
   },

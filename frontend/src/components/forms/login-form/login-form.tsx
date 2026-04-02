@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from '../../../services/store';
 
 import {
-  selectError,
-  selectIsLoading,
-  clearError,
+  selectAuthError,
+  selectIsAuthLoading,
+  clearAuthError,
 } from '../../../services/slices/auth/slice';
 
 import { loginEmployee } from '../../../services/slices/auth/actions';
@@ -37,8 +37,8 @@ export const LoginForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const isLoading = useSelector(selectIsLoading);
-  const serverError = useSelector(selectError);
+  const isLoading = useSelector(selectIsAuthLoading);
+  const serverError = useSelector(selectAuthError);
 
   const { isLoginOpen, setIsOverlayOpen, setIsLoginOpen } =
     useContext(LayerContext);
@@ -57,7 +57,7 @@ export const LoginForm = () => {
 
   useEffect(() => {
     if (isLoginOpen) {
-      dispatch(clearError());
+      dispatch(clearAuthError());
     }
   }, [isLoginOpen]);
 
@@ -78,7 +78,7 @@ export const LoginForm = () => {
     });
 
     // Очищаем ошибки с сервера
-    dispatch(clearError());
+    dispatch(clearAuthError());
   };
 
   // Обработчик потери фокуса для валидации
@@ -109,21 +109,19 @@ export const LoginForm = () => {
       return;
     }
 
-    {
-      try {
-        const employee = await dispatch(loginEmployee(formData)).unwrap();
-        const targetPage = ROLE_TO_PAGE[employee.role || '/'];
+    try {
+      const employee = await dispatch(loginEmployee(formData)).unwrap();
+      const targetPage = ROLE_TO_PAGE[employee.role || '/'];
 
-        navigate(targetPage);
+      navigate(targetPage);
 
-        setIsLoginOpen(false);
-        setIsOverlayOpen(false);
+      setIsLoginOpen(false);
+      setIsOverlayOpen(false);
 
-        setFormData({ login: '', password: '' });
-        setErrors({ login: '', password: '' });
-      } catch (error) {
-        throw new Error();
-      }
+      setFormData({ login: '', password: '' });
+      setErrors({ login: '', password: '' });
+    } catch (error) {
+      throw new Error();
     }
   };
 

@@ -45,14 +45,7 @@ export class AuthService {
     const account = await this.accountsRepository.findAccountByLogin(login);
 
     if (!account) {
-      throw new UnauthorizedException('Доступ запрещён');
-    }
-
-    const employeeRole =
-      await this.employeeRolesRepository.findEmployeeRoleByAccount(account.id);
-
-    if (!employeeRole) {
-      throw new UnauthorizedException('Доступ запрещён');
+      throw new UnauthorizedException('Неверный логин или пароль');
     }
 
     // Проверка пароля
@@ -62,7 +55,14 @@ export class AuthService {
     );
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Доступ запрещён');
+      throw new UnauthorizedException('Неверный логин или пароль');
+    }
+
+    const employeeRole =
+      await this.employeeRolesRepository.findEmployeeRoleByAccount(account.id);
+
+    if (!employeeRole) {
+      throw new UnauthorizedException('Ошибка авторизации'); // Роль в бд null;
     }
 
     // Генерируем accessToken
@@ -101,7 +101,7 @@ export class AuthService {
     );
 
     if (!employee) {
-      throw new UnauthorizedException('Доступ запрещён');
+      throw new UnauthorizedException('Сотрудник не найден');
     }
 
     return {

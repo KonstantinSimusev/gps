@@ -11,6 +11,7 @@ import { selectProfile } from '../../services/slices/auth/slice';
 
 import {
   ADMIN_ROLE,
+  HEAD_ROLE,
   MASTER_ROLE,
   PACKER_ROLE,
   USER_ROLE,
@@ -52,6 +53,7 @@ export const Sidebar = () => {
         <ul className={styles.navigation__list}>
           {(profile?.role === ADMIN_ROLE ||
             profile?.role === USER_ROLE ||
+            profile?.role === HEAD_ROLE ||
             profile?.role === MASTER_ROLE) && (
             <li
               className={clsx(

@@ -15,6 +15,7 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
   const [isEmployeeCreateOpen, setIsEmployeeCreateOpen] = useState(false);
   const [isEmployeeEditOpen, setIsEmployeeEditOpen] = useState(false);
   const [isEmployeeDeleteOpen, setIsEmployeeDeleteOpen] = useState(false);
+  const [isAccountInfoOpen, setIsAccountInfoOpen] = useState(false);
 
   const [selectedId, setSelectedId] = useState('');
   const [selectedScrollPosition, setSelectedScrollPosition] = useState(0);
@@ -31,6 +32,7 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
       isEmployeeCreateOpen,
       isEmployeeEditOpen,
       isEmployeeDeleteOpen,
+      isAccountInfoOpen,
 
       selectedId,
       selectedScrollPosition,
@@ -44,6 +46,7 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
       setIsEmployeeCreateOpen,
       setIsEmployeeEditOpen,
       setIsEmployeeDeleteOpen,
+      setIsAccountInfoOpen,
 
       setSelectedId,
       setSelectedScrollPosition,
@@ -58,6 +61,7 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
       isEmployeeCreateOpen,
       isEmployeeEditOpen,
       isEmployeeDeleteOpen,
+      isAccountInfoOpen,
 
       selectedId,
       selectedScrollPosition,

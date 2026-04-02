@@ -1,15 +1,21 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   Param,
   Post,
   Query,
+  Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 
+import { Response, Request } from 'express';
+
 import { CreateEmployeeDTO } from './dto/create-employee.dto';
 import { CreateEmployeesDTO } from './dto/create-employees.dto';
+import { SearchEmployeePipe } from './pipes/search-employee.pipe';
 
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { EmployeesService } from './employees.service';
@@ -26,9 +32,12 @@ export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
   @Post()
-  // @UseGuards(AuthGuard)
-  async create(@Body() dto: CreateEmployeeDTO): Promise<IAccountInfo> {
-    return this.employeesService.create(dto);
+  @UseGuards(AuthGuard)
+  async create(
+    @Body() dto: CreateEmployeeDTO,
+    @Req() req: Request & { profile: IProfile },
+  ) {
+    return this.employeesService.create(dto, req.profile.workshopCode);
   }
 
   @Post('many')
@@ -41,7 +50,7 @@ export class EmployeesController {
   @Get(':personalNumber')
   @UseGuards(AuthGuard)
   async getEmployeeInfo(
-    @Param('personalNumber') personalNumber: string,
+    @Param('personalNumber', SearchEmployeePipe) personalNumber: string,
   ): Promise<IEmployeeInfo> {
     return this.employeesService.getEmployeeInfo(personalNumber);
   }

@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from '../../../services/store';
 import { LayerContext } from '../../../contexts/layer/layerContext';
 
 import { logoutEmployee } from '../../../services/slices/auth/actions';
-import { selectIsLoading } from '../../../services/slices/auth/slice';
+import { selectIsAuthLoading } from '../../../services/slices/auth/slice';
 
 import { Form } from '../../ui/form/form';
 import { Spinner } from '../../ui/spinner/spinner';
@@ -15,11 +15,11 @@ import styles from './logout-form.module.css';
 
 export const LogoutForm = () => {
   const { setIsAgreed, setIsOverlayOpen, setIsLogoutOpen } =
-  useContext(LayerContext);
+    useContext(LayerContext);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const isLoading = useSelector(selectIsLoading);
+  const isLoading = useSelector(selectIsAuthLoading);
 
   const handleLogoutClick = async () => {
     try {

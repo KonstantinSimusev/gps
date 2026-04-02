@@ -55,6 +55,19 @@ DELETE FROM gps.workshops;
     ('CAR_DRIVER'), -- Водитель автомобиля
     ('STOREKEEPER'); -- Кладовщик
 
+-- Обновить роль сотрудника при старте приложения на ADMIN
+UPDATE gps.employee_roles
+SET role_id = (SELECT id FROM gps.roles WHERE name = 'ADMIN')
+WHERE employee_id = (
+  SELECT id FROM gps.employees WHERE personal_number = '135910'
+);
+
+-- Удалить роль сотрудника по личному номеру
+DELETE FROM gps.employee_roles
+WHERE employee_id = (
+  SELECT id FROM gps.employees WHERE personal_number = '135829'
+);
+
 -- Вставляем роль в таблицу
 INSERT INTO gps.employee_roles (employee_id, role_id)
 VALUES (
@@ -74,17 +87,19 @@ FROM gps.employees
 JOIN gps.positions ON employees.position_id = positions.id
 WHERE positions.position_code = '643844';
 
-UPDATE gps.employee_roles
-SET role_id = (
-  SELECT id FROM gps.roles WHERE name = 'ADMIN'
-)
-WHERE employee_id = (
-  SELECT id FROM gps.employees
-  WHERE first_name = 'Константин' AND last_name = 'Симусев'
-)
-  AND role_id = (
-    SELECT id FROM gps.roles WHERE name = 'MASTER'
-  );
-
 -- Отчистить таблицу
 TRUNCATE TABLE gps.employee_roles;
+
+-- Выбрать роль по личному номеру
+SELECT
+  roles.name
+FROM gps.employees
+JOIN gps.employee_roles ON employees.id = employee_roles.employee_id
+JOIN gps.roles ON employee_roles.role_id = roles.id
+WHERE employees.personal_number = '135829';
+
+-- Выбрать роль по штатной позиции
+SELECT name
+FROM gps.roles
+JOIN gps.positions ON roles.id = positions.role_id
+WHERE positions.position_code = '643777';

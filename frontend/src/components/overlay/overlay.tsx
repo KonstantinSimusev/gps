@@ -15,6 +15,7 @@ export const Overlay = () => {
     isEmployeeCreateOpen,
     isEmployeeEditOpen,
     isEmployeeDeleteOpen,
+    isAccountInfoOpen,
 
     setIsOverlayOpen,
     setIsMenuOpen,
@@ -27,6 +28,10 @@ export const Overlay = () => {
   } = useContext(LayerContext);
 
   useEscapeHandler(() => {
+    if (isAccountInfoOpen) {
+      return;
+    }
+
     if (isOverlayOpen) {
       setIsOverlayOpen(false);
     }
@@ -63,6 +68,10 @@ export const Overlay = () => {
   const handleClick = (event: React.MouseEvent) => {
     // Проверяем, был ли клик по самому оверлею
     if (event.target === event.currentTarget) {
+      if (isAccountInfoOpen) {
+        return;
+      }
+
       setIsOverlayOpen(false);
       setIsMenuOpen(false);
       setIsLoginOpen(false);

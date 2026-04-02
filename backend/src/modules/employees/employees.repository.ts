@@ -16,6 +16,30 @@ export class EmployeesRepository {
     return this.employeesRepository.save(employee);
   }
 
+  async remove(id: string): Promise<void> {
+    this.employeesRepository.delete(id);
+  }
+
+  async existsByFullName(
+    lastName: string,
+    firstName: string,
+    patronymic: string,
+  ): Promise<boolean> {
+    return this.employeesRepository.exists({
+      where: {
+        lastName,
+        firstName,
+        patronymic,
+      },
+    });
+  }
+
+  async existsByPersonalNumber(personalNumber: string): Promise<boolean> {
+    return this.employeesRepository.exists({
+      where: { personalNumber },
+    });
+  }
+
   async findEmployeeByAccount(accountId: string): Promise<{
     employeeId: string;
     workshopCode: string;
@@ -70,7 +94,7 @@ export class EmployeesRepository {
       .addSelect('role.name', 'role')
       // Условия фильтрации
       .where('employee.personalNumber = :number', { number })
-      .andWhere('employee.isActive = true')
+      // .andWhere('employee.isActive = true')
       // Выполняем запрос и возвращаем результат
       .getRawOne();
   }
@@ -100,9 +124,5 @@ export class EmployeesRepository {
   //     ...employee,
   //     ...dto,
   //   });
-  // }
-
-  // async remove(id: string): Promise<void> {
-  //   this.employeesRepository.delete(id);
   // }
 }

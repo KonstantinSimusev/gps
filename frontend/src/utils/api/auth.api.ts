@@ -15,13 +15,18 @@ export const loginEmployeeApi = async (data: ILoginData): Promise<IProfile> => {
     });
 
     if (!response.ok) {
-      throw new Error();
+      const errorData = await response.json();
+      throw new Error(errorData.message);
     }
 
     // Правильно парсим JSON и возвращаем объект
     return await response.json();
   } catch (error) {
-    throw new Error();
+    if (error instanceof Error) {
+      throw error;
+    }
+    
+    throw new Error('Что-то пошло не так');
   }
 };
 

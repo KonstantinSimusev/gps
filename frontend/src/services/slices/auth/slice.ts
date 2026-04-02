@@ -8,60 +8,60 @@ interface IAuthState {
   profile: IProfile | null;
   isAuthenticated: boolean;
   isRole: boolean;
-  isLoading: boolean;
+  isAuthLoading: boolean;
   checking: boolean;
-  error: string | null;
+  authError: string | null;
 }
 
 const initialState: IAuthState = {
   profile: null,
   isAuthenticated: false,
   isRole: false,
-  isLoading: false,
+  isAuthLoading: false,
   checking: true,
-  error: null,
+  authError: null,
 };
 
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    clearError: (state) => {
-      state.error = null;
+    clearAuthError: (state) => {
+      state.authError = null;
     },
   },
   selectors: {
     selectProfile: (state: IAuthState) => state.profile,
     selectIsAuthenticated: (state: IAuthState) => state.isAuthenticated,
-    selectIsLoading: (state: IAuthState) => state.isLoading,
+    selectIsAuthLoading: (state: IAuthState) => state.isAuthLoading,
     selectIsChecking: (state: IAuthState) => state.checking,
-    selectError: (state: IAuthState) => state.error,
+    selectAuthError: (state: IAuthState) => state.authError,
   },
   extraReducers: (builder) => {
     builder
       // Обработчик для loginEmployee
       .addCase(loginEmployee.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
+        state.isAuthLoading = true;
+        state.authError = null;
       })
       .addCase(
         loginEmployee.fulfilled,
         (state, action: PayloadAction<IProfile>) => {
           state.profile = action.payload;
           state.isAuthenticated = true;
-          state.isLoading = false;
-          state.error = null;
+          state.isAuthLoading = false;
+          state.authError = null;
         },
       )
       .addCase(loginEmployee.rejected, (state, action) => {
         state.profile = null;
         state.isAuthenticated = false;
-        state.isLoading = false;
-        state.error = action.error.message ?? 'Неверные учётные данные';
+        state.isAuthLoading = false;
+        state.authError = action.error.message ?? 'Неверные учётные данные';
       })
       // Обработчик для checkRefreshToken
       .addCase(checkAccessToken.pending, (state) => {
-        state.isLoading = true; // Устанавливаем флаг загрузки
+        state.isAuthLoading = true; // Устанавливаем флаг загрузки
         state.checking = true;
       })
       .addCase(
@@ -69,42 +69,42 @@ export const authSlice = createSlice({
         (state, action: PayloadAction<IProfile>) => {
           state.profile = action.payload;
           state.isAuthenticated = true;
-          state.isLoading = false; // Сбрасываем флаг после успешного выполнения
+          state.isAuthLoading = false; // Сбрасываем флаг после успешного выполнения
           state.checking = false;
-          state.error = null;
+          state.authError = null;
         },
       )
       .addCase(checkAccessToken.rejected, (state, action) => {
         state.isAuthenticated = false;
-        state.isLoading = false; // Сбрасываем флаг после ошибки
+        state.isAuthLoading = false; // Сбрасываем флаг после ошибки
         state.checking = false;
-        state.error = action.error.message ?? 'Ошибка токена';
+        state.authError = action.error.message ?? 'Ошибка токена';
       })
       // Обработчик для logoutEmployee
       .addCase(logoutEmployee.pending, (state) => {
-        state.isLoading = true;
-        state.error = null; // Очищаем ошибку при начале выхода
+        state.isAuthLoading = true;
+        state.authError = null; // Очищаем ошибку при начале выхода
       })
       .addCase(logoutEmployee.fulfilled, (state) => {
         state.profile = null;
         state.isAuthenticated = false;
-        state.isLoading = false;
-        state.error = null;
+        state.isAuthLoading = false;
+        state.authError = null;
       })
       .addCase(logoutEmployee.rejected, (state, action) => {
         state.isAuthenticated = false;
-        state.isLoading = false;
-        state.error = action.error.message ?? 'Ошибка при выходе из системы';
+        state.isAuthLoading = false;
+        state.authError = action.error.message ?? 'Ошибка при выходе из системы';
       });
   },
 });
 
-export const { clearError } = authSlice.actions;
+export const { clearAuthError } = authSlice.actions;
 
 export const {
   selectProfile,
   selectIsAuthenticated,
-  selectIsLoading,
+  selectIsAuthLoading,
   selectIsChecking,
-  selectError,
+  selectAuthError,
 } = authSlice.selectors;

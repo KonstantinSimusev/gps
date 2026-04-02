@@ -1,0 +1,12 @@
+.input {
+  margin: clamp(3.125rem, 2.7729rem + 1.7606vw, 4.375rem) 0 0;
+}
+
+.spinner {
+  margin-bottom: clamp(1.25rem, 0.9052rem + 1.7241vw, 1.875rem);
+}
+
+.button {
+  color: var(--color-button);
+  background-color: var(--bg-color-button);
+}
