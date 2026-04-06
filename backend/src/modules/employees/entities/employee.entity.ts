@@ -100,6 +100,8 @@ export class Employee {
   team: Team;
 
   // Связь: один сотрудник — много ролей сотрудника
-  @OneToMany(() => EmployeeRole, (employeeRole) => employeeRole.employee)
+  @OneToMany(() => EmployeeRole, (employeeRole) => employeeRole.employee, {
+    cascade: ['remove'],
+  })
   employeeRoles: EmployeeRole[];
 }

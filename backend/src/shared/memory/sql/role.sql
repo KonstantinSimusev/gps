@@ -65,7 +65,7 @@ WHERE employee_id = (
 -- Удалить роль сотрудника по личному номеру
 DELETE FROM gps.employee_roles
 WHERE employee_id = (
-  SELECT id FROM gps.employees WHERE personal_number = '135829'
+  SELECT id FROM gps.employees WHERE personal_number = '1357371'
 );
 
 -- Вставляем роль в таблицу
@@ -77,8 +77,8 @@ VALUES (
 
 INSERT INTO gps.employee_roles (employee_id, role_id)
 VALUES (
-  (SELECT id FROM gps.employees WHERE personal_number = '135910'),
-  (SELECT id FROM gps.roles WHERE name = 'ADMIN')
+  (SELECT id FROM gps.employees WHERE personal_number = '1357371'),
+  (SELECT id FROM gps.roles WHERE name = 'PACKER')
 );
 
 INSERT INTO gps.employee_roles (employee_id, role_id)

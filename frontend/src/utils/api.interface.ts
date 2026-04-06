@@ -44,6 +44,7 @@ export interface IEmployeeInfo {
   startDate: string;
   endDate: string | null;
   role: string | null;
+  isActive: boolean;
 }
 
 export interface ICreateEmployee {
@@ -55,4 +56,17 @@ export interface ICreateEmployee {
   positionCode: string;
   birthDay: string;
   startDate: string;
+}
+
+export interface IUpdateEmployee {
+  lastName: string;
+  firstName: string;
+  patronymic: string;
+  personalNumber: string;
+  teamNumber: string;
+  positionCode: string;
+  birthDay: Date;
+  startDate: Date;
+  endDate: Date | null;
+  role: string | null;
 }

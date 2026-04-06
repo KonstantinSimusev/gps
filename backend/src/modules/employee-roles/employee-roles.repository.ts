@@ -21,8 +21,19 @@ export class EmployeeRolesRepository {
     return this.employeeRolesRepository.save(employeeRole);
   }
 
-  async delete(employeeRoleId: string): Promise<void> {
-    await this.employeeRolesRepository.delete(employeeRoleId);
+  async update(employeeId: string, roleId: string): Promise<void> {
+    await this.employeeRolesRepository.update(
+      { employee: { id: employeeId } }, // ищем запись по ID сотрудника
+      { role: { id: roleId } }, // обновляем связь на новую роль
+    );
+  }
+
+  async deleteByEmployeeId(employeeId: string): Promise<void> {
+    await this.employeeRolesRepository.delete({
+      employee: {
+        id: employeeId,
+      },
+    });
   }
 
   async findEmployeeRoleByAccount(
@@ -37,6 +48,20 @@ export class EmployeeRolesRepository {
       .innerJoin('employeeRole.role', 'role') // Связываем роль сотрудника с ролью
       .select('role.name', 'name') // Выбираем имя роли
       .addSelect('employeeRole.id', 'id') // Выбираем ID роли сотрудника
+      .getRawOne();
+  }
+
+  async findEmployeeRoleByEmployee(
+    employeeId: string,
+  ): Promise<{ id: string; name: string } | null> {
+    return await this.employeeRolesRepository
+      .createQueryBuilder('employeeRole')
+      .innerJoin('employeeRole.employee', 'employee')
+      .where('employee.id = :employeeId', { employeeId })
+      // .andWhere('employee.isActive = true')
+      .innerJoin('employeeRole.role', 'role')
+      .select('role.name', 'name')
+      .addSelect('employeeRole.id', 'id')
       .getRawOne();
   }
 

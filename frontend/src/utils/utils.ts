@@ -1,6 +1,5 @@
 export const ROLE_TO_PAGE: { [key: string]: string } = {
   ADMIN: '/admin',
-  USER: '/home',
   HEAD: '/home',
   MASTER: '/master/timesheet',
   PACKER: '/packer/scan',

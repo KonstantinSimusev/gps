@@ -1,10 +1,11 @@
 // Определяем тип для одного правила валидации
 interface IValidationRule {
   type: string;
-  pattern: RegExp;
+  pattern?: RegExp;
   message: string;
   min?: number;
   max?: number;
+  options?: string[];
 }
 
 // Определяем тип для поля валидации
@@ -254,9 +255,9 @@ export const validationRules: IValidationRules = {
     required: false,
     validators: [
       {
-        type: 'length',
-        pattern: /^.{2,20}$/,
-        message: 'Введите 2-20 символов',
+        type: 'in',
+        options: ['ADMIN', 'HEAD', 'MASTER', 'PACKER', ''],
+        message: 'Выберите роль из списка',
       },
     ],
   },
@@ -360,6 +361,14 @@ export const validateField = (
 
   // Проходим по всем валидаторам поля
   for (const validator of fieldRules.validators) {
+    // Обработка валидации 'in' — проверка на принадлежность значения списку
+    if (validator.type === 'in') {
+      if (validator.options && !validator.options.includes(value)) {
+        return validator.message;
+      }
+      continue; // пропускаем остальные проверки, если 'in' пройден
+    }
+
     if (fieldName === 'date' && !value) {
       return validator.message;
     }
@@ -396,7 +405,7 @@ export const validateField = (
     }
 
     // Если значение не соответствует регулярному выражению
-    if (!validator.pattern.test(value)) {
+    if (validator.pattern && !validator.pattern.test(value)) {
       return validator.message; // Возвращаем сообщение об ошибке
     }
   }

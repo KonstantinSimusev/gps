@@ -7,7 +7,8 @@ interface IInputProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   className?: string;
   label?: string;
   error?: string;
-  options: string[];
+  options: { value: string; label: string }[];
+  placeholder?: string;
 }
 
 export const SelectInput = ({
@@ -15,6 +16,7 @@ export const SelectInput = ({
   label,
   error,
   options,
+  placeholder,
   ...props
 }: IInputProps) => {
   return (
@@ -22,9 +24,10 @@ export const SelectInput = ({
       <label className={styles.label}>{label}</label>
       <div className={styles.wrapper}>
         <select className={styles.select} {...props}>
+          <option value=''>{placeholder}</option>
           {options.map((option) => (
-            <option key={option} value={option}>
-              {option}
+            <option key={option.value} value={option.value}>
+              {option.label}
             </option>
           ))}
         </select>

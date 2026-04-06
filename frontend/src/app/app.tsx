@@ -30,6 +30,7 @@ import { EmployeeCreateForm } from '../components/forms/employee-create-form/emp
 import { EmployeeDeleteForm } from '../components/forms/employee-delete-form/employee-delete-form';
 import { EmployeeEditForm } from '../components/forms/employee-edit-form/employee-edit-form';
 import { AccountInfoForm } from '../components/forms/account-info-form/account-info-form';
+import { PasswordUpdateForm } from '../components/forms/password-update-form/password-update-form';
 
 import styles from './app.module.css';
 
@@ -43,6 +44,7 @@ const App = () => {
     isEmployeeEditOpen,
     isEmployeeDeleteOpen,
     isAccountInfoOpen,
+    isPasswordUpdateOpen,
     selectedScrollPosition,
     setSelectedScrollPosition,
   } = useContext(LayerContext);
@@ -135,6 +137,12 @@ const App = () => {
       {isAccountInfoOpen && (
         <Modal>
           <AccountInfoForm />
+        </Modal>
+      )}
+
+      {isPasswordUpdateOpen && (
+        <Modal>
+          <PasswordUpdateForm />
         </Modal>
       )}
 

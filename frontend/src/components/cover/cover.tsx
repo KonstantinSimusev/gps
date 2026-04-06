@@ -10,14 +10,15 @@ import styles from './cover.module.css';
 import { PageTitle } from '../ui/page-title/page-title';
 
 export const Cover = () => {
+  const { isAgreed } = useContext(LayerContext);
   const { pathname } = useLocation();
+
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+
   const isAdmin = pathname.startsWith('/admin');
   const isHome = pathname === '/home';
   const isMasterTimesheet = pathname === '/master/timesheet';
   const isPackerScan = pathname === '/packer/scan';
-
-  const { isAgreed } = useContext(LayerContext);
-  const isAuthenticated = useSelector(selectIsAuthenticated);
 
   return (
     <>

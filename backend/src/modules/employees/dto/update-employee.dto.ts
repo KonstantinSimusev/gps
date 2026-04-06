@@ -6,25 +6,26 @@ import {
   MinLength,
   Matches,
   IsUUID,
-  IsBoolean,
+  IsDate,
+  IsOptional,
 } from 'class-validator';
 
 export class UpdateEmployeeDTO {
-  @Transform(({ value }) => value.trim()) // удаляем пробелы по краям
-  @IsNotEmpty({ message: 'ID не может быть пустым' })
-  @IsString({ message: 'ID должен быть строкой' })
-  @IsUUID()
-  @MinLength(1, { message: 'ID должен быть от 1 символа' })
-  @MaxLength(36, {
-    message: 'ID не может превышать 36 символов (стандартный UUID)',
-  })
-  @Matches(
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
-    {
-      message: 'ID должен быть корректным UUID',
-    },
-  )
-  id: string;
+  // @Transform(({ value }) => value.trim()) // удаляем пробелы по краям
+  // @IsNotEmpty({ message: 'ID не может быть пустым' })
+  // @IsString({ message: 'ID должен быть строкой' })
+  // @IsUUID()
+  // @MinLength(1, { message: 'ID должен быть от 1 символа' })
+  // @MaxLength(36, {
+  //   message: 'ID не может превышать 36 символов (стандартный UUID)',
+  // })
+  // @Matches(
+  //   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+  //   {
+  //     message: 'ID должен быть корректным UUID',
+  //   },
+  // )
+  // id: string;
 
   @Transform(({ value }) => value.trim())
   @IsNotEmpty({ message: 'Фамилия не может быть пустой' })
@@ -59,6 +60,12 @@ export class UpdateEmployeeDTO {
   personalNumber: string;
 
   @Transform(({ value }) => value.trim())
+  @IsNotEmpty({ message: 'Номер бригады не может быть пустым' })
+  @IsString({ message: 'Номер бригады должен быть строкой' })
+  @Matches(/^[1-5]$/, { message: 'Номер бригады должен быть от 1 до 5' })
+  teamNumber: string;
+
+  @Transform(({ value }) => value.trim())
   @IsNotEmpty({ message: 'Штатная позиция не может быть пустой' })
   @IsString({ message: 'Штатная позиция должна быть строкой' })
   @Matches(/^\d+$/, {
@@ -68,6 +75,31 @@ export class UpdateEmployeeDTO {
   @MaxLength(10, { message: 'Штатная позиция не может превышать 10 символов' })
   positionCode: string;
 
-  @IsBoolean({ message: 'isActive должен быть boolean' })
-  isActive: boolean;
+  @IsNotEmpty({ message: 'Дата рождения не может быть пустой' })
+  @Transform(({ value }) => new Date(value))
+  @IsDate({ message: 'Дата рождения должна быть валидной датой' })
+  birthDay: Date;
+
+  @IsNotEmpty({ message: 'Дата назначения не может быть пустой' })
+  @Transform(({ value }) => new Date(value))
+  @IsDate({ message: 'Дата назначения должна быть валидной датой' })
+  startDate: Date;
+
+  @Transform(({ value }) => {
+    if (value === null) return null;
+    return new Date(value);
+  })
+  @IsOptional()
+  @IsDate({ message: 'Дата увольнения должна быть валидной датой' })
+  endDate: Date | null;
+
+  @Transform(({ value }) => {
+    if (value === null) return null;
+    return value.trim();
+  })
+  @IsOptional()
+  @Matches(/^\S+$/, { message: 'Роль не должна содержать лишних пробелов' })
+  @MinLength(0, { message: 'Роль может быть пустой' })
+  @MaxLength(40, { message: 'Роль не может превышать 40 символов' })
+  role: string | null;
 }

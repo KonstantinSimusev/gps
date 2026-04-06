@@ -1,4 +1,4 @@
-import { IsNull, Not, Repository } from 'typeorm';
+import { IsNull, Not, Repository, UpdateResult } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -15,11 +15,26 @@ export class AccountsRepository {
     return this.accountsRepository.save(account);
   }
 
+  async updateByEmployeeId(
+    accountId: string,
+    login: string,
+    hashedPassword: string,
+  ): Promise<void> {
+    await this.accountsRepository.update(
+      accountId,
+      {
+        login,
+        hashedPassword,
+        hashedRefreshToken: null,
+      },
+    );
+  }
+
   async updateHashedRefreshToken(
-    id: string,
+    accountId: string,
     hashedRefreshToken: string,
   ): Promise<void> {
-    await this.accountsRepository.update(id, {
+    await this.accountsRepository.update(accountId, {
       hashedRefreshToken,
     });
   }
@@ -35,6 +50,17 @@ export class AccountsRepository {
       select: {
         id: true,
         hashedPassword: true,
+      },
+    });
+  }
+
+  async findAccountByEmployeeId(employeeId: string): Promise<Account | null> {
+    return this.accountsRepository.findOne({
+      where: {
+        employee: {
+          id: employeeId,
+          isActive: true,
+        },
       },
     });
   }

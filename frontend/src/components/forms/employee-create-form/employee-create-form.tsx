@@ -163,7 +163,7 @@ export const EmployeeCreateForm = () => {
         startDate: '',
       });
     } catch (error) {
-      throw new Error();
+      throw new Error('Что-то пошло не так');
     }
   };
 

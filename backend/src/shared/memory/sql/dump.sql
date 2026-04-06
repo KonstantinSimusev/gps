@@ -108,7 +108,7 @@ psql -v ON_ERROR_STOP=1 postgresql://student:password@localhost:5432/gps <<-EOSQ
     CONSTRAINT unique_employee_single_role UNIQUE (employee_id),
 
     CONSTRAINT fk__employee_role_role FOREIGN KEY (role_id) REFERENCES gps.roles(id),
-    CONSTRAINT fk__employee_role_employee FOREIGN KEY (employee_id) REFERENCES gps.employees(id)
+    CONSTRAINT fk__employee_role_employee FOREIGN KEY (employee_id) REFERENCES gps.employees(id) ON DELETE CASCADE
   );
 
   -- Вставляем номера бригад в таблицу

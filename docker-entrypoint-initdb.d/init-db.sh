@@ -119,7 +119,7 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     CONSTRAINT unique_employee_single_role UNIQUE (employee_id),
 
     CONSTRAINT fk__employee_role_role FOREIGN KEY (role_id) REFERENCES gps.roles(id),
-    CONSTRAINT fk__employee_role_employee FOREIGN KEY (employee_id) REFERENCES gps.employees(id)
+    CONSTRAINT fk__employee_role_employee FOREIGN KEY (employee_id) REFERENCES gps.employees(id) ON DELETE CASCADE
   );
 
   -- Вставляем номера бригад в таблицу
@@ -221,7 +221,6 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
   INSERT INTO gps.roles (name)
   VALUES
     ('ADMIN'), -- Администратор
-    ('USER'), -- Пользователь
     ('HEAD'), -- Начальник участка (в промышленности)
     ('DETAIL_MASTER'), -- Мастер участка реквизитов
     ('MASTER'), -- Мастер участка

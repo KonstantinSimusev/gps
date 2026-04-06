@@ -11,6 +11,10 @@ export class RolesRepository {
     private readonly rolesRepository: Repository<Role>,
   ) {}
 
+  async findRoleByName(name: string): Promise<Role | null> {
+    return this.rolesRepository.findOneBy({ name });
+  }
+
   async findRoleByPositionCode(
     positionCode: string,
   ): Promise<{ id: string } | null> {

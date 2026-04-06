@@ -14,7 +14,6 @@ import {
   HEAD_ROLE,
   MASTER_ROLE,
   PACKER_ROLE,
-  USER_ROLE,
 } from '../../utils/types';
 
 import styles from './sidebar.module.css';
@@ -52,7 +51,6 @@ export const Sidebar = () => {
       <nav className={styles.navigation}>
         <ul className={styles.navigation__list}>
           {(profile?.role === ADMIN_ROLE ||
-            profile?.role === USER_ROLE ||
             profile?.role === HEAD_ROLE ||
             profile?.role === MASTER_ROLE) && (
             <li

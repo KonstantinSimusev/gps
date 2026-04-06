@@ -16,6 +16,7 @@ export const Overlay = () => {
     isEmployeeEditOpen,
     isEmployeeDeleteOpen,
     isAccountInfoOpen,
+    isPasswordUpdateOpen,
 
     setIsOverlayOpen,
     setIsMenuOpen,
@@ -25,6 +26,7 @@ export const Overlay = () => {
     setIsEmployeeCreateOpen,
     setIsEmployeeEditOpen,
     setIsEmployeeDeleteOpen,
+    setIsPasswordUpdateOpen,
   } = useContext(LayerContext);
 
   useEscapeHandler(() => {
@@ -63,6 +65,10 @@ export const Overlay = () => {
     if (isEmployeeDeleteOpen) {
       setIsEmployeeDeleteOpen(false);
     }
+
+    if (isPasswordUpdateOpen) {
+      setIsPasswordUpdateOpen(false);
+    }
   });
 
   const handleClick = (event: React.MouseEvent) => {
@@ -80,6 +86,7 @@ export const Overlay = () => {
       setIsEmployeeCreateOpen(false);
       setIsEmployeeEditOpen(false);
       setIsEmployeeDeleteOpen(false);
+      setIsPasswordUpdateOpen(false);
     }
   };
 

@@ -5,12 +5,12 @@ import { useSelector } from '../../services/store';
 import { selectProfile } from '../../services/slices/auth/slice';
 import { selectSearсhEmployee } from '../../services/slices/employee/slice';
 
+import { formatDateForUI } from '../../utils/utils';
+
 import { MainLayout } from '../../components/ui/layouts/main/main-layout';
 import { Button } from '../../components/ui/button/button';
 import { CardContainer } from '../../components/ui/card-container/card-container';
 import { InfoBlock } from '../../components/ui/info-block/info-block';
-
-import { formatDateForUI } from '../../utils/utils';
 
 import styles from './admin.module.css';
 
@@ -21,6 +21,7 @@ export const Admin = () => {
     setIsEmployeeCreateOpen,
     setIsEmployeeEditOpen,
     setIsEmployeeDeleteOpen,
+    setIsPasswordUpdateOpen,
     setSelectedId,
   } = useContext(LayerContext);
 
@@ -37,13 +38,16 @@ export const Admin = () => {
     setIsEmployeeCreateOpen(true);
   };
 
-  const deleteRole = () => {
-    setIsOverlayOpen(true);
-    setIsEmployeeCreateOpen(true);
-  };
   const updatePassword = () => {
+    if (!employee) {
+      return;
+    }
+
+    setSelectedId(employee.id);
     setIsOverlayOpen(true);
-    setIsEmployeeCreateOpen(true);
+    setIsPasswordUpdateOpen(true);
+
+    // dispatch(updateLoginAndPassword(employee.id));
   };
 
   const updateProfile = () => {
@@ -124,21 +128,12 @@ export const Admin = () => {
                 type='button'
                 label='Обновить пароль'
                 onClick={updatePassword}
-                className={styles.button}
-              />
-
-              <Button
-                type='button'
-                label='Удалить роль'
-                onClick={deleteRole}
-                className={styles.button}
               />
 
               <Button
                 type='button'
                 label='Удалить профиль'
                 onClick={deleteProfile}
-                className={styles.button}
               />
             </div>
           )}

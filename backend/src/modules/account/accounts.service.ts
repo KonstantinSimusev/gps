@@ -2,14 +2,27 @@ import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { plainToInstance } from 'class-transformer';
 
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { Account } from './entities/account.entity';
 import { AccountsRepository } from './accounts.repository';
+import { EmployeesRepository } from '../employees/employees.repository';
+import { WorkshopsRepository } from '../workshops/workshops.repository';
+
+import { IAccountInfo } from '../../shared/interfaces/api.interface';
 
 @Injectable()
 export class AccountsService {
-  constructor(private readonly accountsRepository: AccountsRepository) {}
+  constructor(
+    private readonly accountsRepository: AccountsRepository,
+    private readonly employeesRepository: EmployeesRepository,
+    private readonly workshopsRepository: WorkshopsRepository,
+  ) {}
 
   async createAсcount(
     lastName: string,
@@ -40,8 +53,72 @@ export class AccountsService {
         initialPassword: password, // возвращаем пароль один раз
       };
     } catch (error) {
+      throw new InternalServerErrorException('Не удалось создать аккаунт');
+    }
+  }
+
+  async updateLoginAndPassword(
+    employeeId: string,
+    profileWorkshop: string,
+  ): Promise<IAccountInfo> {
+    try {
+      // Находим работника по ID
+      const employee =
+        await this.employeesRepository.findActiveEmployeeById(employeeId);
+
+      if (!employee) {
+        throw new NotFoundException('Работник не найден');
+      }
+
+      // Находим аккаунт по ID работника
+      const account = await this.accountsRepository.findAccountByEmployeeId(
+        employee.id,
+      );
+
+      if (!account) {
+        throw new NotFoundException('Аккаунт не найден');
+      }
+
+      // Получаем цех из БД по ID работника
+      const dbWorkshop =
+        await this.workshopsRepository.findWorkshopByEmployeeId(employee.id);
+
+      // Сравниваем цеха из БД и профиля
+      if (dbWorkshop.code !== profileWorkshop) {
+        throw new ConflictException('Позиция из другого цеха');
+      }
+
+      // Генерируем новый логин
+      const newLogin = this.generateLogin(
+        employee.lastName,
+        employee.firstName,
+        employee.patronymic,
+      );
+
+      // Генерируем новый пароль
+      const newPassword = uuidv4();
+
+      // Генерируем соль и хешируем новый пароль
+      const salt = await bcrypt.genSalt(10);
+      const newHashedPassword = await bcrypt.hash(newPassword, salt);
+
+      // Обновляем только нужные поля одним запросом
+      await this.accountsRepository.updateByEmployeeId(
+        account.id,
+        newLogin,
+        newHashedPassword,
+      );
+
+      return {
+        lastName: employee.lastName,
+        firstName: employee.firstName,
+        patronymic: employee.patronymic,
+        login: newLogin,
+        password: newPassword,
+      };
+    } catch (error) {
       throw new InternalServerErrorException(
-        `Не удалось создать аккаунт: ${error.message}`,
+        'Не удалось обновить логин и пароль',
       );
     }
   }

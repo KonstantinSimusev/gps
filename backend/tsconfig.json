@@ -8,8 +8,13 @@
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true,
+    "rootDir": "./src",
+    "paths": {
+      "*": ["./*"],  // базовый резолв для всех импортов
+      "@src/*": ["./src/*"],  // алиас для src (можно убрать, если не нужен)
+      "@test/*": ["./test/*"]  // алиас для тестов (можно убрать)
+    },
+    "incremental": false,
     "skipLibCheck": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
@@ -19,5 +24,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true
-  }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

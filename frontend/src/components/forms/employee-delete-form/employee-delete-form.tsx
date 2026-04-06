@@ -1,7 +1,14 @@
 import { useContext } from 'react';
 
-// import { useDispatch, useSelector } from '../../../services/store';
 import { LayerContext } from '../../../contexts/layer/layerContext';
+import { useDispatch, useSelector } from '../../../services/store';
+
+import { deleteEmployee } from '../../../services/slices/employee/actions';
+
+import {
+  selectDeleteEmployeeError,
+  selectIsDeleteEmployeeLoading,
+} from '../../../services/slices/employee/slice';
 
 import { Form } from '../../ui/form/form';
 import { Spinner } from '../../ui/spinner/spinner';
@@ -11,17 +18,15 @@ import styles from './employee-delete-form.module.css';
 
 export const EmployeeDeleteForm = () => {
   const { selectedId, setIsOverlayOpen, setIsEmployeeDeleteOpen } =
-  useContext(LayerContext);
+    useContext(LayerContext);
 
-  console.log(selectedId)
-
-  // const dispatch = useDispatch();
-  const isLoading = true;
+  const dispatch = useDispatch();
+  const isLoading = useSelector(selectIsDeleteEmployeeLoading);
+  const serverError = useSelector(selectDeleteEmployeeError);
 
   const handleDeleteClick = async () => {
     try {
-      // Диспачим действие выхода
-      // await dispatch(logoutEmployee());
+      await dispatch(deleteEmployee(selectedId));
 
       // Очищаем состояние оверлеев и модальных окон
       setIsOverlayOpen(false);
@@ -39,7 +44,11 @@ export const EmployeeDeleteForm = () => {
 
   return (
     <Form title='Удалить работника?' titleClassName={styles.title}>
-      <Spinner isLoading={isLoading} className={styles.spinner} />
+      <Spinner
+        isLoading={isLoading}
+        serverError={serverError}
+        className={styles.spinner}
+      />
 
       <div className={styles.buttons__wrapper}>
         <Button

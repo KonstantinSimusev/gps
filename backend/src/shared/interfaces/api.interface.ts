@@ -51,4 +51,5 @@ export interface IEmployeeInfo {
   startDate: string;
   endDate: string | null;
   role: string | null;
+  isActive: boolean;
 }

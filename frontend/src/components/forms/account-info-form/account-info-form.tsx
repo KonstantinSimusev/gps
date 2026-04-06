@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 
 import { LayerContext } from '../../../contexts/layer/layerContext';
 import { useSelector } from '../../../services/store';
@@ -10,16 +10,29 @@ import { InfoBlock } from '../../ui/info-block/info-block';
 
 import styles from './account-info-form.module.css';
 import { SuccessIcon } from '../../ui/icons/success/success';
+import { Spinner } from '../../ui/spinner/spinner';
+import { delay } from '../../../utils/utils';
+import { selectUpdateAccountInfo } from '../../../services/slices/account/slice';
 
 export const AccountInfoForm = () => {
-  const { setIsOverlayOpen, setIsAccountInfoOpen } = useContext(LayerContext);
+  const { setIsOverlayOpen, setIsAccountInfoOpen, setIsPasswordUpdateOpen } =
+    useContext(LayerContext);
 
-  const accountInfo = useSelector(selectCreateEmployee);
+  const createAccountInfo = useSelector(selectCreateEmployee);
+  const updateAccountInfo = useSelector(selectUpdateAccountInfo);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Определяем, какие данные использовать: приоритет — createAccountInfo, если нет — updateAccountInfo
+  const accountInfo = createAccountInfo || updateAccountInfo;
 
   const handleCopyClick = async () => {
     if (!accountInfo) {
       return;
     }
+
+    setIsLoading(true);
+    await delay();
 
     // Форматируем объект в читаемый текст (не JSON‑строку)
     const formattedInfo = `
@@ -36,12 +49,14 @@ ${accountInfo.password}
     await navigator.clipboard.writeText(formattedInfo);
     window.location.reload();
 
+    await delay();
     setIsOverlayOpen(false);
     setIsAccountInfoOpen(false);
+    setIsPasswordUpdateOpen(false);
   };
 
   return (
-    <Form title={'Сотрудник создан'} titleClassName={styles.title}>
+    <Form title={'Работник создан'} titleClassName={styles.title}>
       <div className={styles.icon__wrapper}>
         <SuccessIcon />
       </div>
@@ -57,9 +72,10 @@ ${accountInfo.password}
       )}
 
       <span className={styles.text}>
-        Скопируйте и вставьте информацию в
-        безопасном месте.
+        Скопируйте и вставьте информацию в&nbsp;безопасном&nbsp;месте.
       </span>
+
+      <Spinner isLoading={isLoading} className={styles.spinner} />
 
       <Button
         type='button'

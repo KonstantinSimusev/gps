@@ -1,9 +1,9 @@
-import { Repository } from 'typeorm';
+import { DeleteResult, Not, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Employee } from './entities/employee.entity';
-import { IEmployeeInfo } from 'src/shared/interfaces/api.interface';
+import { IEmployeeInfo } from './../../shared/interfaces/api.interface';
 
 @Injectable()
 export class EmployeesRepository {
@@ -16,8 +16,23 @@ export class EmployeesRepository {
     return this.employeesRepository.save(employee);
   }
 
-  async remove(id: string): Promise<void> {
-    this.employeesRepository.delete(id);
+  async findOneById(id: string): Promise<Employee> {
+    return this.employeesRepository.findOne({
+      where: { id },
+    });
+  }
+
+  async findActiveEmployeeById(employeeId: string): Promise<Employee> {
+    return this.employeesRepository.findOne({
+      where: {
+        id: employeeId,
+        isActive: true,
+      },
+    });
+  }
+
+  async delete(id: string): Promise<DeleteResult> {
+    return this.employeesRepository.delete(id);
   }
 
   async existsByFullName(
@@ -37,6 +52,34 @@ export class EmployeesRepository {
   async existsByPersonalNumber(personalNumber: string): Promise<boolean> {
     return this.employeesRepository.exists({
       where: { personalNumber },
+    });
+  }
+
+  async existsByFullNameExcluding(
+    employeeId: string,
+    lastName: string,
+    firstName: string,
+    patronymic: string,
+  ): Promise<boolean> {
+    return await this.employeesRepository.exists({
+      where: {
+        id: Not(employeeId),
+        lastName,
+        firstName,
+        patronymic,
+      },
+    });
+  }
+
+  async existsByPersonalNumberExcluding(
+    employeeId: string,
+    personalNumber: string,
+  ): Promise<boolean> {
+    return this.employeesRepository.exists({
+      where: {
+        id: Not(employeeId),
+        personalNumber,
+      },
     });
   }
 
@@ -85,6 +128,7 @@ export class EmployeesRepository {
       .addSelect('employee.birthDay', 'birthDay')
       .addSelect('employee.startDate', 'startDate')
       .addSelect('employee.endDate', 'endDate')
+      .addSelect('employee.isActive', 'isActive')
       .addSelect('workshop.workshopCode', 'workshop')
       .addSelect('team.teamNumber', 'team')
       .addSelect('profession.name', 'profession')
@@ -98,31 +142,4 @@ export class EmployeesRepository {
       // Выполняем запрос и возвращаем результат
       .getRawOne();
   }
-
-  // async findByAccount(id: string): Promise<{ id: string } | null> {
-  //   return this.employeesRepository.findOne({
-  //     where: {
-  //       account: { id },
-  //       isActive: true,
-  //     },
-  //     select: {
-  //       id: true,
-  //     },
-  //   });
-  // }
-
-  // async findAll(): Promise<Employee[]> {
-  //   return this.employeesRepository.find({});
-  // }
-
-  // async findById(id: string): Promise<Employee> {
-  //   return this.employeesRepository.findOneBy({ id });
-  // }
-
-  // async update(employee: Employee, dto: UpdateEmployeeDTO): Promise<Employee> {
-  //   return this.employeesRepository.save({
-  //     ...employee,
-  //     ...dto,
-  //   });
-  // }
 }

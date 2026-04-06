@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { useDispatch, useSelector } from '../../../services/store';
 
@@ -11,7 +10,17 @@ import {
   validationRules,
 } from '../../../utils/validation';
 
+import { updateEmployee } from '../../../services/slices/employee/actions';
+
+import {
+  clearUpdateEmployeeError,
+  selectIsUpdateEmployeeLoading,
+  selectSearсhEmployee,
+  selectUpdateEmployeeError,
+} from '../../../services/slices/employee/slice';
+
 import { formatDateForInput } from '../../../utils/utils';
+import { IUpdateEmployee } from '../../../utils/api.interface';
 
 import { Form } from '../../ui/form/form';
 import { TextInput } from '../../ui/inputs/text-input/text-input';
@@ -19,7 +28,8 @@ import { Spinner } from '../../ui/spinner/spinner';
 import { Button } from '../../ui/button/button';
 
 import styles from './employee-edit-form.module.css';
-import { selectSearсhEmployee } from '../../../services/slices/employee/slice';
+import { ROLE_OPTIONS } from '../../../utils/types';
+import { SelectInput } from '../../ui/inputs/select-input/select-input';
 
 interface IFormData extends Record<string, string> {
   lastName: string;
@@ -27,7 +37,7 @@ interface IFormData extends Record<string, string> {
   patronymic: string;
   personalNumber: string;
   teamNumber: string;
-  position: string;
+  positionCode: string;
   birthDay: string;
   startDate: string;
   endDate: string;
@@ -35,19 +45,17 @@ interface IFormData extends Record<string, string> {
 }
 
 export const EmployeeEditForm = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const { isEmployeeEditOpen, setIsOverlayOpen, setIsEmployeeEditOpen } =
+    useContext(LayerContext);
 
+  const dispatch = useDispatch();
   const employee = useSelector(selectSearсhEmployee);
-  const isLoading = true;
-  const serverError = '';
+  const isLoading = useSelector(selectIsUpdateEmployeeLoading);
+  const serverError = useSelector(selectUpdateEmployeeError);
 
   if (!employee) {
     return;
   }
-
-  const { isLoginOpen, setIsOverlayOpen, setIsLoginOpen } =
-    useContext(LayerContext);
 
   // Состояние для хранения значений полей формы
   const [formData, setFormData] = useState<IFormData>({
@@ -56,11 +64,11 @@ export const EmployeeEditForm = () => {
     patronymic: employee.patronymic,
     personalNumber: employee.personalNumber,
     teamNumber: employee.team,
-    position: employee.positionCode,
+    positionCode: employee.positionCode,
     birthDay: formatDateForInput(employee.birthDay),
     startDate: formatDateForInput(employee.startDate),
     endDate: formatDateForInput(employee.endDate),
-    role: employee.role || 'Не назначена',
+    role: employee.role || '',
   });
 
   // Состояние для хранения ошибок валидации
@@ -70,7 +78,7 @@ export const EmployeeEditForm = () => {
     patronymic: '',
     personalNumber: '',
     teamNumber: '',
-    position: '',
+    positionCode: '',
     birthDay: '',
     startDate: '',
     endDate: '',
@@ -78,13 +86,15 @@ export const EmployeeEditForm = () => {
   });
 
   useEffect(() => {
-    if (isLoginOpen) {
-      // dispatch(clearError());
+    if (isEmployeeEditOpen) {
+      dispatch(clearUpdateEmployeeError());
     }
-  }, [isLoginOpen]);
+  }, [isEmployeeEditOpen]);
 
   // Обработчик изменения поля ввода
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
 
     // Обновляем данные формы
@@ -100,11 +110,13 @@ export const EmployeeEditForm = () => {
     });
 
     // Очищаем ошибки с сервера
-    // dispatch(clearError());
+    dispatch(clearUpdateEmployeeError());
   };
 
   // Обработчик потери фокуса для валидации
-  const handleBlur = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBlur = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
 
     // Получаем ошибку валидации для поля
@@ -131,26 +143,77 @@ export const EmployeeEditForm = () => {
       return;
     }
 
-   
-    //   try {
-    //     const employee = await dispatch(loginEmployee(formData)).unwrap();
-    //     const targetPage = ROLE_TO_PAGE[employee.role || '/'];
+    // Преобразование данных перед отправкой
+    const dataForBackend: IUpdateEmployee = {
+      lastName: formData.lastName,
+      firstName: formData.firstName,
+      patronymic: formData.patronymic,
+      personalNumber: formData.personalNumber,
+      teamNumber: formData.teamNumber,
+      positionCode: formData.positionCode,
 
-    //     navigate(targetPage);
+      // Преобразование строк в Date
+      birthDay: new Date(formData.birthDay),
+      startDate: new Date(formData.startDate),
 
-    //     setIsLoginOpen(false);
-    //     setIsOverlayOpen(false);
+      // endDate: если пустая строка — null, иначе Date
+      endDate: formData.endDate === '' ? null : new Date(formData.endDate),
 
-    //     setFormData({ login: '', password: '' });
-    //     setErrors({ login: '', password: '' });
-    //   } catch (error) {
-    //     throw new Error();
-    //   }
+      role: formData.role === '' ? null : formData.role,
+    };
 
+    const payload = {
+      id: employee.id,
+      data: dataForBackend,
+    };
+
+    try {
+      await dispatch(updateEmployee(payload)).unwrap();
+
+      setIsEmployeeEditOpen(false);
+      setIsOverlayOpen(false);
+
+      setFormData({
+        lastName: '',
+        firstName: '',
+        patronymic: '',
+        personalNumber: '',
+        teamNumber: '',
+        positionCode: '',
+        birthDay: '',
+        startDate: '',
+        endDate: '',
+        role: '',
+      });
+
+      setErrors({
+        lastName: '',
+        firstName: '',
+        patronymic: '',
+        personalNumber: '',
+        teamNumber: '',
+        positionCode: '',
+        birthDay: '',
+        startDate: '',
+        endDate: '',
+        role: '',
+      });
+    } catch (error) {
+      throw new Error('Что-то пошло не так');
+    }
   };
 
   // Определяем, заблокирована ли кнопка
-  const isButtonDisabled = isLoading || !formData.login || !formData.password;
+  const isButtonDisabled =
+    isLoading ||
+    !formData.lastName ||
+    !formData.firstName ||
+    !formData.patronymic ||
+    !formData.personalNumber ||
+    !formData.teamNumber ||
+    !formData.positionCode ||
+    !formData.birthDay ||
+    !formData.startDate;
 
   return (
     <Form title='Профиль' onSubmit={handleSubmit}>
@@ -207,10 +270,10 @@ export const EmployeeEditForm = () => {
 
       <TextInput
         type='text'
-        name='position'
+        name='positionCode'
         label='Штатная позиция'
-        value={formData.position}
-        error={errors.position}
+        value={formData.positionCode}
+        error={errors.positionCode}
         onChange={handleChange}
         onBlur={handleBlur}
       />
@@ -245,11 +308,12 @@ export const EmployeeEditForm = () => {
         onBlur={handleBlur}
       />
 
-       <TextInput
-        type='text'
+      <SelectInput
         name='role'
         label='Роль'
         value={formData.role}
+        placeholder='Не назначена'
+        options={ROLE_OPTIONS}
         error={errors.role}
         onChange={handleChange}
         onBlur={handleBlur}

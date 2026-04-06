@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Employee } from './entities/employee.entity';
@@ -7,7 +7,7 @@ import { EmployeesRepository } from './employees.repository';
 import { EmployeesService } from './employees.service';
 import { EmployeesController } from './employees.controller';
 
-import { AccountsModule } from '../account/account.module';
+import { AccountsModule } from '../account/accounts.module';
 import { PositionsModule } from '../positions/positions.module';
 import { TeamsModule } from '../teams/teams.module';
 import { RolesModule } from '../roles/roles.module';
@@ -19,10 +19,10 @@ import { WorkshopsModule } from '../workshops/workshops.module';
     TypeOrmModule.forFeature([Employee]),
     PositionsModule,
     TeamsModule,
-    AccountsModule,
     RolesModule,
     EmployeeRolesModule,
     WorkshopsModule,
+    forwardRef(() => AccountsModule),
   ],
   controllers: [EmployeesController],
   providers: [EmployeesRepository, EmployeesService],

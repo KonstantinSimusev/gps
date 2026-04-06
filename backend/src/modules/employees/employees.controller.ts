@@ -1,21 +1,22 @@
 import {
-  BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
-  Query,
+  Put,
   Req,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 
-import { Response, Request } from 'express';
+import { Request } from 'express';
 
 import { CreateEmployeeDTO } from './dto/create-employee.dto';
 import { CreateEmployeesDTO } from './dto/create-employees.dto';
-import { SearchEmployeePipe } from './pipes/search-employee.pipe';
+import { SearchEmployeeDTO } from './dto/search-employee.dto';
+import { UpdateEmployeeDTO } from './dto/update-employee.dto';
+import { EmployeeIdDTO } from './dto/employee-id.dto';
 
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { EmployeesService } from './employees.service';
@@ -25,6 +26,7 @@ import {
   IProfile,
   IAccountInfo,
   IEmployeeInfo,
+  ISuccess,
 } from '../../shared/interfaces/api.interface';
 
 @Controller('employees')
@@ -50,21 +52,36 @@ export class EmployeesController {
   @Get(':personalNumber')
   @UseGuards(AuthGuard)
   async getEmployeeInfo(
-    @Param('personalNumber', SearchEmployeePipe) personalNumber: string,
+    @Param() dto: SearchEmployeeDTO,
   ): Promise<IEmployeeInfo> {
-    return this.employeesService.getEmployeeInfo(personalNumber);
+    return this.employeesService.getEmployeeInfo(dto.personalNumber);
   }
 
-  // @Put(':id')
-  // async updateUser(
-  //   @Param('id') id: string,
-  //   @Body() dto: UpdateUserDTO,
-  // ): Promise<ISuccess> {
-  //   return this.userService.updateUser(id, dto);
-  // }
+  @Put(':id')
+  @UseGuards(AuthGuard)
+  // @UsePipes(new ValidationPipe())
+  async updateUser(
+    @Param() idDto: EmployeeIdDTO,
+    @Body() dto: UpdateEmployeeDTO,
+    @Req() req: Request & { profile: IProfile },
+  ): Promise<IEmployeeInfo> {
+    return this.employeesService.updateEmployee(
+      idDto.id,
+      dto,
+      req.profile.workshopCode,
+    );
+  }
 
-  // @Delete(':id')
-  // async deleteUser(@Param('id') id: string): Promise<ISuccess> {
-  //   return this.personService.deleteUser(id);
-  // }
+  @Delete(':id')
+  @UseGuards(AuthGuard)
+  // @UsePipes(new ValidationPipe())
+  async deleteEmployee(
+    @Param() dto: EmployeeIdDTO,
+    @Req() req: Request & { profile: IProfile },
+  ): Promise<ISuccess> {
+    return this.employeesService.deleteEmployee(
+      dto.id,
+      req.profile.workshopCode,
+    );
+  }
 }
