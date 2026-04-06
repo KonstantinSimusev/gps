@@ -23,6 +23,9 @@ EOSQL
 # Часть 3: Подключение к созданной базе данных, DB_USER создает таблицы и расширения
 psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
 
+  -- Создание расширения для работы с UUID
+  CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA gps;
+
   -- Создание таблицы accounts
   CREATE TABLE IF NOT EXISTS gps.accounts (
     id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,

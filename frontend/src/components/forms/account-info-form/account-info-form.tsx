@@ -40,10 +40,10 @@ export const AccountInfoForm = () => {
 ${accountInfo.lastName} ${accountInfo.firstName} ${accountInfo.patronymic}
 
 Логин:
-${accountInfo.login}
+login:${accountInfo.login}
 
 Пароль:
-${accountInfo.password}
+password:${accountInfo.password}
     `.trim();
 
     await navigator.clipboard.writeText(formattedInfo);

@@ -43,11 +43,11 @@ export const Admin = () => {
       return;
     }
 
-    setSelectedId(employee.id);
-    setIsOverlayOpen(true);
-    setIsPasswordUpdateOpen(true);
-
-    // dispatch(updateLoginAndPassword(employee.id));
+    if (employee.isActive === true) {
+      setSelectedId(employee.id);
+      setIsOverlayOpen(true);
+      setIsPasswordUpdateOpen(true);
+    }
   };
 
   const updateProfile = () => {
@@ -124,11 +124,13 @@ export const Admin = () => {
                 className={styles.button}
               />
 
-              <Button
-                type='button'
-                label='Обновить пароль'
-                onClick={updatePassword}
-              />
+              {employee.isActive === true && (
+                <Button
+                  type='button'
+                  label='Обновить пароль'
+                  onClick={updatePassword}
+                />
+              )}
 
               <Button
                 type='button'
