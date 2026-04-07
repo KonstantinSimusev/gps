@@ -1,8 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { updateLoginAndPasswordApi } from '../../../utils/api/account.api';
 import { IAccountInfo } from '../../../utils/api.interface';
 import { delay } from '../../../utils/utils';
+import { updateLoginAndPasswordApi } from '../../../utils/api/account.api';
 
 export const updateLoginAndPassword = createAsyncThunk(
   'account/update',

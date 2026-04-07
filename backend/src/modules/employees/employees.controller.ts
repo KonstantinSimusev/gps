@@ -59,8 +59,7 @@ export class EmployeesController {
 
   @Put(':id')
   @UseGuards(AuthGuard)
-  // @UsePipes(new ValidationPipe())
-  async updateUser(
+  async updateEmployee(
     @Param() idDto: EmployeeIdDTO,
     @Body() dto: UpdateEmployeeDTO,
     @Req() req: Request & { profile: IProfile },
@@ -74,7 +73,6 @@ export class EmployeesController {
 
   @Delete(':id')
   @UseGuards(AuthGuard)
-  // @UsePipes(new ValidationPipe())
   async deleteEmployee(
     @Param() dto: EmployeeIdDTO,
     @Req() req: Request & { profile: IProfile },

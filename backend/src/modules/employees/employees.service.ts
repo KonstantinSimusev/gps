@@ -1,3 +1,7 @@
+import bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
+import { plainToInstance } from 'class-transformer';
+
 import {
   BadRequestException,
   ConflictException,
@@ -6,20 +10,20 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { plainToInstance } from 'class-transformer';
-
 import { Employee } from './entities/employee.entity';
 
 import { CreateEmployeeDTO } from './dto/create-employee.dto';
 import { CreateEmployeesDTO } from './dto/create-employees.dto';
+import { UpdateEmployeeDTO } from './dto/update-employee.dto';
 
 import { EmployeesRepository } from './employees.repository';
 import { PositionsRepository } from '../positions/positions.repository';
 import { TeamsRepository } from '../teams/teams.repository';
 import { RolesRepository } from '../roles/roles.repository';
 import { EmployeeRolesRepository } from '../employee-roles/employee-roles.repository';
-import { AccountsService } from '../account/accounts.service';
+import { AccountsRepository } from '../account/accounts.repository';
 import { WorkshopsRepository } from '../workshops/workshops.repository';
+import { AccountsService } from '../account/accounts.service';
 
 import {
   IAccountInfo,
@@ -27,7 +31,6 @@ import {
   IList,
   ISuccess,
 } from '../../shared/interfaces/api.interface';
-import { UpdateEmployeeDTO } from './dto/update-employee.dto';
 
 @Injectable()
 export class EmployeesService {
@@ -36,9 +39,10 @@ export class EmployeesService {
     private readonly positionsRepository: PositionsRepository,
     private readonly teamsRepository: TeamsRepository,
     private readonly rolesRepository: RolesRepository,
-    private readonly accountsService: AccountsService,
     private readonly employeeRolesRepository: EmployeeRolesRepository,
+    private readonly accountsRepository: AccountsRepository,
     private readonly workshopsRepository: WorkshopsRepository,
+    private readonly accountsService: AccountsService,
   ) {}
 
   async create(
@@ -292,7 +296,7 @@ export class EmployeesService {
     if (dbWorkshop.code !== profileWorkshop) {
       throw new ConflictException('Позиция из другого цеха');
     }
-    
+
     const result = await this.employeesRepository.delete(id);
 
     if (result.affected === 0) {
