@@ -1,1 +1,1 @@
-### Global Pack Studio
+### Global Pack Studio.
