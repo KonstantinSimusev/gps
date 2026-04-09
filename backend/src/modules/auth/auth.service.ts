@@ -13,9 +13,9 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
-import { Account } from '../account/entities/account.entity';
+import { Account } from '../accounts/entities/account.entity';
 
-import { AccountsRepository } from '../account/accounts.repository';
+import { AccountsRepository } from '../accounts/accounts.repository';
 import { EmployeesRepository } from '../employees/employees.repository';
 import { EmployeeRolesRepository } from '../employee-roles/employee-roles.repository';
 
@@ -42,7 +42,7 @@ export class AuthService {
     res: Response,
   ): Promise<IProfile> {
     // Проверка аккаунта
-    const account = await this.accountsRepository.findAccountByLogin(login);
+    const account = await this.accountsRepository.findByLogin(login);
 
     if (!account) {
       throw new UnauthorizedException('Неверный логин или пароль');
@@ -83,10 +83,9 @@ export class AuthService {
     const hashedRefreshToken = await bcrypt.hash(refreshToken, salt);
 
     // Обновили refreshToken в базе данных
-    await this.accountsRepository.updateHashedRefreshToken(
-      account.id,
-      hashedRefreshToken,
-    );
+    await this.accountsRepository.update(account.id, {
+      hashedRefreshToken: hashedRefreshToken,
+    });
 
     // Установили refreshToken в куки
     this.setCookie(
@@ -157,8 +156,7 @@ export class AuthService {
       return;
     }
 
-    const accounts =
-      await this.accountsRepository.findAllByHashedRefreshToken();
+    const accounts = await this.accountsRepository.findByHashedRefreshToken();
 
     const account = await this.findAccountByRefreshToken(
       accounts,
@@ -166,7 +164,9 @@ export class AuthService {
     );
 
     if (account) {
-      await this.accountsRepository.updateHashedRefreshToken(account.id, null);
+      await this.accountsRepository.update(account.id, {
+        hashedRefreshToken: null,
+      });
     }
   }
 
@@ -240,8 +240,7 @@ export class AuthService {
       }
 
       // Получаем все аккаунты с установленным hashedRefreshToken
-      const accounts =
-        await this.accountsRepository.findAllByHashedRefreshToken();
+      const accounts = await this.accountsRepository.findByHashedRefreshToken();
 
       // Находим аккаунт сотрудника
       const account = await this.findAccountByRefreshToken(

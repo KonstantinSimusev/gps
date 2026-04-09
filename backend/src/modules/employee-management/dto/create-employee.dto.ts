@@ -1,52 +1,29 @@
 import { Transform } from 'class-transformer';
+
 import {
   IsString,
   IsNotEmpty,
   MaxLength,
   MinLength,
   Matches,
-  IsUUID,
   IsDate,
-  IsOptional,
 } from 'class-validator';
 
-export class UpdateEmployeeDTO {
-  // @Transform(({ value }) => value.trim()) // удаляем пробелы по краям
-  // @IsNotEmpty({ message: 'ID не может быть пустым' })
-  // @IsString({ message: 'ID должен быть строкой' })
-  // @IsUUID()
-  // @MinLength(1, { message: 'ID должен быть от 1 символа' })
-  // @MaxLength(36, {
-  //   message: 'ID не может превышать 36 символов (стандартный UUID)',
-  // })
-  // @Matches(
-  //   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
-  //   {
-  //     message: 'ID должен быть корректным UUID',
-  //   },
-  // )
-  // id: string;
-
-  @Transform(({ value }) => value.trim())
+export class CreateEmployeeDto {
+  @Transform(({ value }) => value.trim()) // удаляем пробелы по краям
   @IsNotEmpty({ message: 'Фамилия не может быть пустой' })
-  @IsString({ message: 'Фамилия должна быть строкой' })
-  @Matches(/^\S+$/, { message: 'Фамилия не должна содержать лишних пробелов' })
   @MinLength(2, { message: 'Фамилия должна быть от 2 символов' })
   @MaxLength(50, { message: 'Фамилия не может превышать 50 символов' })
   lastName: string;
 
   @Transform(({ value }) => value.trim())
-  @IsString({ message: 'Имя должно быть строкой' })
   @IsNotEmpty({ message: 'Имя не может быть пустым' })
-  @Matches(/^\S+$/, { message: 'Имя не должно содержать лишних пробелов' })
   @MinLength(2, { message: 'Имя должно быть от 2 символов' })
   @MaxLength(30, { message: 'Имя не может превышать 30 символов' })
   firstName: string;
 
   @Transform(({ value }) => value.trim())
-  @IsString({ message: 'Отчество должно быть строкой' })
   @IsNotEmpty({ message: 'Отчество не может быть пустым' })
-  @Matches(/^\S+$/, { message: 'Отчество не должно содержать лишних пробелов' })
   @MinLength(2, { message: 'Отчество должно быть от 2 символов' })
   @MaxLength(40, { message: 'Отчество не может превышать 40 символов' })
   patronymic: string;
@@ -84,22 +61,4 @@ export class UpdateEmployeeDTO {
   @Transform(({ value }) => new Date(value))
   @IsDate({ message: 'Дата назначения должна быть валидной датой' })
   startDate: Date;
-
-  @Transform(({ value }) => {
-    if (value === null) return null;
-    return new Date(value);
-  })
-  @IsOptional()
-  @IsDate({ message: 'Дата увольнения должна быть валидной датой' })
-  endDate: Date | null;
-
-  @Transform(({ value }) => {
-    if (value === null) return null;
-    return value.trim();
-  })
-  @IsOptional()
-  @Matches(/^\S+$/, { message: 'Роль не должна содержать лишних пробелов' })
-  @MinLength(0, { message: 'Роль может быть пустой' })
-  @MaxLength(40, { message: 'Роль не может превышать 40 символов' })
-  role: string | null;
 }

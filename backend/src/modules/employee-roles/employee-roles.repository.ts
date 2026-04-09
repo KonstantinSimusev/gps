@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { EmployeeRole } from './entities/employee-role.entity';
+import { DeleteResult } from 'node_modules/typeorm/browser';
 
 @Injectable()
 export class EmployeeRolesRepository {
@@ -21,15 +22,15 @@ export class EmployeeRolesRepository {
     return this.employeeRolesRepository.save(employeeRole);
   }
 
-  async update(employeeId: string, roleId: string): Promise<void> {
-    await this.employeeRolesRepository.update(
+  async update(employeeId: string, roleId: string): Promise<UpdateResult> {
+    return this.employeeRolesRepository.update(
       { employee: { id: employeeId } }, // ищем запись по ID сотрудника
       { role: { id: roleId } }, // обновляем связь на новую роль
     );
   }
 
-  async deleteByEmployeeId(employeeId: string): Promise<void> {
-    await this.employeeRolesRepository.delete({
+  async removeEmployeeRole(employeeId: string): Promise<DeleteResult> {
+    return this.employeeRolesRepository.delete({
       employee: {
         id: employeeId,
       },
@@ -64,20 +65,4 @@ export class EmployeeRolesRepository {
       .addSelect('employeeRole.id', 'id')
       .getRawOne();
   }
-
-  // async findAll(): Promise<Employee[]> {
-  //   return this.employeesRepository.find({});
-  // }
-
-  // async findOne(id: string): Promise<EmployeeRole | null> {
-  //   return this.employeeRolesRepository.findOne({ where: { id } });
-  // }
-
-  // async findById(id: string): Promise<Employee> {
-  //   return this.employeesRepository.findOneBy({ id });
-  // }
-
-  // async remove(id: string): Promise<void> {
-  //   this.employeesRepository.delete(id);
-  // }
 }

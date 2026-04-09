@@ -1,4 +1,4 @@
-import { IsNull, Not, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, IsNull, Not, Repository, UpdateResult } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -11,35 +11,31 @@ export class AccountsRepository {
     private readonly accountsRepository: Repository<Account>,
   ) {}
 
-  async save(account: Account): Promise<Account> {
+  async create(accountData: Partial<Account>): Promise<Account> {
+    const account = this.accountsRepository.create(accountData);
     return this.accountsRepository.save(account);
   }
 
-  async updateByEmployeeId(
-    accountId: string,
-    login: string,
-    hashedPassword: string,
-  ): Promise<void> {
-    await this.accountsRepository.update(
-      accountId,
-      {
-        login,
-        hashedPassword,
-        hashedRefreshToken: null,
-      },
-    );
+  async findOne(id: string): Promise<Account | null> {
+    return this.accountsRepository.findOne({ where: { id } });
   }
 
-  async updateHashedRefreshToken(
-    accountId: string,
-    hashedRefreshToken: string,
-  ): Promise<void> {
-    await this.accountsRepository.update(accountId, {
-      hashedRefreshToken,
-    });
+  async findAll(): Promise<Account[]> {
+    return this.accountsRepository.find();
   }
 
-  async findAccountByLogin(login: string): Promise<Account | null> {
+  async update(
+    id: string,
+    accountData: Partial<Account>,
+  ): Promise<UpdateResult> {
+    return this.accountsRepository.update(id, accountData);
+  }
+
+  async remove(id: string): Promise<DeleteResult> {
+    return this.accountsRepository.delete(id);
+  }
+
+  async findByLogin(login: string): Promise<Account | null> {
     return this.accountsRepository.findOne({
       where: {
         login,
@@ -54,7 +50,7 @@ export class AccountsRepository {
     });
   }
 
-  async findAccountByEmployeeId(employeeId: string): Promise<Account | null> {
+  async findByEmployeeId(employeeId: string): Promise<Account | null> {
     return this.accountsRepository.findOne({
       where: {
         employee: {
@@ -66,7 +62,7 @@ export class AccountsRepository {
   }
 
   // Получаем все аккаунты с установленным hashedRefreshToken
-  async findAllByHashedRefreshToken(): Promise<Account[]> {
+  async findByHashedRefreshToken(): Promise<Account[]> {
     return this.accountsRepository.find({
       where: {
         hashedRefreshToken: Not(IsNull()),

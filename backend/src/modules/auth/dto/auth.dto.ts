@@ -8,7 +8,7 @@ import {
   MaxLength,
 } from 'class-validator';
 
-export class AuthDTO {
+export class AuthDto {
   @Transform(({ value }) => value.trim())
   @IsString({ message: 'Логин должен быть строкой' })
   @IsNotEmpty({ message: 'Логин не может быть пустым' })

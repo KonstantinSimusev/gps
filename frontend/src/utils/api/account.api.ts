@@ -7,7 +7,7 @@ export const updateLoginAndPasswordApi = async (
   id: string,
 ): Promise<IAccountInfo> => {
   try {
-    const response = await fetch(`${URL}/accounts/${id}`, {
+    const response = await fetch(`${URL}/employee-account/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',

@@ -7,4 +7,4 @@ import { AuthModule } from '../modules/auth/auth.module';
   imports: [AuthModule],
   exports: [AuthModule],
 })
-export class GlobalAppModule {}
+export class GlobalAuthModule {}

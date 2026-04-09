@@ -216,7 +216,7 @@ export const EmployeeEditForm = () => {
     !formData.startDate;
 
   return (
-    <Form title='Профиль' onSubmit={handleSubmit}>
+    <Form title='Профиль' onSubmit={handleSubmit} className={styles.container}>
       <TextInput
         type='text'
         name='lastName'

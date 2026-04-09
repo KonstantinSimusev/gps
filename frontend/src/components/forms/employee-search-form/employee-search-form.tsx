@@ -117,7 +117,11 @@ export const EmployeeSearchForm = () => {
   const isButtonDisabled = isLoading || !formData.personalNumber;
 
   return (
-    <Form title='Поиск работника' onSubmit={handleSubmit}>
+    <Form
+      title='Поиск работника'
+      onSubmit={handleSubmit}
+      className={styles.container}
+    >
       <TextInput
         type='text'
         name='personalNumber'

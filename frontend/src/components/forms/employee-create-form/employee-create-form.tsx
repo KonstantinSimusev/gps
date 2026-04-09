@@ -180,7 +180,11 @@ export const EmployeeCreateForm = () => {
     !formData.startDate;
 
   return (
-    <Form title='Новый работник' onSubmit={handleSubmit}>
+    <Form
+      title='Новый работник'
+      onSubmit={handleSubmit}
+      className={styles.container}
+    >
       <TextInput
         type='text'
         name='lastName'

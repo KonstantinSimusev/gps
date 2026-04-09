@@ -2,7 +2,7 @@ import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 
 import { Response, Request } from 'express';
 
-import { AuthDTO } from './dto/auth.dto';
+import { AuthDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './guards/auth.guard';
 
@@ -14,7 +14,7 @@ export class AuthController {
 
   @Post('login')
   async login(
-    @Body() dto: AuthDTO,
+    @Body() dto: AuthDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<IProfile> {
     return this.authService.login(dto.login, dto.password, res);

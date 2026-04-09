@@ -10,20 +10,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { Employee } from './entities/employee.entity';
+import { Employee } from '../employees/entities/employee.entity';
+import { CreateEmployeeDto } from './dto/create-employee.dto';
 
-import { CreateEmployeeDTO } from './dto/create-employee.dto';
-import { CreateEmployeesDTO } from './dto/create-employees.dto';
-import { UpdateEmployeeDTO } from './dto/update-employee.dto';
-
-import { EmployeesRepository } from './employees.repository';
+import { EmployeesRepository } from '../employees/employees.repository';
 import { PositionsRepository } from '../positions/positions.repository';
-import { TeamsRepository } from '../teams/teams.repository';
 import { RolesRepository } from '../roles/roles.repository';
-import { EmployeeRolesRepository } from '../employee-roles/employee-roles.repository';
-import { AccountsRepository } from '../account/accounts.repository';
+import { TeamsRepository } from '../teams/teams.repository';
 import { WorkshopsRepository } from '../workshops/workshops.repository';
-import { AccountsService } from '../account/accounts.service';
+import { EmployeeRolesRepository } from '../employee-roles/employee-roles.repository';
+import { AccountService } from '../accounts/account.service';
 
 import {
   IAccountInfo,
@@ -31,22 +27,23 @@ import {
   IList,
   ISuccess,
 } from '../../shared/interfaces/api.interface';
+import { CreateEmployeesDto } from './dto/create-employees.dto';
+import { UpdateEmployeeDto } from './dto/update-employee.dto';
 
 @Injectable()
-export class EmployeesService {
+export class EmployeeManagementService {
   constructor(
     private readonly employeesRepository: EmployeesRepository,
     private readonly positionsRepository: PositionsRepository,
     private readonly teamsRepository: TeamsRepository,
     private readonly rolesRepository: RolesRepository,
     private readonly employeeRolesRepository: EmployeeRolesRepository,
-    private readonly accountsRepository: AccountsRepository,
     private readonly workshopsRepository: WorkshopsRepository,
-    private readonly accountsService: AccountsService,
+    private readonly accountService: AccountService,
   ) {}
 
-  async create(
-    dto: CreateEmployeeDTO,
+  async createEmployee(
+    dto: CreateEmployeeDto,
     profileWorkshop?: string,
     isManyOperation: boolean = false,
   ): Promise<IAccountInfo> {
@@ -120,39 +117,39 @@ export class EmployeesService {
 
     // Создаем аккаунт
     const { account, initialPassword } =
-      await this.accountsService.createAсcount(
+      await this.accountService.createAсcount(
         dto.lastName,
         dto.firstName,
         dto.patronymic,
       );
 
-    // Преобразовываем простой объект dto в сущность
-    const employee = plainToInstance(Employee, dto);
+    // Формируем данные для создания сотрудника
+    const employeeData: Partial<Employee> = {
+      ...dto,
+      position,
+      team,
+      account,
+    };
 
-    // Связываем с другими сущностями
-    employee.position = position;
-    employee.team = team;
-    employee.account = account;
-
-    // Сохраняем в базу данных
-    const savedEmployee = await this.employeesRepository.save(employee);
+    // Создаём сотрудника через репозиторий
+    const savedEmployee = await this.employeesRepository.create(employeeData);
 
     // Создаём связь сотрудника с ролью
     await this.employeeRolesRepository.create(savedEmployee.id, role.id);
 
     return {
-      lastName: employee.lastName,
-      firstName: employee.firstName,
-      patronymic: employee.patronymic,
+      lastName: dto.lastName,
+      firstName: dto.firstName,
+      patronymic: dto.patronymic,
       login: account.login,
       password: initialPassword,
     };
   }
 
-  async createMany(dtos: CreateEmployeesDTO): Promise<IList<IAccountInfo>> {
+  async createMany(dtos: CreateEmployeesDto): Promise<IList<IAccountInfo>> {
     try {
       const employees = await Promise.all(
-        dtos.employees.map((dto) => this.create(dto, undefined, true)),
+        dtos.employees.map((dto) => this.createEmployee(dto, undefined, true)),
       );
 
       return {
@@ -166,11 +163,11 @@ export class EmployeesService {
 
   async updateEmployee(
     id: string,
-    dto: UpdateEmployeeDTO,
+    dto: UpdateEmployeeDto,
     profileWorkshop: string,
   ): Promise<IEmployeeInfo> {
     // Находим работника
-    const employee = await this.employeesRepository.findOneById(id);
+    const employee = await this.employeesRepository.findOne(id);
 
     if (!employee) {
       throw new NotFoundException('Работник не найден');
@@ -297,7 +294,7 @@ export class EmployeesService {
       throw new ConflictException('Позиция из другого цеха');
     }
 
-    const result = await this.employeesRepository.delete(id);
+    const result = await this.employeesRepository.remove(id);
 
     if (result.affected === 0) {
       throw new NotFoundException('Работник не найден');
@@ -313,7 +310,7 @@ export class EmployeesService {
       await this.employeeRolesRepository.findEmployeeRoleByEmployee(employeeId);
 
     if (employeeRole) {
-      await this.employeeRolesRepository.deleteByEmployeeId(employeeId);
+      await this.employeeRolesRepository.removeEmployeeRole(employeeId);
     }
   }
 

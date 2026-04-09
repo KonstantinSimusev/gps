@@ -1,6 +1,5 @@
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
-import { plainToInstance } from 'class-transformer';
 
 import {
   ConflictException,
@@ -9,53 +8,19 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { Account } from './entities/account.entity';
-import { AccountsRepository } from './accounts.repository';
 import { EmployeesRepository } from '../employees/employees.repository';
 import { WorkshopsRepository } from '../workshops/workshops.repository';
+import { AccountsRepository } from '../accounts/accounts.repository';
 
 import { IAccountInfo } from '../../shared/interfaces/api.interface';
 
 @Injectable()
-export class AccountsService {
+export class EmployeeAccountService {
   constructor(
-    private readonly accountsRepository: AccountsRepository,
     private readonly employeesRepository: EmployeesRepository,
     private readonly workshopsRepository: WorkshopsRepository,
+    private readonly accountsRepository: AccountsRepository,
   ) {}
-
-  async createAсcount(
-    lastName: string,
-    firstName: string,
-    patronymic: string,
-  ): Promise<{ account: Account; initialPassword: string }> {
-    try {
-      const login = this.generateLogin(lastName, firstName, patronymic);
-      const password = uuidv4();
-
-      // Генерируем соль и хешируем пароль
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
-
-      const newAccount = {
-        login,
-        hashedPassword,
-      };
-
-      // Преобразовываем объект в сущность
-      const entityAccount = plainToInstance(Account, newAccount);
-
-      // Сохраняем в базу данных
-      const savedAccount = await this.accountsRepository.save(entityAccount);
-
-      return {
-        account: savedAccount,
-        initialPassword: password, // возвращаем пароль один раз
-      };
-    } catch (error) {
-      throw new InternalServerErrorException('Не удалось создать аккаунт');
-    }
-  }
 
   async updateLoginAndPassword(
     employeeId: string,
@@ -71,7 +36,7 @@ export class AccountsService {
       }
 
       // Находим аккаунт по ID работника
-      const account = await this.accountsRepository.findAccountByEmployeeId(
+      const account = await this.accountsRepository.findByEmployeeId(
         employee.id,
       );
 
@@ -103,11 +68,10 @@ export class AccountsService {
       const newHashedPassword = await bcrypt.hash(newPassword, salt);
 
       // Обновляем только нужные поля одним запросом
-      await this.accountsRepository.updateByEmployeeId(
-        account.id,
-        newLogin,
-        newHashedPassword,
-      );
+      await this.accountsRepository.update(account.id, {
+        login: newLogin,
+        hashedPassword: newHashedPassword,
+      });
 
       return {
         lastName: employee.lastName,

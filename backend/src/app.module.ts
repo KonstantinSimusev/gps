@@ -5,7 +5,10 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from '@nestjs/config';
 
 import { DatabaseModule } from './database/database.module';
-import { GlobalAppModule } from './global/global-app.module';
+import { GlobalAuthModule } from './global/global-auth.module';
+
+import { EmployeeManagementModule } from './modules/employee-management/employee-management.module';
+import { EmployeeAccountModule } from './modules/employee-account/employee-account.module';
 
 @Module({
   imports: [
@@ -13,7 +16,9 @@ import { GlobalAppModule } from './global/global-app.module';
       isGlobal: true,
     }),
     DatabaseModule,
-    GlobalAppModule,
+    GlobalAuthModule,
+    EmployeeManagementModule,
+    EmployeeAccountModule,
     ServeStaticModule.forRoot(
       {
         rootPath: path.join(__dirname, '..', 'dist', 'assets'),

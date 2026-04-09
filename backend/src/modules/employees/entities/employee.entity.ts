@@ -11,7 +11,7 @@ import {
 
 import { Position } from '../../positions/entities/position.entity';
 import { Team } from '../../teams/entities/team.entity';
-import { Account } from '../../account/entities/account.entity';
+import { Account } from '../../accounts/entities/account.entity';
 import { EmployeeRole } from '../../employee-roles/entities/employee-role.entity';
 
 @Entity({

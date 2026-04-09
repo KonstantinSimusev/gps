@@ -32,21 +32,10 @@ export const AccountInfoForm = () => {
     }
 
     setIsLoading(true);
-    await delay();
-
-    // HTML‑контент с подчёркиванием для буфера обмена
-    const htmlContent = `
-<div style="font-family: Arial, sans-serif; font-size: 14px;">
-  <p><strong>ФИО:</strong><br>
-  ${accountInfo.lastName} ${accountInfo.firstName} ${accountInfo.patronymic}</p>
-  <p><strong>Логин:</strong><br>
-  <u style="color: #007bff;>${accountInfo.login}</u></p>
-  <p><strong>Пароль:</strong><br>
-  <u style="color: #007bff;>${accountInfo.password}</u></p>
-</div>`;
+    await delay(200);
 
     // Чистый текст для fallback
-    const plainText = `
+    const formattedInfo = `
 ФИО:
 ${accountInfo.lastName} ${accountInfo.firstName} ${accountInfo.patronymic}
 
@@ -57,22 +46,11 @@ ${accountInfo.login}
 ${accountInfo.password}
   `.trim();
 
-    // Основной способ: копируем HTML + plain text
-    navigator.clipboard
-      .write([
-        new ClipboardItem({
-          'text/html': new Blob([htmlContent], { type: 'text/html' }),
-          'text/plain': new Blob([plainText], { type: 'text/plain' }),
-        }),
-      ])
-      .catch(() => {
-        // Fallback: если HTML не поддерживается, копируем простой текст
-        navigator.clipboard.writeText(plainText);
-      });
-
+    await navigator.clipboard.writeText(formattedInfo);
     window.location.reload();
 
-    await delay();
+    await delay(300);
+
     setIsOverlayOpen(false);
     setIsAccountInfoOpen(false);
     setIsPasswordUpdateOpen(false);

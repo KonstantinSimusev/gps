@@ -1,9 +1,9 @@
-import { DeleteResult, Not, Repository } from 'typeorm';
+import { DeleteResult, Not, Repository, UpdateResult } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Employee } from './entities/employee.entity';
-import { IEmployeeInfo } from './../../shared/interfaces/api.interface';
+import { IEmployeeInfo } from '../../shared/interfaces/api.interface';
 
 @Injectable()
 export class EmployeesRepository {
@@ -12,14 +12,32 @@ export class EmployeesRepository {
     private readonly employeesRepository: Repository<Employee>,
   ) {}
 
+  async create(employeeData: Partial<Employee>): Promise<Employee> {
+    const employee = this.employeesRepository.create(employeeData);
+    return this.employeesRepository.save(employee);
+  }
+
+  async findOne(id: string): Promise<Employee | null> {
+    return this.employeesRepository.findOne({ where: { id } });
+  }
+
+  async findAll(): Promise<Employee[]> {
+    return this.employeesRepository.find();
+  }
+
+  async update(
+    id: string,
+    employeeData: Partial<Employee>,
+  ): Promise<UpdateResult> {
+    return this.employeesRepository.update(id, employeeData);
+  }
+
   async save(employee: Employee): Promise<Employee> {
     return this.employeesRepository.save(employee);
   }
 
-  async findOneById(id: string): Promise<Employee> {
-    return this.employeesRepository.findOne({
-      where: { id },
-    });
+  async remove(id: string): Promise<DeleteResult> {
+    return this.employeesRepository.delete(id);
   }
 
   async findActiveEmployeeById(employeeId: string): Promise<Employee> {
@@ -29,10 +47,6 @@ export class EmployeesRepository {
         isActive: true,
       },
     });
-  }
-
-  async delete(id: string): Promise<DeleteResult> {
-    return this.employeesRepository.delete(id);
   }
 
   async existsByFullName(

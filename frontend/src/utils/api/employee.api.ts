@@ -13,7 +13,7 @@ export const searchEmployeeApi = async (
   personalNumber: string,
 ): Promise<IEmployeeInfo> => {
   try {
-    const response = await fetch(`${URL}/employees/${personalNumber}`, {
+    const response = await fetch(`${URL}/employee-management/${personalNumber}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
@@ -42,7 +42,7 @@ export const createEmployeeApi = async (
 ): Promise<IAccountInfo> => {
   try {
     // Здесь происходит запрос к серверу
-    const response = await fetch(`${URL}/employees`, {
+    const response = await fetch(`${URL}/employee-management`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
@@ -72,7 +72,7 @@ export const updateEmployeeApi = async (
   data: IUpdateEmployee,
 ): Promise<IEmployeeInfo> => {
   try {
-    const response = await fetch(`${URL}/employees/${id}`, {
+    const response = await fetch(`${URL}/employee-management/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
@@ -99,7 +99,7 @@ export const updateEmployeeApi = async (
 
 export const deleteEmployeeApi = async (id: string): Promise<ISuccess> => {
   try {
-    const response = await fetch(`${URL}/employees/${id}`, {
+    const response = await fetch(`${URL}/employee-management/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',

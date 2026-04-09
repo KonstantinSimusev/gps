@@ -8,7 +8,7 @@ import {
   Matches,
 } from 'class-validator';
 
-export class SearchEmployeeDTO {
+export class SearchEmployeeDto {
   @Transform(({ value }) => value.trim())
   @IsNotEmpty({ message: 'Личный номер не может быть пустым' })
   @IsString({ message: 'Личный номер должен быть строкой' })
