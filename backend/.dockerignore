@@ -7,7 +7,7 @@
 **/node_modules/
 
 # Lock files — не копируем, Docker сам установит зависимости
-package-lock.json
+# package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
