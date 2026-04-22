@@ -1,9 +1,8 @@
-import { Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { EmployeeRole } from './entities/employee-role.entity';
-import { DeleteResult } from 'node_modules/typeorm/browser';
 
 @Injectable()
 export class EmployeeRolesRepository {
@@ -39,30 +38,29 @@ export class EmployeeRolesRepository {
 
   async findEmployeeRoleByAccount(
     accountId: string,
-  ): Promise<{ id: string; name: string } | null> {
-    return await this.employeeRolesRepository
-      .createQueryBuilder('employeeRole')
-      .innerJoin('employeeRole.employee', 'employee') // Связываем роль с сотрудником
-      .innerJoin('employee.account', 'account') // Связываем сотрудника с аккаунтом
-      .where('account.id = :accountId', { accountId }) // Фильтруем по ID аккаунта
-      .andWhere('employee.isActive = true') // Проверяем активность сотрудника
-      .innerJoin('employeeRole.role', 'role') // Связываем роль сотрудника с ролью
-      .select('role.name', 'name') // Выбираем имя роли
-      .addSelect('employeeRole.id', 'id') // Выбираем ID роли сотрудника
-      .getRawOne();
+  ): Promise<EmployeeRole | null> {
+    return await this.employeeRolesRepository.findOne({
+      where: {
+        employee: {
+          account: { id: accountId },
+          isActive: true,
+        },
+      },
+      relations: ['employee', 'role'],
+    });
   }
 
   async findEmployeeRoleByEmployee(
     employeeId: string,
-  ): Promise<{ id: string; name: string } | null> {
-    return await this.employeeRolesRepository
-      .createQueryBuilder('employeeRole')
-      .innerJoin('employeeRole.employee', 'employee')
-      .where('employee.id = :employeeId', { employeeId })
-      // .andWhere('employee.isActive = true')
-      .innerJoin('employeeRole.role', 'role')
-      .select('role.name', 'name')
-      .addSelect('employeeRole.id', 'id')
-      .getRawOne();
+  ): Promise<EmployeeRole | null> {
+    return await this.employeeRolesRepository.findOne({
+      where: {
+        employee: {
+          id: employeeId,
+          // isActive: true,
+        },
+      },
+      relations: ['employee', 'role'],
+    });
   }
 }

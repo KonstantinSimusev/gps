@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -10,6 +10,10 @@ export class RolesRepository {
     @InjectRepository(Role)
     private readonly rolesRepository: Repository<Role>,
   ) {}
+
+  async findOne(id: string): Promise<Role | null> {
+    return this.rolesRepository.findOne({ where: { id } });
+  }
 
   async findRoleByName(name: string): Promise<Role | null> {
     return this.rolesRepository.findOneBy({ name });

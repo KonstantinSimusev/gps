@@ -57,3 +57,8 @@
 .color {
   background-color: var(--bg-color-button-default);
 }
+
+.input {
+  background-color: aliceblue;
+  color: black;
+}

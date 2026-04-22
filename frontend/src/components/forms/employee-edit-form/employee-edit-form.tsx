@@ -206,6 +206,7 @@ export const EmployeeEditForm = () => {
   // Определяем, заблокирована ли кнопка
   const isButtonDisabled =
     isLoading ||
+    Object.values(errors).some(Boolean) ||
     !formData.lastName ||
     !formData.firstName ||
     !formData.patronymic ||

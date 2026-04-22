@@ -24,7 +24,13 @@ export const Cover = () => {
     <>
       {isAuthenticated && isAgreed && (
         <div className={styles.container}>
-          {isAdmin && <PageTitle title='ПОЛЬЗОВАТЕЛИ' />}
+          {isAdmin && (
+            <>
+              <PageTitle title='ПОЛЬЗОВАТЕЛИ' />
+              {/* кнопка 'Поиск' */}
+              {/* кнопка 'Создать' */}
+            </>
+          )}
           {isHome && <PageTitle title='ГЛАВНАЯ' />}
           {isMasterTimesheet && <PageTitle title='ТАБЕЛЬ' />}
           {isPackerScan && <PageTitle title='СКАНИРОВАНИЕ' />}

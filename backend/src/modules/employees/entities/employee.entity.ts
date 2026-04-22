@@ -1,18 +1,18 @@
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
   JoinColumn,
   ManyToOne,
+  PrimaryGeneratedColumn,
+  OneToMany,
   OneToOne,
   Unique,
-  OneToMany,
 } from 'typeorm';
 
-import { Position } from '../../positions/entities/position.entity';
-import { Team } from '../../teams/entities/team.entity';
 import { Account } from '../../accounts/entities/account.entity';
 import { EmployeeRole } from '../../employee-roles/entities/employee-role.entity';
+import { Position } from '../../positions/entities/position.entity';
+import { Team } from '../../teams/entities/team.entity';
 
 @Entity({
   schema: 'gps',

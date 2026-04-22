@@ -1,13 +1,13 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   JoinColumn,
   ManyToOne,
+  PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
 
-import { Role } from '../../roles/entities/role.entity';
 import { Employee } from '../../employees/entities/employee.entity';
+import { Role } from '../../roles/entities/role.entity';
 
 @Entity({
   schema: 'gps',

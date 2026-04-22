@@ -21,9 +21,9 @@ export class EmployeesRepository {
     return this.employeesRepository.findOne({ where: { id } });
   }
 
-  async findAll(): Promise<Employee[]> {
-    return this.employeesRepository.find();
-  }
+  // async findAll(): Promise<Employee[]> {
+  //   return this.employeesRepository.find();
+  // }
 
   async update(
     id: string,

@@ -3,9 +3,9 @@ import { Transform } from 'class-transformer';
 import {
   IsString,
   IsNotEmpty,
-  MinLength,
-  Matches,
   MaxLength,
+  Matches,
+  MinLength,
 } from 'class-validator';
 
 export class AuthDto {

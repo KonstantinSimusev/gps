@@ -15,16 +15,16 @@ import { JwtService } from '@nestjs/jwt';
 
 import { Account } from '../accounts/entities/account.entity';
 
-import { AccountsRepository } from '../accounts/accounts.repository';
-import { EmployeesRepository } from '../employees/employees.repository';
-import { EmployeeRolesRepository } from '../employee-roles/employee-roles.repository';
-
 import {
   ITokenOptions,
   IProfile,
   ISuccess,
   IJwtPayload,
 } from '../../shared/interfaces/api.interface';
+
+import { AccountsRepository } from '../accounts/accounts.repository';
+import { EmployeeRolesRepository } from '../employee-roles/employee-roles.repository';
+import { EmployeesRepository } from '../employees/employees.repository';
 
 @Injectable()
 export class AuthService {
@@ -106,7 +106,7 @@ export class AuthService {
     return {
       ...employee,
       roleId: employeeRole.id,
-      role: employeeRole.name,
+      role: employeeRole.role.name,
     };
   }
 
@@ -153,6 +153,9 @@ export class AuthService {
     const refreshToken = req.cookies.refresh_token;
 
     if (!refreshToken) {
+      // Console.log
+      console.log('Больше 30 сек или вышел');
+
       return;
     }
 
@@ -164,6 +167,9 @@ export class AuthService {
     );
 
     if (account) {
+      // Console.log
+      console.log('Вышел');
+
       await this.accountsRepository.update(account.id, {
         hashedRefreshToken: null,
       });
@@ -221,10 +227,13 @@ export class AuthService {
       throw new NotFoundException('Сотрудник не найден');
     }
 
+    // Console.log
+    console.log('До 10 сек');
+
     return {
       ...employee,
       roleId: employeeRole.id,
-      role: employeeRole.name,
+      role: employeeRole.role.name,
     };
   }
 
@@ -284,10 +293,13 @@ export class AuthService {
         throw new NotFoundException('Сотрудник не найден');
       }
 
+      // Console.log
+      console.log('10-30 сек');
+
       return {
         ...employee,
         roleId: employeeRole.id,
-        role: employeeRole.name,
+        role: employeeRole.role.name,
       };
     } catch (error) {
       if (error instanceof UnauthorizedException) {

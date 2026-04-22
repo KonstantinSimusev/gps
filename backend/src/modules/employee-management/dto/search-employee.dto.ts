@@ -1,11 +1,11 @@
 import { Transform } from 'class-transformer';
 
 import {
-  IsString,
   IsNotEmpty,
+  IsString,
+  Matches,
   MaxLength,
   MinLength,
-  Matches,
 } from 'class-validator';
 
 export class SearchEmployeeDto {

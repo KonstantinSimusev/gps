@@ -1,9 +1,12 @@
 import { Controller, Param, Put, Req, UseGuards } from '@nestjs/common';
 
-import { AuthGuard } from '../auth/guards/auth.guard';
-import { EmployeeIdDto } from './dto/employee-id.dto';
+import { Request } from 'express';
 
-import { IProfile, IAccountInfo } from '../../shared/interfaces/api.interface';
+import { AuthGuard } from '../auth/guards/auth.guard';
+
+import { EmployeeIdDto } from './dto/employee-id.dto';
+import { IAccountInfo, IProfile } from '../../shared/interfaces/api.interface';
+
 import { EmployeeAccountService } from './employee-account.service';
 
 @Controller('employee-account')

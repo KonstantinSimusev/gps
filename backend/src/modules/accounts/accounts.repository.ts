@@ -1,4 +1,4 @@
-import { DeleteResult, IsNull, Not, Repository, UpdateResult } from 'typeorm';
+import { IsNull, Not, Repository, UpdateResult } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -16,23 +16,11 @@ export class AccountsRepository {
     return this.accountsRepository.save(account);
   }
 
-  async findOne(id: string): Promise<Account | null> {
-    return this.accountsRepository.findOne({ where: { id } });
-  }
-
-  async findAll(): Promise<Account[]> {
-    return this.accountsRepository.find();
-  }
-
   async update(
     id: string,
     accountData: Partial<Account>,
   ): Promise<UpdateResult> {
     return this.accountsRepository.update(id, accountData);
-  }
-
-  async remove(id: string): Promise<DeleteResult> {
-    return this.accountsRepository.delete(id);
   }
 
   async findByLogin(login: string): Promise<Account | null> {
@@ -42,10 +30,6 @@ export class AccountsRepository {
         employee: {
           isActive: true,
         },
-      },
-      select: {
-        id: true,
-        hashedPassword: true,
       },
     });
   }

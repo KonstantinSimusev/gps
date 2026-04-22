@@ -15,8 +15,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
         return {
           type: 'postgres',
           url: dbUrl,
-          // Автоматическое подключение сущностей по шаблону
-          entities: [__dirname + '/../modules/**/*.entity.{js,ts}'],
+          entities: [__dirname + '/../modules/**/*.entity.{js,ts}'], // Автоматическое подключение сущностей по шаблону
           synchronize: false,
           retryAttempts: 5, // Количество попыток переподключения
           retryDelay: 1000, // Задержка между попытками в миллисекундах

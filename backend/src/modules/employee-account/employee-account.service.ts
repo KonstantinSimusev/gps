@@ -8,18 +8,18 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
+import { IAccountInfo } from '../../shared/interfaces/api.interface';
+
+import { AccountsRepository } from '../accounts/accounts.repository';
 import { EmployeesRepository } from '../employees/employees.repository';
 import { WorkshopsRepository } from '../workshops/workshops.repository';
-import { AccountsRepository } from '../accounts/accounts.repository';
-
-import { IAccountInfo } from '../../shared/interfaces/api.interface';
 
 @Injectable()
 export class EmployeeAccountService {
   constructor(
+    private readonly accountsRepository: AccountsRepository,
     private readonly employeesRepository: EmployeesRepository,
     private readonly workshopsRepository: WorkshopsRepository,
-    private readonly accountsRepository: AccountsRepository,
   ) {}
 
   async updateLoginAndPassword(

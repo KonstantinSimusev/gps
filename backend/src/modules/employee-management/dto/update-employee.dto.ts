@@ -1,13 +1,13 @@
 import { Transform } from 'class-transformer';
+
 import {
-  IsString,
-  IsNotEmpty,
-  MaxLength,
-  MinLength,
-  Matches,
-  IsUUID,
   IsDate,
+  IsNotEmpty,
   IsOptional,
+  IsString,
+  MaxLength,
+  Matches,
+  MinLength,
 } from 'class-validator';
 
 export class UpdateEmployeeDto {

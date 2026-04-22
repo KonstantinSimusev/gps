@@ -1,4 +1,4 @@
-import { IsUUID, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsUUID } from 'class-validator';
 
 export class EmployeeIdDto {
   @IsNotEmpty({ message: 'ID сотрудника не может быть пустым' })

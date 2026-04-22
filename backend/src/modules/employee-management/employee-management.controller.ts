@@ -13,20 +13,22 @@ import {
 import { Request } from 'express';
 
 import { AuthGuard } from '../auth/guards/auth.guard';
+
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreateEmployeesDto } from './dto/create-employees.dto';
-import { SearchEmployeeDto } from './dto/search-employee.dto';
 import { EmployeeIdDto } from './dto/employee-id.dto';
+import { SearchEmployeeDto } from './dto/search-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
-import { EmployeeManagementService } from './employee-management.service';
 
 import {
-  IList,
-  IProfile,
   IAccountInfo,
   IEmployeeInfo,
+  IList,
+  IProfile,
   ISuccess,
 } from '../../shared/interfaces/api.interface';
+
+import { EmployeeManagementService } from './employee-management.service';
 
 @Controller('employee-management')
 export class EmployeeManagementController {

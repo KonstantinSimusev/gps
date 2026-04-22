@@ -1,7 +1,7 @@
 import {
-  Injectable,
   CanActivate,
   ExecutionContext,
+  Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 
@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
         request,
         response,
       );
-      
+
       request.profile = profile;
 
       return true;
