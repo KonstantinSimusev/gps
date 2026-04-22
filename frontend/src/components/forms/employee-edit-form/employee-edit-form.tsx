@@ -97,10 +97,13 @@ export const EmployeeEditForm = () => {
   ) => {
     const { name, value } = e.target;
 
+    // Для полей типа date: если value пустое, явно устанавливаем пустую строку
+    const finalValue = ['endDate'].includes(name) ? value || '' : value;
+
     // Обновляем данные формы
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: finalValue,
     });
 
     // Сбрасываем ошибку при начале ввода

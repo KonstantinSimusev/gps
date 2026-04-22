@@ -124,7 +124,7 @@ export const DefaultPage = () => {
         </ol>
       </div>
 
-      <input className={styles.input} type='date' />
+      <input type='date' />
 
       <div className={styles.button__wrapper}>
         <Button type='button' label='Принять' onClick={handleClick} />
