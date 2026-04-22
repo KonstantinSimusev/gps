@@ -58,7 +58,14 @@
   background-color: var(--bg-color-button-default);
 }
 
+/* удалить */
 .input {
-  background-color: aliceblue;
-  color: black;
+  background-color: inherit;
+  border: 1px solid #fff;
+  color: inherit;
+}
+
+/* удалить */
+.input::-webkit-calendar-picker-indicator {
+  filter: brightness(0) invert(1);
 }
