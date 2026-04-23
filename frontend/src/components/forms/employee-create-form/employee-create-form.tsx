@@ -247,20 +247,22 @@ export const EmployeeCreateForm = () => {
       />
 
       <TextInput
-        type='date'
+        type='text'
         name='birthDay'
         label='Дата рождения'
         value={formData.birthDay}
+        placeholder='дд.мм.гггг'
         error={errors.birthDay}
         onChange={handleChange}
         onBlur={handleBlur}
       />
 
       <TextInput
-        type='date'
+        type='text'
         name='startDate'
         label='Дата назначения'
         value={formData.startDate}
+        placeholder='дд.мм.гггг'
         error={errors.startDate}
         onChange={handleChange}
         onBlur={handleBlur}

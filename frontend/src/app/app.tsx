@@ -75,11 +75,8 @@ const App = () => {
   }, [isOverlayOpen]);
 
   useEffect(() => {
-    // console.log('✅ App смонтирован');
     dispatch(checkAccessToken());
   }, []);
-
-  // console.log('🔁 App отрендерен');
 
   return (
     <div

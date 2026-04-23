@@ -13,7 +13,9 @@ export const delay = (ms: number = 500): Promise<void> =>
     }, ms);
   });
 
-export const formatDateForUI = (date: string | Date | null | undefined): string => {
+export const formatDateForUI = (
+  date: string | Date | null | undefined,
+): string => {
   // Обработка отсутствующих данных
   if (!date) return 'Некорректные данные';
 
@@ -52,5 +54,5 @@ export const formatDateForInput = (
   const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
   const day = String(parsedDate.getDate()).padStart(2, '0');
 
-  return `${year}-${month}-${day}`;
+  return `${day}.${month}.${year}`;
 };

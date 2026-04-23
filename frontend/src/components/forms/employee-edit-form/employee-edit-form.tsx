@@ -97,13 +97,10 @@ export const EmployeeEditForm = () => {
   ) => {
     const { name, value } = e.target;
 
-    // Для полей типа date: если value пустое, явно устанавливаем пустую строку
-    const finalValue = ['endDate'].includes(name) ? value || '' : value;
-
     // Обновляем данные формы
     setFormData({
       ...formData,
-      [name]: finalValue,
+      [name]: value,
     });
 
     // Сбрасываем ошибку при начале ввода
@@ -283,30 +280,33 @@ export const EmployeeEditForm = () => {
       />
 
       <TextInput
-        type='date'
+        type='text'
         name='birthDay'
         label='Дата рождения'
         value={formData.birthDay}
+        placeholder='дд.мм.гггг'
         error={errors.birthDay}
         onChange={handleChange}
         onBlur={handleBlur}
       />
 
       <TextInput
-        type='date'
+        type='text'
         name='startDate'
         label='Дата назначения'
         value={formData.startDate}
+        placeholder='дд.мм.гггг'
         error={errors.startDate}
         onChange={handleChange}
         onBlur={handleBlur}
       />
 
       <TextInput
-        type='date'
+        type='text'
         name='endDate'
         label='Дата увольнения'
         value={formData.endDate}
+        placeholder='дд.мм.гггг'
         error={errors.endDate}
         onChange={handleChange}
         onBlur={handleBlur}

@@ -57,15 +57,3 @@
 .color {
   background-color: var(--bg-color-button-default);
 }
-
-/* удалить */
-.input {
-  /* background-color: inherit; */
-  border: 1px solid #fff;
-  color: #fff;
-}
-
-/* удалить */
-.input::-webkit-calendar-picker-indicator {
-  filter: brightness(0) invert(1);
-}
