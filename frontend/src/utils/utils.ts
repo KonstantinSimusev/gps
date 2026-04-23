@@ -54,5 +54,5 @@ export const formatDateForInput = (
   const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
   const day = String(parsedDate.getDate()).padStart(2, '0');
 
-  return `${day}.${month}.${year}`;
+  return `${year}-${month}-${day}`;
 };

@@ -19,17 +19,17 @@ import {
   selectUpdateEmployeeError,
 } from '../../../services/slices/employee/slice';
 
-import { formatDateForInput } from '../../../utils/utils';
 import { IUpdateEmployee } from '../../../utils/api.interface';
+import { ROLE_OPTIONS } from '../../../utils/types';
+import { formatDateForInput } from '../../../utils/utils';
 
 import { Form } from '../../ui/form/form';
 import { TextInput } from '../../ui/inputs/text-input/text-input';
+import { SelectInput } from '../../ui/inputs/select-input/select-input';
 import { Spinner } from '../../ui/spinner/spinner';
 import { Button } from '../../ui/button/button';
 
 import styles from './employee-edit-form.module.css';
-import { ROLE_OPTIONS } from '../../../utils/types';
-import { SelectInput } from '../../ui/inputs/select-input/select-input';
 
 interface IFormData extends Record<string, string> {
   lastName: string;
@@ -284,7 +284,7 @@ export const EmployeeEditForm = () => {
         name='birthDay'
         label='Дата рождения'
         value={formData.birthDay}
-        placeholder='дд.мм.гггг'
+        placeholder='гггг-мм-дд'
         error={errors.birthDay}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -295,7 +295,7 @@ export const EmployeeEditForm = () => {
         name='startDate'
         label='Дата назначения'
         value={formData.startDate}
-        placeholder='дд.мм.гггг'
+        placeholder='гггг-мм-дд'
         error={errors.startDate}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -306,7 +306,7 @@ export const EmployeeEditForm = () => {
         name='endDate'
         label='Дата увольнения'
         value={formData.endDate}
-        placeholder='дд.мм.гггг'
+        placeholder='гггг-мм-дд'
         error={errors.endDate}
         onChange={handleChange}
         onBlur={handleBlur}

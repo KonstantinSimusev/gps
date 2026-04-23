@@ -251,7 +251,7 @@ export const EmployeeCreateForm = () => {
         name='birthDay'
         label='Дата рождения'
         value={formData.birthDay}
-        placeholder='дд.мм.гггг'
+        placeholder='гггг-мм-дд'
         error={errors.birthDay}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -262,7 +262,7 @@ export const EmployeeCreateForm = () => {
         name='startDate'
         label='Дата назначения'
         value={formData.startDate}
-        placeholder='дд.мм.гггг'
+        placeholder='гггг-мм-дд'
         error={errors.startDate}
         onChange={handleChange}
         onBlur={handleBlur}
