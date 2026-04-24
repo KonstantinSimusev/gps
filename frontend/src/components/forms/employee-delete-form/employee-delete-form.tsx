@@ -59,17 +59,19 @@ export const EmployeeDeleteForm = () => {
       <div className={styles.buttons__wrapper}>
         <Button
           type='button'
-          label='Да'
           onClick={handleDeleteClick}
           className={styles.button__ok}
-        />
+        >
+          Да
+        </Button>
 
         <Button
           type='button'
-          label='Отменить'
           onClick={handleReturnClick}
           className={styles.button__return}
-        />
+        >
+          Отменить
+        </Button>
       </div>
     </Form>
   );

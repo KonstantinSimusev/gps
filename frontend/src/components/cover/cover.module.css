@@ -4,8 +4,3 @@
   padding: 20px var(--horizontal-margin);
   background-image: linear-gradient(to left, #fffafa, #1c1c1c);
 }
-
-.buttons__wrapper {
-  display: flex;
-  gap: 10px;
-}

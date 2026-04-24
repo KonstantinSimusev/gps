@@ -276,10 +276,11 @@ export const EmployeeCreateForm = () => {
 
       <Button
         type='submit'
-        label='Сохранить'
         disabled={isButtonDisabled}
         className={styles.button}
-      />
+      >
+        Сохранить
+      </Button>
     </Form>
   );
 };

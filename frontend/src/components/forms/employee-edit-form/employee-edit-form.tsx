@@ -331,10 +331,11 @@ export const EmployeeEditForm = () => {
 
       <Button
         type='submit'
-        label='Сохранить'
         disabled={isButtonDisabled}
         className={styles.button}
-      />
+      >
+        Сохранить
+      </Button>
     </Form>
   );
 };

@@ -141,10 +141,11 @@ export const EmployeeSearchForm = () => {
 
       <Button
         type='submit'
-        label='Найти'
         disabled={isButtonDisabled}
         className={styles.button}
-      />
+      >
+        Найти
+      </Button>
     </Form>
   );
 };

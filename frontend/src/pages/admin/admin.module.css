@@ -1,3 +1,22 @@
 .container {
   display: flex;
+  gap: 24px;
+  width: fit-content;
+  margin-left: auto;
+  padding: 12px 20px;
+  border-radius: 24px;
+  background-color: var(--bg-color-button-default);
+}
+
+.buttons__wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }

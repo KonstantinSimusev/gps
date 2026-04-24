@@ -16,8 +16,12 @@ import {
 import styles from './password-update-form.module.css';
 
 export const PasswordUpdateForm = () => {
-  const { selectedId, setIsOverlayOpen, setIsPasswordUpdateOpen, setIsAccountInfoOpen } =
-    useContext(LayerContext);
+  const {
+    selectedId,
+    setIsOverlayOpen,
+    setIsPasswordUpdateOpen,
+    setIsAccountInfoOpen,
+  } = useContext(LayerContext);
 
   const dispatch = useDispatch();
 
@@ -49,17 +53,19 @@ export const PasswordUpdateForm = () => {
       <div className={styles.buttons__wrapper}>
         <Button
           type='button'
-          label='Да'
           onClick={handleUpdateClick}
           className={styles.button__ok}
-        />
+        >
+          Да
+        </Button>
 
         <Button
           type='button'
-          label='Отменить'
           onClick={handleReturnClick}
           className={styles.button__return}
-        />
+        >
+          Отменить
+        </Button>
       </div>
     </Form>
   );

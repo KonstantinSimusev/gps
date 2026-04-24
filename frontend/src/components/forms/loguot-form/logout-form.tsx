@@ -52,17 +52,19 @@ export const LogoutForm = () => {
       <div className={styles.buttons__wrapper}>
         <Button
           type='button'
-          label='Да'
           onClick={handleLogoutClick}
           className={styles.button__ok}
-        />
+        >
+          Да
+        </Button>
 
         <Button
           type='button'
-          label='Отменить'
           onClick={handleReturnClick}
           className={styles.button__return}
-        />
+        >
+          Отменить
+        </Button>
       </div>
     </Form>
   );

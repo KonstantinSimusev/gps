@@ -159,10 +159,11 @@ export const LoginForm = () => {
 
       <Button
         type='submit'
-        label='Войти'
         disabled={isButtonDisabled}
         className={styles.button}
-      />
+      >
+        Войти
+      </Button>
     </Form>
   );
 };

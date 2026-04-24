@@ -3,10 +3,11 @@ import styles from './button.module.css';
 
 interface IButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string;
-  label?: string;
+  // label?: string;
+  children?: React.ReactNode;
 }
 
-export const Button = ({ label, className, ...props }: IButtonProps) => {
+export const Button = ({ children, className, ...props }: IButtonProps) => {
   return (
     <button
       className={clsx(
@@ -16,7 +17,7 @@ export const Button = ({ label, className, ...props }: IButtonProps) => {
       )}
       {...props}
     >
-      {label}
+      {children}
     </button>
   );
 };

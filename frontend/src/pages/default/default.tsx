@@ -125,7 +125,9 @@ export const DefaultPage = () => {
       </div>
 
       <div className={styles.button__wrapper}>
-        <Button type='button' label='Принять' onClick={handleClick} />
+        <Button type='button' onClick={handleClick}>
+          Принять
+        </Button>
       </div>
     </MainLayout>
   );

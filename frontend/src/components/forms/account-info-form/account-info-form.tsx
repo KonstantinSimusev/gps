@@ -78,12 +78,9 @@ ${accountInfo.password}
 
       <Spinner isLoading={isLoading} className={styles.spinner} />
 
-      <Button
-        type='button'
-        label='Скопировать'
-        onClick={handleCopyClick}
-        className={styles.button}
-      />
+      <Button type='button' onClick={handleCopyClick} className={styles.button}>
+        Скопировать
+      </Button>
     </Form>
   );
 };
