@@ -154,7 +154,7 @@ export class AuthService {
 
     if (!refreshToken) {
       // Console.log
-      console.log('Больше 30 сек или вышел');
+      // console.log('Больше 30 сек или вышел');
 
       return;
     }
@@ -168,7 +168,7 @@ export class AuthService {
 
     if (account) {
       // Console.log
-      console.log('Вышел');
+      // console.log('Вышел');
 
       await this.accountsRepository.update(account.id, {
         hashedRefreshToken: null,
@@ -228,7 +228,7 @@ export class AuthService {
     }
 
     // Console.log
-    console.log('До 10 сек');
+    // console.log('До 10 сек');
 
     return {
       ...employee,
@@ -294,7 +294,7 @@ export class AuthService {
       }
 
       // Console.log
-      console.log('10-30 сек');
+      // console.log('10-30 сек');
 
       return {
         ...employee,

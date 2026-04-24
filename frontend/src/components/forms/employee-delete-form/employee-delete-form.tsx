@@ -44,6 +44,12 @@ export const EmployeeDeleteForm = () => {
 
   return (
     <Form title='Удалить работника?' titleClassName={styles.title}>
+      <span className={styles.info}>
+        При удалении данные станут недоступны для отчётности. Вместо удаления
+        укажите дату увольнения в профиле: так данные останутся доступны для
+        отчётности.
+      </span>
+
       <Spinner
         isLoading={isLoading}
         serverError={serverError}

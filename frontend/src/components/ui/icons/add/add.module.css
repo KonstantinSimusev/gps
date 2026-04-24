@@ -1,6 +1,4 @@
 .icon {
-  width: 30px;
-  height: 30px;
-  stroke: var(--color-button);
-  stroke-width: 1;
+  stroke: #464646;
+  stroke-width: 2;
 }

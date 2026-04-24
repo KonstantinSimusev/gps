@@ -1,28 +1,3 @@
-.buttons__wrapper {
+.container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-grow: 1;
-  gap: 30px;
-}
-
-.button {
-  color: var(--color-button);
-  background-color: var(--bg-color-button);
-}
-
-.card__container {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
-.employee__wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(1rem, 0.8944rem + 0.5282vw, 1.375rem);
-}
-
-.button:focus {
-  outline: none;
 }

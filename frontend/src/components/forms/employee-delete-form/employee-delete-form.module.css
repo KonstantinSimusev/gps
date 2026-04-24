@@ -2,6 +2,14 @@
   margin-top: clamp(1.25rem, 0.5603rem + 3.4483vw, 2.5rem);
 }
 
+.info {
+  margin-top: 40px;
+  font-size: 14px;
+  line-height: 1.4;
+  opacity: 0.8;
+  text-align: center;
+}
+
 .spinner {
   margin: clamp(1.25rem, 0.5603rem + 3.4483vw, 2.5rem) 0;
 }

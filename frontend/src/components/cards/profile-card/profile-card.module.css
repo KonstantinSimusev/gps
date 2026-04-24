@@ -1,0 +1,32 @@
+.card__container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.profile {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.fullname {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.buttons__wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+
+.employee__wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 0.8944rem + 0.5282vw, 1.375rem);
+}
