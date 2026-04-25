@@ -21,7 +21,7 @@
 
 .text {
   margin-top: clamp(1.875rem, 1.1853rem + 3.4483vw, 3.125rem);
-  opacity: 0.6;
+  /* opacity: 0.6; */
   text-align: center;
   line-height: 1.3;
 }

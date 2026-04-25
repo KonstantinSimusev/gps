@@ -1,3 +1,5 @@
+import { ROLE_OPTIONS } from './types';
+
 export const ROLE_TO_PAGE: { [key: string]: string } = {
   ADMIN: '/admin',
   HEAD: '/home',
@@ -55,4 +57,9 @@ export const formatDateForInput = (
   const day = String(parsedDate.getDate()).padStart(2, '0');
 
   return `${year}-${month}-${day}`;
+};
+
+export const getRoleLabel = (roleValue: string): string => {
+  const option = ROLE_OPTIONS.find((opt) => opt.value === roleValue);
+  return option?.label || 'Не создана';
 };

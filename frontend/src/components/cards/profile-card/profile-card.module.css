@@ -19,14 +19,32 @@
   gap: 6px;
 }
 
+.profession {
+  opacity: 0.6;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  line-height: 1.4;
+}
+
 .buttons__wrapper {
   display: flex;
   justify-content: center;
-  gap: 24px;
+  gap: 40px;
 }
 
 .employee__wrapper {
   display: flex;
   flex-direction: column;
+  gap: 30px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
   gap: clamp(1rem, 0.8944rem + 0.5282vw, 1.375rem);
+  padding: 20px;
+  border: 1px solid rgba(255 255 255 / 0.1);
+  border-radius: 30px;
+  background-color: rgba(180 180 180 / 0.1);
 }

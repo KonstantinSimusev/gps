@@ -13,7 +13,7 @@ export const AddIcon = ({ width = 20, height = 20 }: IIconProps) => {
       height={height}
       viewBox='0 0 24 24'
     >
-      <path d='M4 12h16m-8-8v16' />
+      <path strokeLinecap='round' d='M4 12h16m-8-8v16' />
     </svg>
   );
 };
