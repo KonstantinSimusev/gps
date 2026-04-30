@@ -23,7 +23,6 @@ export interface IProfile {
   employeeId: string;
   workshopCode: string;
   teamNumber: string;
-  roleId: string;
   role: string;
 }
 
@@ -47,9 +46,9 @@ export interface IEmployeeInfo {
   positionCode: string;
   grade: string;
   schedule: string;
-  birthDay: string;
-  startDate: string;
-  endDate: string | null;
+  birthDay: Date;
+  startDate: Date;
+  endDate: Date | null;
   role: string | null;
   isActive: boolean;
 }

@@ -4,21 +4,13 @@ import { ConfigModule } from '@nestjs/config';
 
 import { AuthGuard } from './guards/auth.guard';
 
-import { AccountsModule } from '../accounts/accounts.module';
-import { EmployeeRolesModule } from '../employee-roles/employee-roles.module';
-import { EmployeesModule } from '../employees/employees.module';
+import { AccountModule } from '../account/account.module';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
 @Module({
-  imports: [
-    ConfigModule,
-    JwtModule,
-    AccountsModule,
-    EmployeeRolesModule,
-    EmployeesModule,
-  ],
+  imports: [ConfigModule, JwtModule, AccountModule],
   controllers: [AuthController],
   providers: [AuthGuard, AuthService],
   exports: [AuthGuard, AuthService],

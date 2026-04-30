@@ -13,7 +13,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
-import { Account } from '../accounts/entities/account.entity';
+import { Account } from '../account/entities/account.entity';
 
 import {
   ITokenOptions,
@@ -22,18 +22,14 @@ import {
   IJwtPayload,
 } from '../../shared/interfaces/api.interface';
 
-import { AccountsRepository } from '../accounts/accounts.repository';
-import { EmployeeRolesRepository } from '../employee-roles/employee-roles.repository';
-import { EmployeesRepository } from '../employees/employees.repository';
+import { AccountRepository } from '../account/account.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
-    private readonly accountsRepository: AccountsRepository,
-    private readonly employeesRepository: EmployeesRepository,
-    private readonly employeeRolesRepository: EmployeeRolesRepository,
+    private readonly accountRepository: AccountRepository,
   ) {}
 
   async login(
@@ -41,14 +37,14 @@ export class AuthService {
     password: string,
     res: Response,
   ): Promise<IProfile> {
-    // Проверка аккаунта
-    const account = await this.accountsRepository.findByLogin(login);
+    // Находим аккаунт
+    const account = await this.accountRepository.findByLogin(login);
 
     if (!account) {
       throw new UnauthorizedException('Неверный логин или пароль');
     }
 
-    // Проверка пароля
+    // Проверяем пароль
     const isPasswordValid = await bcrypt.compare(
       password,
       account.hashedPassword,
@@ -56,13 +52,6 @@ export class AuthService {
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Неверный логин или пароль');
-    }
-
-    const employeeRole =
-      await this.employeeRolesRepository.findEmployeeRoleByAccount(account.id);
-
-    if (!employeeRole) {
-      throw new UnauthorizedException('Ошибка авторизации'); // Роль в бд null;
     }
 
     // Генерируем accessToken
@@ -82,12 +71,12 @@ export class AuthService {
     // Хешируем refreshToken
     const hashedRefreshToken = await bcrypt.hash(refreshToken, salt);
 
-    // Обновили refreshToken в базе данных
-    await this.accountsRepository.update(account.id, {
+    // Обновляем refreshToken в базе данных
+    await this.accountRepository.update(account.id, {
       hashedRefreshToken: hashedRefreshToken,
     });
 
-    // Установили refreshToken в куки
+    // Устанавливаем refreshToken в куки
     this.setCookie(
       res,
       'refresh_token',
@@ -95,18 +84,14 @@ export class AuthService {
       'REFRESH_TOKEN_EXPIRATION',
     );
 
-    const employee = await this.employeesRepository.findEmployeeByAccount(
-      account.id,
-    );
-
-    if (!employee) {
-      throw new UnauthorizedException('Сотрудник не найден');
-    }
+    // Console.log
+    // console.log('Успешный вход');
 
     return {
-      ...employee,
-      roleId: employeeRole.id,
-      role: employeeRole.role.name,
+      employeeId: account.employee.id,
+      workshopCode: account.employee.position.workshop.workshopCode,
+      teamNumber: account.employee.team.teamNumber,
+      role: account.employee.employeeRole.role.name,
     };
   }
 
@@ -154,13 +139,15 @@ export class AuthService {
 
     if (!refreshToken) {
       // Console.log
-      // console.log('Больше 30 сек или вышел');
+      // console.log('Больше 30 сек - выход');
 
       return;
     }
 
-    const accounts = await this.accountsRepository.findByHashedRefreshToken();
+    // Находим все аккаунты с установленным hashedRefreshToken
+    const accounts = await this.accountRepository.findByHashedRefreshToken();
 
+    // Находим нужный аккаунт
     const account = await this.findAccountByRefreshToken(
       accounts,
       refreshToken,
@@ -170,7 +157,7 @@ export class AuthService {
       // Console.log
       // console.log('Вышел');
 
-      await this.accountsRepository.update(account.id, {
+      await this.accountRepository.update(account.id, {
         hashedRefreshToken: null,
       });
     }
@@ -201,39 +188,28 @@ export class AuthService {
     const accessToken = await this.getAccessToken(req);
 
     // Проверяем токен (подпись и срок действия), возвращаем обьект payload
-    const decoded = this.jwtService.verify<IJwtPayload>(accessToken, {
-      secret: this.configService.get('ACCESS_TOKEN_SECRET'),
-    });
+    const { sub: accountId } = this.jwtService.verify<IJwtPayload>(
+      accessToken,
+      {
+        secret: this.configService.get('ACCESS_TOKEN_SECRET'),
+      },
+    );
 
-    const accountId = decoded.sub;
+    // Находим аккаунт
+    const account = await this.accountRepository.findById(accountId);
 
-    if (!accountId) {
-      throw new UnauthorizedException(
-        'Обязательное поле sub в payload JWT-токена отсутствует или пусто',
-      );
-    }
-
-    const employeeRole =
-      await this.employeeRolesRepository.findEmployeeRoleByAccount(accountId);
-
-    if (!employeeRole) {
-      throw new UnauthorizedException('Роль отсутствует');
-    }
-
-    const employee =
-      await this.employeesRepository.findEmployeeByAccount(accountId);
-
-    if (!employee) {
-      throw new NotFoundException('Сотрудник не найден');
+    if (!account) {
+      throw new NotFoundException('Аккаунт не найден');
     }
 
     // Console.log
     // console.log('До 10 сек');
 
     return {
-      ...employee,
-      roleId: employeeRole.id,
-      role: employeeRole.role.name,
+      employeeId: account.employee.id,
+      workshopCode: account.employee.position.workshop.workshopCode,
+      teamNumber: account.employee.team.teamNumber,
+      role: account.employee.employeeRole.role.name,
     };
   }
 
@@ -249,30 +225,21 @@ export class AuthService {
       }
 
       // Получаем все аккаунты с установленным hashedRefreshToken
-      const accounts = await this.accountsRepository.findByHashedRefreshToken();
+      const accounts = await this.accountRepository.findByHashedRefreshToken();
 
       // Находим аккаунт сотрудника
-      const account = await this.findAccountByRefreshToken(
+      const currentAccount = await this.findAccountByRefreshToken(
         accounts,
         refreshToken,
       );
 
-      if (!account) {
+      if (!currentAccount) {
         throw new UnauthorizedException('Неверный refresh token');
-      }
-
-      const employeeRole =
-        await this.employeeRolesRepository.findEmployeeRoleByAccount(
-          account.id,
-        );
-
-      if (!employeeRole) {
-        throw new UnauthorizedException('Роль отсутствует');
       }
 
       // Генерируем accessToken
       const accessToken = await this.generateToken({
-        payload: { sub: account.id },
+        payload: { sub: currentAccount.id },
         secretKey: 'ACCESS_TOKEN_SECRET',
         expiresInKey: 'ACCESS_TOKEN_EXPIRATION',
       });
@@ -285,21 +252,21 @@ export class AuthService {
         'ACCESS_TOKEN_EXPIRATION',
       );
 
-      const employee = await this.employeesRepository.findEmployeeByAccount(
-        account.id,
-      );
+      // Находим аккаунт
+      const account = await this.accountRepository.findById(currentAccount.id);
 
-      if (!employee) {
-        throw new NotFoundException('Сотрудник не найден');
+      if (!account) {
+        throw new NotFoundException('Аккаунт не найден');
       }
 
       // Console.log
       // console.log('10-30 сек');
 
       return {
-        ...employee,
-        roleId: employeeRole.id,
-        role: employeeRole.role.name,
+        employeeId: account.employee.id,
+        workshopCode: account.employee.position.workshop.workshopCode,
+        teamNumber: account.employee.team.teamNumber,
+        role: account.employee.employeeRole.role.name,
       };
     } catch (error) {
       if (error instanceof UnauthorizedException) {

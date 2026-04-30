@@ -1,74 +1,43 @@
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
-import {
-  ConflictException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
-import { IAccountInfo } from '../../shared/interfaces/api.interface';
-
-import { AccountRepository } from '../account/account.repository';
-import { EmployeeRepository } from '../employee/employee.repository';
+import { Account } from './entities/account.entity';
+import { AccountRepository } from './account.repository';
 
 @Injectable()
-export class EmployeeAccountService {
-  constructor(
-    private readonly accountRepository: AccountRepository,
-    private readonly employeeRepository: EmployeeRepository,
-  ) {}
+export class AccountService {
+  constructor(private readonly accountRepository: AccountRepository) {}
 
-  async updateLoginAndPassword(
-    employeeId: string,
-    profileWorkshop: string,
-  ): Promise<IAccountInfo> {
+  async createAсcount(
+    lastName: string,
+    firstName: string,
+    patronymic: string,
+  ): Promise<{ account: Account; initialPassword: string }> {
     try {
-      // Находим работника по ID
-      const employee =
-        await this.employeeRepository.findActiveEmployeeById(employeeId);
+      const login = this.generateLogin(lastName, firstName, patronymic);
+      const password = uuidv4();
 
-      if (!employee) {
-        throw new NotFoundException('Работник не найден');
-      }
-
-      // Сравниваем цеха работника и профиля
-      if (employee.position.workshop.workshopCode !== profileWorkshop) {
-        throw new ConflictException('Разные цеха');
-      }
-
-      // Генерируем новый логин
-      const newLogin = this.generateLogin(
-        employee.lastName,
-        employee.firstName,
-        employee.patronymic,
-      );
-
-      // Генерируем новый пароль
-      const newPassword = uuidv4();
-
-      // Генерируем соль и хешируем новый пароль
+      // Генерируем соль и хешируем пароль
       const salt = await bcrypt.genSalt(10);
-      const newHashedPassword = await bcrypt.hash(newPassword, salt);
+      const hashedPassword = await bcrypt.hash(password, salt);
 
-      // Обновляем только нужные поля
-      await this.accountRepository.update(employee.account.id, {
-        login: newLogin,
-        hashedPassword: newHashedPassword,
-      });
+      // Формируем данные для создания аккаунта
+      const data = {
+        login,
+        hashedPassword,
+      };
+
+      // Сохраняем в базу данных
+      const account = await this.accountRepository.create(data);
 
       return {
-        lastName: employee.lastName,
-        firstName: employee.firstName,
-        patronymic: employee.patronymic,
-        login: newLogin,
-        password: newPassword,
+        account,
+        initialPassword: password, // возвращаем пароль один раз
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Не удалось обновить логин и пароль',
-      );
+      throw new InternalServerErrorException('Не удалось создать аккаунт');
     }
   }
 

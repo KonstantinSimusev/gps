@@ -24,7 +24,6 @@ export interface IProfile {
   employeeId: string;
   workshopCode: string;
   teamNumber: string;
-  roleId: string;
   role: string;
 }
 

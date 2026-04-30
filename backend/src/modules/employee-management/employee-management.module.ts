@@ -1,25 +1,23 @@
 import { Module } from '@nestjs/common';
 
-import { AccountsModule } from '../accounts/accounts.module';
-import { EmployeeRolesModule } from '../employee-roles/employee-roles.module';
-import { EmployeesModule } from '../employees/employees.module';
-import { PositionsModule } from '../positions/positions.module';
-import { RolesModule } from '../roles/roles.module';
-import { TeamsModule } from '../teams/teams.module';
-import { WorkshopsModule } from '../workshops/workshops.module';
+import { AccountModule } from '../account/account.module';
+import { EmployeeModule } from '../employee/employee.module';
+import { EmployeeRoleModule } from '../employee-role/employee-role.module';
+import { PositionModule } from '../position/position.module';
+import { RoleModule } from '../role/role.module';
+import { TeamModule } from '../team/team.module';
 
 import { EmployeeManagementController } from './employee-management.controller';
 import { EmployeeManagementService } from './employee-management.service';
 
 @Module({
   imports: [
-    AccountsModule,
-    EmployeeRolesModule,
-    EmployeesModule,
-    PositionsModule,
-    RolesModule,
-    TeamsModule,
-    WorkshopsModule,
+    AccountModule,
+    EmployeeModule,
+    EmployeeRoleModule,
+    PositionModule,
+    RoleModule,
+    TeamModule,
   ],
   controllers: [EmployeeManagementController],
   providers: [EmployeeManagementService],

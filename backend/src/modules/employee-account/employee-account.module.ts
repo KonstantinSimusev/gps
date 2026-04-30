@@ -1,16 +1,15 @@
 import { Module } from '@nestjs/common';
 
-import { AccountsModule } from '../accounts/accounts.module';
-import { EmployeesModule } from '../employees/employees.module';
-import { WorkshopsModule } from '../workshops/workshops.module';
+import { AccountModule } from '../account/account.module';
+import { EmployeeModule } from '../employee/employee.module';
 
 import { EmployeeAccountController } from './employee-account.controller';
 import { EmployeeAccountService } from './employee-account.service';
 
 @Module({
-  imports: [AccountsModule, EmployeesModule, WorkshopsModule],
+  imports: [AccountModule, EmployeeModule],
   controllers: [EmployeeAccountController],
   providers: [EmployeeAccountService],
-  exports: []
+  exports: [],
 })
 export class EmployeeAccountModule {}
