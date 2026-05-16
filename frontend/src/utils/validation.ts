@@ -284,6 +284,22 @@ export const validationRules: IValidationRules = {
       },
     ],
   },
+  shiftDate: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Выберите дату',
+      },
+      {
+        type: 'dateFormat',
+        pattern:
+          /^(19[0-9]{2}|2[0-9]{3}|3000)-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/,
+        message: 'Введите дату в формате ГГГГ-ММ-ДД',
+      },
+    ],
+  },
   shiftNumber: {
     required: true,
     validators: [

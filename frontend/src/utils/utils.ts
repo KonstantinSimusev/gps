@@ -3,8 +3,8 @@ import { ROLE_OPTIONS } from './types';
 export const ROLE_TO_PAGE: { [key: string]: string } = {
   ADMIN: '/admin',
   HEAD: '/home',
-  MASTER: '/master/timesheet',
-  PACKER: '/packer/scan',
+  MASTER: '/timesheet',
+  PACKER: '/scan',
 };
 
 export const delay = (ms: number = 500): Promise<void> =>
@@ -25,7 +25,7 @@ export const formatDateForUI = (
   const parsedDate = date instanceof Date ? date : new Date(date);
 
   // Проверка валидности даты
-  if (isNaN(parsedDate.getTime())) {
+  if (Number.isNaN(parsedDate.getTime())) {
     return 'Нет данных';
   }
 
@@ -47,7 +47,7 @@ export const formatDateForInput = (
   const parsedDate = date instanceof Date ? date : new Date(date);
 
   // Проверка валидности даты
-  if (isNaN(parsedDate.getTime())) {
+  if (Number.isNaN(parsedDate.getTime())) {
     return '';
   }
 

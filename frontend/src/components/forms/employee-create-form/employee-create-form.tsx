@@ -1,15 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-
-import { LayerContext } from '../../../contexts/layer/layerContext';
-import { useDispatch, useSelector } from '../../../services/store';
-
-import { createEmployee } from '../../../services/slices/employee/actions';
-
-import {
-  selectIsCreateEmployeeLoading,
-  selectCreateEmployeeError,
-  clearCreateEmployeeError,
-} from '../../../services/slices/employee/slice';
+import { useNavigate } from 'react-router-dom';
 
 import {
   validateField,
@@ -17,10 +7,23 @@ import {
   validationRules,
 } from '../../../utils/validation';
 
+import { useDispatch, useSelector } from '../../../services/store';
+
+import { createEmployee } from '../../../services/slices/employee/actions';
+
+import {
+  clearCreateEmployeeError,
+  selectCreateEmployeeError,
+  selectIsCreateEmployeeLoading,
+} from '../../../services/slices/employee/slice';
+
+import { LayerContext } from '../../../contexts/layer/layerContext';
+
+import { Button } from '../../ui/buttons/button/button';
 import { Form } from '../../ui/form/form';
-import { TextInput } from '../../ui/inputs/text-input/text-input';
+import { ServerError } from '../../ui/errors/server-error/server-error';
 import { Spinner } from '../../ui/spinner/spinner';
-import { Button } from '../../ui/button/button';
+import { TextInput } from '../../ui/inputs/text-input/text-input';
 
 import styles from './employee-create-form.module.css';
 
@@ -36,6 +39,8 @@ interface IFormData extends Record<string, string> {
 }
 
 export const EmployeeCreateForm = () => {
+  const navigate = useNavigate();
+
   const {
     isEmployeeCreateOpen,
     setIsEmployeeCreateOpen,
@@ -138,6 +143,8 @@ export const EmployeeCreateForm = () => {
     try {
       await dispatch(createEmployee(data)).unwrap();
 
+      navigate('/admin');
+
       setIsEmployeeCreateOpen(false);
       setIsAccountInfoOpen(true);
 
@@ -170,6 +177,7 @@ export const EmployeeCreateForm = () => {
   // Определяем, заблокирована ли кнопка
   const isButtonDisabled =
     isLoading ||
+    Object.values(errors).some(Boolean) ||
     !formData.lastName ||
     !formData.firstName ||
     !formData.patronymic ||
@@ -182,25 +190,28 @@ export const EmployeeCreateForm = () => {
   return (
     <Form
       title='Новый работник'
-      onSubmit={handleSubmit}
       className={styles.container}
+      onSubmit={handleSubmit}
     >
       <TextInput
+        // Группа 1. Стандартные HTML‑атрибуты (базовые свойства элемента)
         type='text'
         name='lastName'
-        label='Фамилия'
         value={formData.lastName}
+        // Группа 2. Кастомные пропсы компонента (специфичные для TextInput)
+        label='Фамилия'
         error={errors.lastName}
+        className={styles.input}
+        // Группа 3. Обработчики событий (в конце)
         onChange={handleChange}
         onBlur={handleBlur}
-        className={styles.input}
       />
 
       <TextInput
         type='text'
         name='firstName'
-        label='Имя'
         value={formData.firstName}
+        label='Имя'
         error={errors.firstName}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -219,8 +230,8 @@ export const EmployeeCreateForm = () => {
       <TextInput
         type='text'
         name='personalNumber'
-        label='Личный номер'
         value={formData.personalNumber}
+        label='Личный номер'
         error={errors.personalNumber}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -229,8 +240,8 @@ export const EmployeeCreateForm = () => {
       <TextInput
         type='text'
         name='teamNumber'
-        label='Бригада'
         value={formData.teamNumber}
+        label='Бригада'
         error={errors.teamNumber}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -239,8 +250,8 @@ export const EmployeeCreateForm = () => {
       <TextInput
         type='text'
         name='position'
-        label='Штатная позиция'
         value={formData.position}
+        label='Штатная позиция'
         error={errors.position}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -249,9 +260,9 @@ export const EmployeeCreateForm = () => {
       <TextInput
         type='text'
         name='birthDay'
-        label='Дата рождения'
-        value={formData.birthDay}
         placeholder='гггг-мм-дд'
+        value={formData.birthDay}
+        label='Дата рождения'
         error={errors.birthDay}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -260,19 +271,17 @@ export const EmployeeCreateForm = () => {
       <TextInput
         type='text'
         name='startDate'
-        label='Дата назначения'
-        value={formData.startDate}
         placeholder='гггг-мм-дд'
+        value={formData.startDate}
+        label='Дата назначения'
         error={errors.startDate}
         onChange={handleChange}
         onBlur={handleBlur}
       />
 
-      <Spinner
-        isLoading={isLoading}
-        serverError={serverError}
-        className={styles.spinner}
-      />
+      <div className={styles.message}>
+        {isLoading ? <Spinner /> : <ServerError text={serverError} />}
+      </div>
 
       <Button
         type='submit'

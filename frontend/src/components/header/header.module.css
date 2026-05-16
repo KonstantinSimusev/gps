@@ -3,7 +3,7 @@
   justify-content: space-between;
   align-items: center;
   min-height: 60px;
-  padding: 30px var(--horizontal-margin) 0;
+  padding: 46px var(--horizontal-margin) 0;
 }
 
 .logo {
@@ -25,4 +25,13 @@
   margin-right: auto;
   font-size: 16px;
   font-weight: 400;
+}
+
+.buttons {
+  display: flex;
+  gap: 18px;
+}
+
+.icon__white {
+  stroke: rgba(255 255 255 / 0.8);
 }

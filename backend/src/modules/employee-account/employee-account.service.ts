@@ -3,12 +3,14 @@ import { v4 as uuidv4 } from 'uuid';
 
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 
-import { IAccountInfo } from '../../shared/interfaces/api.interface';
+import { IAccountInfo, IProfile } from '../../shared/interfaces/api.interface';
+import { ERole } from '../../shared/enums/enums';
 
 import { AccountRepository } from '../account/account.repository';
 import { EmployeeRepository } from '../employee/employee.repository';
@@ -22,54 +24,53 @@ export class EmployeeAccountService {
 
   async updateLoginAndPassword(
     employeeId: string,
-    profileWorkshop: string,
+    profile: IProfile,
   ): Promise<IAccountInfo> {
-    try {
-      // Находим работника по ID
-      const employee =
-        await this.employeeRepository.findActiveEmployeeById(employeeId);
-
-      if (!employee) {
-        throw new NotFoundException('Работник не найден');
-      }
-
-      // Сравниваем цеха работника и профиля
-      if (employee.position.workshop.workshopCode !== profileWorkshop) {
-        throw new ConflictException('Разные цеха');
-      }
-
-      // Генерируем новый логин
-      const newLogin = this.generateLogin(
-        employee.lastName,
-        employee.firstName,
-        employee.patronymic,
-      );
-
-      // Генерируем новый пароль
-      const newPassword = uuidv4();
-
-      // Генерируем соль и хешируем новый пароль
-      const salt = await bcrypt.genSalt(10);
-      const newHashedPassword = await bcrypt.hash(newPassword, salt);
-
-      // Обновляем только нужные поля
-      await this.accountRepository.update(employee.account.id, {
-        login: newLogin,
-        hashedPassword: newHashedPassword,
-      });
-
-      return {
-        lastName: employee.lastName,
-        firstName: employee.firstName,
-        patronymic: employee.patronymic,
-        login: newLogin,
-        password: newPassword,
-      };
-    } catch (error) {
-      throw new InternalServerErrorException(
-        'Не удалось обновить логин и пароль',
-      );
+    // Проверяем права на данную операцию
+    if (profile.role !== ERole.ADMIN) {
+      throw new ForbiddenException('Недостаточно прав');
     }
+
+    // Находим работника по ID
+    const employee =
+      await this.employeeRepository.findActiveEmployeeById(employeeId);
+
+    if (!employee) {
+      throw new NotFoundException('Работник не найден');
+    }
+
+    // Сравниваем цеха работника и профиля
+    if (employee.position.workshop.workshopCode !== profile.workshopCode) {
+      throw new ConflictException('Разные цеха');
+    }
+
+    // Генерируем новый логин
+    const newLogin = this.generateLogin(
+      employee.lastName,
+      employee.firstName,
+      employee.patronymic,
+    );
+
+    // Генерируем новый пароль
+    const newPassword = uuidv4();
+
+    // Генерируем соль и хешируем новый пароль
+    const salt = await bcrypt.genSalt(10);
+    const newHashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Обновляем только нужные поля
+    await this.accountRepository.update(employee.account.id, {
+      login: newLogin,
+      hashedPassword: newHashedPassword,
+    });
+
+    return {
+      lastName: employee.lastName,
+      firstName: employee.firstName,
+      patronymic: employee.patronymic,
+      login: newLogin,
+      password: newPassword,
+    };
   }
 
   private generateLogin(

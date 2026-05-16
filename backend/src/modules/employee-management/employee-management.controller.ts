@@ -42,10 +42,7 @@ export class EmployeeManagementController {
     @Body() dto: CreateEmployeeDto,
     @Req() req: Request & { profile: IProfile },
   ) {
-    return this.employeeManagementService.createEmployee(
-      dto,
-      req.profile.workshopCode,
-    );
+    return this.employeeManagementService.createEmployee(dto, req.profile);
   }
 
   @Post('many')
@@ -73,7 +70,7 @@ export class EmployeeManagementController {
     return this.employeeManagementService.updateEmployee(
       idDto.id,
       dto,
-      req.profile.workshopCode,
+      req.profile,
     );
   }
 
@@ -83,9 +80,6 @@ export class EmployeeManagementController {
     @Param() dto: EmployeeIdDto,
     @Req() req: Request & { profile: IProfile },
   ): Promise<ISuccess> {
-    return this.employeeManagementService.deleteEmployee(
-      dto.id,
-      req.profile.workshopCode,
-    );
+    return this.employeeManagementService.deleteEmployee(dto.id, req.profile);
   }
 }

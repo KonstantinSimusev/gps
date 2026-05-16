@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { checkAccessToken, loginEmployee, logoutEmployee } from './actions';
-
 import { IProfile } from '../../../utils/api.interface';
+
+import { checkAccessToken, loginEmployee, logoutEmployee } from './actions';
 
 interface IAuthState {
   profile: IProfile | null;
@@ -94,7 +94,8 @@ export const authSlice = createSlice({
       .addCase(logoutEmployee.rejected, (state, action) => {
         state.isAuthenticated = false;
         state.isAuthLoading = false;
-        state.authError = action.error.message ?? 'Ошибка при выходе из системы';
+        state.authError =
+          action.error.message ?? 'Ошибка при выходе из системы';
       });
   },
 });

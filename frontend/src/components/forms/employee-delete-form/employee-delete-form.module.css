@@ -10,7 +10,12 @@
   text-align: center;
 }
 
-.spinner {
+.message {
+  position: relative; /* Создаём контекст для абсолютного позиционирования */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 26px;
   margin: clamp(1.25rem, 0.5603rem + 3.4483vw, 2.5rem) 0;
 }
 

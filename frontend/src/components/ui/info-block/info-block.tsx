@@ -1,17 +1,17 @@
-import styles from './info-block.module.css';
-
 import clsx from 'clsx';
 
-interface IInfoBlockProps {
+import styles from './info-block.module.css';
+
+interface IProps {
+  title: string;
+  text: string;
   className?: string;
-  title?: string;
-  text: string | number;
 }
 
-export const InfoBlock = ({ className, title, text }: IInfoBlockProps) => {
+export const InfoBlock = ({ className, title, text }: IProps) => {
   return (
-    <div className={styles.container}>
-      <span className={clsx(className, styles.title)}>{title}</span>
+    <div className={clsx(className, styles.container)}>
+      <span className={styles.title}>{title}</span>
       <span className={styles.text}>{text}</span>
     </div>
   );

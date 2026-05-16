@@ -1,12 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+import { IAccountInfo, IEmployeeInfo } from '../../../utils/api.interface';
+
 import {
   createEmployee,
   deleteEmployee,
   searchEmployee,
   updateEmployee,
 } from './actions';
-import { IAccountInfo, IEmployeeInfo } from '../../../utils/api.interface';
 
 interface IEmployeeState {
   employeeInfo: IEmployeeInfo | null;
@@ -55,6 +56,9 @@ export const employeeSlice = createSlice({
     clearUpdateEmployeeError: (state) => {
       state.updateEmployeeError = null;
     },
+    clearDeleteEmployeeError: (state) => {
+      state.deleteEmployeeError = null;
+    },
   },
   selectors: {
     selectSearсhEmployee: (state: IEmployeeState) => state.employeeInfo,
@@ -62,7 +66,7 @@ export const employeeSlice = createSlice({
       state.isSearchEmployeeLoading,
     selectSearchEmployeeError: (state: IEmployeeState) =>
       state.searchEmployeeError,
-    
+
     selectCreateEmployee: (state: IEmployeeState) => state.accountInfo,
     selectIsCreateEmployeeLoading: (state: IEmployeeState) =>
       state.isCreateEmployeeLoading,
@@ -157,6 +161,7 @@ export const {
   clearSearchEmployeeError,
   clearCreateEmployeeError,
   clearUpdateEmployeeError,
+  clearDeleteEmployeeError,
 } = employeeSlice.actions;
 
 export const {

@@ -1,7 +1,7 @@
-import clsx from 'clsx';
-
 import { useContext, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
+
+import clsx from 'clsx';
 
 import { useDispatch } from '../components/../services/store';
 
@@ -11,26 +11,36 @@ import { LayerContext } from '../contexts/layer/layerContext';
 
 import { ProtectedRoute } from '../components/protected-route/protected-route';
 
-import { Home } from '../pages/home/home';
-import { Admin } from '../pages/admin/admin';
-import { Packer } from '../pages/packer/packer';
-import { Timesheet } from '../pages/master/timesheet/timesheet';
-import { DefaultPage } from '../components/../pages/default/default';
-import { NotFound } from '../pages/not-found/not-found';
+import { AdminPage } from '../pages/admin-page/admin-page';
+import { DefaultPage } from '../pages/default-page/default-page';
+// import { Fix } from '../pages/master/fix/fix';
+import { HomePage } from '../pages/home-page/home-page';
+import { NotFoundPage } from '../pages/not-found-page/not-found-page';
+// import { Pack } from '../pages/master/pack/pack';
+// import { Packer } from '../pages/packer/packer';
+// import { Production } from '../pages/master/production/production';
+// import { Residue } from '../pages/master/residue/residue';
+import { ShiftPage } from '../pages/master/shift-page/shift-page';
+// import { Shipment } from '../pages/master/shipment/shipment';
+import { TimesheetPage } from '../pages/master/timesheet-page/timesheet-page';
 
-import { Cover } from '../components/cover/cover';
+// import { Cover } from '../components/cover/cover';
 import { Footer } from '../components/footer/footer';
 import { Header } from '../components/header/header';
-import { Overlay } from '../components/overlay/overlay';
-import { Modal } from '../components/modal/modal';
-import { LoginForm } from '../components/forms/login-form/login-form';
-import { LogoutForm } from '../components/forms/loguot-form/logout-form';
-import { EmployeeSearchForm } from '../components/forms/employee-search-form/employee-search-form';
+import { Modal } from '../components/ui/modal/modal';
+import { Overlay } from '../components/ui/overlay/overlay';
+
+import { AccountInfoForm } from '../components/forms/account-info-form/account-info-form';
 import { EmployeeCreateForm } from '../components/forms/employee-create-form/employee-create-form';
 import { EmployeeDeleteForm } from '../components/forms/employee-delete-form/employee-delete-form';
 import { EmployeeEditForm } from '../components/forms/employee-edit-form/employee-edit-form';
-import { AccountInfoForm } from '../components/forms/account-info-form/account-info-form';
+import { EmployeeSearchForm } from '../components/forms/employee-search-form/employee-search-form';
+import { LoginForm } from '../components/forms/login-form/login-form';
+import { LogoutForm } from '../components/forms/loguot-form/logout-form';
 import { PasswordUpdateForm } from '../components/forms/password-update-form/password-update-form';
+import { EmployeeAddForm } from '../components/forms/employee-add-form/employee-add-form';
+import { ShiftAddForm } from '../components/forms/shift-add-form/shift-add-form';
+import { TimesheetEditForm } from '../components/forms/timesheet-edit-form/timesheet-edit-form';
 
 import styles from './app.module.css';
 
@@ -45,6 +55,9 @@ const App = () => {
     isEmployeeDeleteOpen,
     isAccountInfoOpen,
     isPasswordUpdateOpen,
+    isShiftAddOpen,
+    isEmployeeAddOpen,
+    isTimesheetEditOpen,
     selectedScrollPosition,
     setSelectedScrollPosition,
   } = useContext(LayerContext);
@@ -86,16 +99,22 @@ const App = () => {
       )}
     >
       <Header />
-      <Cover />
+      {/* <Cover /> */}
       <Routes>
         <Route path='/' element={<DefaultPage />} />
         <Route element={<ProtectedRoute />}>
-          <Route path='/admin' element={<Admin />} />
-          <Route path='/home' element={<Home />} />
-          <Route path='/master/timesheet' element={<Timesheet />} />
-          <Route path='/packer/scan' element={<Packer />} />
+          <Route path='/admin' element={<AdminPage />} />
+          <Route path='/home' element={<HomePage />} />
+          <Route path='/timesheet' element={<ShiftPage />} />
+          <Route path='/timesheet/:shiftId' element={<TimesheetPage />} />
+          {/* <Route path='/production' element={<ProductionPage />} />
+          <Route path='/shipment' element={<ShipmentPage />} />
+          <Route path='/pack' element={<PackPage />} />
+          <Route path='/fix' element={<FixPage />} />
+          <Route path='/residue' element={<ResiduePage />} />
+          <Route path='/scan' element={<Packer />} /> */}
         </Route>
-        <Route path='*' element={<NotFound />} />
+        <Route path='*' element={<NotFoundPage />} />
       </Routes>
       <Footer />
 
@@ -140,6 +159,24 @@ const App = () => {
       {isPasswordUpdateOpen && (
         <Modal>
           <PasswordUpdateForm />
+        </Modal>
+      )}
+
+      {isShiftAddOpen && (
+        <Modal>
+          <ShiftAddForm />
+        </Modal>
+      )}
+
+      {isEmployeeAddOpen && (
+        <Modal>
+          <EmployeeAddForm />
+        </Modal>
+      )}
+
+      {isTimesheetEditOpen && (
+        <Modal>
+          <TimesheetEditForm />
         </Modal>
       )}
 

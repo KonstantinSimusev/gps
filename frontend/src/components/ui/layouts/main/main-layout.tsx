@@ -1,12 +1,12 @@
-import styles from './main-layout.module.css';
-
 import clsx from 'clsx';
 
-interface ILayoutProps {
-  className?: string;
+import styles from './main-layout.module.css';
+
+interface IProps {
   children: React.ReactNode;
+  className?: string;
 }
 
-export const MainLayout = ({ className, children }: ILayoutProps) => {
+export const MainLayout = ({ children, className }: IProps) => {
   return <div className={clsx(styles.container, className)}>{children}</div>;
 };

@@ -1,4 +1,4 @@
-import type { IProfile, ILoginData, ISuccess } from '../api.interface';
+import type { ILoginData, IProfile, ISuccess } from '../api.interface';
 
 // Используем переменную окружения
 export const URL = import.meta.env.VITE_API_URL ?? '/api/gps';
@@ -25,7 +25,7 @@ export const loginEmployeeApi = async (data: ILoginData): Promise<IProfile> => {
     if (error instanceof Error) {
       throw error;
     }
-    
+
     throw new Error('Что-то пошло не так');
   }
 };

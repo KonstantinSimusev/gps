@@ -1,4 +1,4 @@
 .icon {
-  stroke: var(--color-icon);
-  stroke-width: 2;
+  /* stroke: rgba(255 255 255 / 0.8); */
+  stroke-width: 1.4;
 }

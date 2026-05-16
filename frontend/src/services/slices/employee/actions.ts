@@ -1,13 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import {
-  createEmployeeApi,
-  deleteEmployeeApi,
-  searchEmployeeApi,
-  updateEmployeeApi,
-} from '../../../utils/api/employee.api';
-
-import {
   IAccountInfo,
   ICreateEmployee,
   IEmployeeInfo,
@@ -16,6 +9,13 @@ import {
 } from '../../../utils/api.interface';
 
 import { delay } from '../../../utils/utils';
+
+import {
+  createEmployeeApi,
+  deleteEmployeeApi,
+  searchEmployeeApi,
+  updateEmployeeApi,
+} from '../../../utils/api/employee.api';
 
 export const searchEmployee = createAsyncThunk(
   'employees/personalNumber',

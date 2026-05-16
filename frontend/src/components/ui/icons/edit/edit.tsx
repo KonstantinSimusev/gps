@@ -1,11 +1,11 @@
 import styles from './edit.module.css';
 
-interface IEditIconProps {
+interface IProps {
   width?: number | string;
   height?: number | string;
 }
 
-export const EditIcon = ({ width = 20, height = 20 }: IEditIconProps) => {
+export const EditIcon = ({ width = 20, height = 20 }: IProps) => {
   return (
     <svg
       className={styles.icon}

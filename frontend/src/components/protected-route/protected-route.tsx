@@ -3,13 +3,14 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 import { useSelector } from '../../services/store';
 
-import { LayerContext } from '../../contexts/layer/layerContext';
-import { MainLayout } from '../ui/layouts/main/main-layout';
-
 import {
   selectIsAuthenticated,
   selectIsChecking,
 } from '../../services/slices/auth/slice';
+
+import { LayerContext } from '../../contexts/layer/layerContext';
+
+import { MainLayout } from '../ui/layouts/main/main-layout';
 
 import styles from './protected-route.module.css';
 
@@ -27,7 +28,11 @@ export const ProtectedRoute = memo(() => {
 
   // Пока идёт проверка — показываем пустой блок (безопасность)
   if (checking) {
-    return <MainLayout>{checking && <div className={styles.container}></div>}</MainLayout>;
+    return (
+      <MainLayout>
+        {checking && <div className={styles.container}></div>}
+      </MainLayout>
+    );
   }
 
   // Если не авторизован и проверка завершена — редирект

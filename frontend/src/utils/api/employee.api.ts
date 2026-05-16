@@ -13,13 +13,16 @@ export const searchEmployeeApi = async (
   personalNumber: string,
 ): Promise<IEmployeeInfo> => {
   try {
-    const response = await fetch(`${URL}/employee-management/${personalNumber}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
+    const response = await fetch(
+      `${URL}/employee-management/${personalNumber}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8',
+        },
+        credentials: 'include', // Важно добавить эту строку
       },
-      credentials: 'include', // Важно добавить эту строку
-    });
+    );
 
     if (!response.ok) {
       const errorData = await response.json();

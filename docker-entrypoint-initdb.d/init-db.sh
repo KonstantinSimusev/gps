@@ -125,6 +125,18 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     CONSTRAINT fk__employee_role_employee FOREIGN KEY (employee_id) REFERENCES gps.employees(id) ON DELETE CASCADE
   );
 
+  -- Создание таблицы shifts
+  CREATE TABLE IF NOT EXISTS gps.shifts (
+    id uuid DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    workshop_code VARCHAR(20) NOT NULL,
+    date DATE NOT NULL,
+    shift_number INTEGER NOT NULL,
+    team_number INTEGER NOT NULL,
+    
+    CONSTRAINT unique_date_team_workshop UNIQUE (workshop_code, date, team_number),
+    CONSTRAINT unique_date_shift_workshop UNIQUE (workshop_code, date, shift_number)
+  );
+
   -- Вставляем номера бригад в таблицу
   INSERT INTO gps.teams (team_number)
   VALUES

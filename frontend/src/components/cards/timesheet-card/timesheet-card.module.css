@@ -1,0 +1,66 @@
+.container {
+  position: relative;
+  display: flex;
+  width: 370px;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.success {
+  position: absolute;
+  display: flex;
+  top: 30px;
+  right: 30px;
+}
+
+.profile {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.fullname {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.profession {
+  opacity: 0.6;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  line-height: 1.4;
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.timesheet {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 0.8944rem + 0.5282vw, 1.375rem);
+  padding: 22px;
+  border-radius: 30px;
+  border: 1px solid rgba(255 255 255 / 0.1);
+  background-color: rgba(129 129 129 / 0.1);
+}
+
+.status {
+  display: flex;
+  justify-content: space-between;
+}
+
+.button {
+  display: flex;
+  padding: 6px;
+  border-radius: 50%;
+  border: 1px solid rgba(255 255 255 / 0.1);
+  background-color: rgba(129 129 129 / 0.1);
+}

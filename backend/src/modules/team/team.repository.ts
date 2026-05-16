@@ -12,9 +12,7 @@ export class TeamRepository {
   ) {}
 
   // 2. CRUD: Read (общие методы поиска)
-  async findTeamByTeamNumber(teamNumber: string): Promise<Team> {
-    return this.teamRepository.findOne({
-      where: { teamNumber },
-    });
+  async findTeamByTeamNumber(teamNumber: string): Promise<Team | null> {
+    return this.teamRepository.findOneBy({ teamNumber });
   }
 }

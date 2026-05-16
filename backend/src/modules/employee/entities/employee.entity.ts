@@ -4,7 +4,6 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  OneToMany,
   OneToOne,
   Unique,
 } from 'typeorm';
@@ -99,7 +98,7 @@ export class Employee {
   @JoinColumn({ name: 'team_id' })
   team: Team;
 
-  // Связь: один сотрудник — много ролей сотрудника
+  // Связь: один сотрудник — одна роль сотрудника
   @OneToOne(() => EmployeeRole, (employeeRole) => employeeRole.employee, {
     cascade: ['remove'],
   })

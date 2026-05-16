@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -14,8 +15,11 @@ import {
   IAccountInfo,
   IEmployeeInfo,
   IList,
+  IProfile,
   ISuccess,
 } from '../../shared/interfaces/api.interface';
+
+import { ERole } from '../../shared/enums/enums';
 
 import { AccountService } from '../account/account.service';
 import { EmployeeRepository } from '../employee/employee.repository';
@@ -37,9 +41,14 @@ export class EmployeeManagementService {
 
   async createEmployee(
     dto: CreateEmployeeDto,
-    profileWorkshop?: string,
+    profile?: IProfile,
     isManyOperation: boolean = false,
   ): Promise<IAccountInfo> {
+    // Проверяем права на данную операцию
+    if (!isManyOperation && profile.role !== ERole.ADMIN) {
+      throw new ForbiddenException('Недостаточно прав');
+    }
+
     // Проверяем уникальность ФИО
     const isFullNameTaken = await this.employeeRepository.existsByFullName(
       dto.lastName,
@@ -78,7 +87,7 @@ export class EmployeeManagementService {
     // Проверяем совместимость цеха работника и цеха пользователя (только если не массовая операция)
     if (
       !isManyOperation &&
-      position.workshop.workshopCode !== profileWorkshop
+      position.workshop.workshopCode !== profile.workshopCode
     ) {
       throw new ConflictException('Позиция из другого цеха');
     }
@@ -137,8 +146,13 @@ export class EmployeeManagementService {
   async updateEmployee(
     id: string,
     dto: UpdateEmployeeDto,
-    profileWorkshop: string,
+    profile: IProfile,
   ): Promise<IEmployeeInfo> {
+    // Проверяем права на данную операцию
+    if (profile.role !== ERole.ADMIN) {
+      throw new ForbiddenException('Недостаточно прав');
+    }
+
     // Находим работника
     const employee = await this.employeeRepository.findEmployeeById(id);
 
@@ -189,7 +203,7 @@ export class EmployeeManagementService {
     }
 
     // Проверяем совместимость цеха работника и цеха пользователя
-    if (newPosition.workshop.workshopCode !== profileWorkshop) {
+    if (newPosition.workshop.workshopCode !== profile.workshopCode) {
       throw new ConflictException('Позиция из другого цеха');
     }
 
@@ -238,7 +252,12 @@ export class EmployeeManagementService {
     return this.getEmployeeInfo(employee.personalNumber);
   }
 
-  async deleteEmployee(id: string, profileWorkshop: string): Promise<ISuccess> {
+  async deleteEmployee(id: string, profile: IProfile): Promise<ISuccess> {
+    // Проверяем права на данную операцию
+    if (profile.role !== ERole.ADMIN) {
+      throw new ForbiddenException('Недостаточно прав');
+    }
+
     // Находим работника
     const employee = await this.employeeRepository.findWithWorkshopCodeById(id);
 
@@ -247,7 +266,7 @@ export class EmployeeManagementService {
     }
 
     // Сравниваем цеха из БД и профиля
-    if (employee.position.workshop.workshopCode !== profileWorkshop) {
+    if (employee.position.workshop.workshopCode !== profile.workshopCode) {
       throw new ConflictException('Позиция из другого цеха');
     }
 

@@ -1,8 +1,9 @@
 import { useContext } from 'react';
+
 import { useSelector } from '../../services/store';
+import { selectIsAuthenticated } from '../../services/slices/auth/slice';
 
 import { LayerContext } from '../../contexts/layer/layerContext';
-import { selectIsAuthenticated } from '../../services/slices/auth/slice';
 
 import styles from './footer.module.css';
 

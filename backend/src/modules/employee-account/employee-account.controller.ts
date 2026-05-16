@@ -23,7 +23,7 @@ export class EmployeeAccountController {
   ): Promise<IAccountInfo> {
     return this.employeeAccountService.updateLoginAndPassword(
       dto.id,
-      req.profile.workshopCode,
+      req.profile,
     );
   }
 }

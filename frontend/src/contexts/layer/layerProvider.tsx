@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+
 import { LayerContext } from './layerContext';
 
 interface TLayerProviderProps {
@@ -17,6 +18,9 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
   const [isEmployeeDeleteOpen, setIsEmployeeDeleteOpen] = useState(false);
   const [isAccountInfoOpen, setIsAccountInfoOpen] = useState(false);
   const [isPasswordUpdateOpen, setIsPasswordUpdateOpen] = useState(false);
+  const [isShiftAddOpen, setIsShiftAddOpen] = useState(false);
+  const [isEmployeeAddOpen, setIsEmployeeAddOpen] = useState(false);
+  const [isTimesheetEditOpen, setIsTimesheetEditOpen] = useState(false);
 
   const [selectedId, setSelectedId] = useState('');
   const [selectedScrollPosition, setSelectedScrollPosition] = useState(0);
@@ -35,6 +39,9 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
       isEmployeeDeleteOpen,
       isAccountInfoOpen,
       isPasswordUpdateOpen,
+      isShiftAddOpen,
+      isEmployeeAddOpen,
+      isTimesheetEditOpen,
 
       selectedId,
       selectedScrollPosition,
@@ -50,6 +57,9 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
       setIsEmployeeDeleteOpen,
       setIsAccountInfoOpen,
       setIsPasswordUpdateOpen,
+      setIsShiftAddOpen,
+      setIsEmployeeAddOpen,
+      setIsTimesheetEditOpen,
 
       setSelectedId,
       setSelectedScrollPosition,
@@ -66,6 +76,9 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
       isEmployeeDeleteOpen,
       isAccountInfoOpen,
       isPasswordUpdateOpen,
+      isShiftAddOpen,
+      isEmployeeAddOpen,
+      isTimesheetEditOpen,
 
       selectedId,
       selectedScrollPosition,

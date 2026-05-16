@@ -1,11 +1,3 @@
-.container {
-  position: relative; /* Создаём контекст для абсолютного позиционирования */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 26px;
-}
-
 .spinner {
   position: absolute;
   width: 26px;

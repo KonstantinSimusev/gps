@@ -1,37 +1,47 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 
-import { LayerContext } from '../../../contexts/layer/layerContext';
 import { useDispatch, useSelector } from '../../../services/store';
 
 import { deleteEmployee } from '../../../services/slices/employee/actions';
 
 import {
+  clearDeleteEmployeeError,
   selectDeleteEmployeeError,
   selectIsDeleteEmployeeLoading,
 } from '../../../services/slices/employee/slice';
 
+import { LayerContext } from '../../../contexts/layer/layerContext';
+
+import { Button } from '../../ui/buttons/button/button';
 import { Form } from '../../ui/form/form';
 import { Spinner } from '../../ui/spinner/spinner';
-import { Button } from '../../ui/button/button';
 
 import styles from './employee-delete-form.module.css';
+import { ServerError } from '../../ui/errors/server-error/server-error';
 
 export const EmployeeDeleteForm = () => {
-  const { selectedId, setIsOverlayOpen, setIsEmployeeDeleteOpen } =
-    useContext(LayerContext);
+  const {
+    selectedId,
+    isEmployeeDeleteOpen,
+    setIsOverlayOpen,
+    setIsEmployeeDeleteOpen,
+  } = useContext(LayerContext);
 
   const dispatch = useDispatch();
   const isLoading = useSelector(selectIsDeleteEmployeeLoading);
   const serverError = useSelector(selectDeleteEmployeeError);
 
-  const handleDeleteClick = async () => {
-    try {
-      await dispatch(deleteEmployee(selectedId));
+  useEffect(() => {
+    if (isEmployeeDeleteOpen) {
+      dispatch(clearDeleteEmployeeError());
+    }
+  }, [isEmployeeDeleteOpen]);
 
-      // Очищаем состояние оверлеев и модальных окон
-      setIsOverlayOpen(false);
-      setIsEmployeeDeleteOpen(false);
-    } catch (error) {
+  const handleDeleteClick = async () => {
+    const result = await dispatch(deleteEmployee(selectedId));
+
+    // Очищаем состояние оверлеев и модальных окон
+    if (result.payload) {
       setIsOverlayOpen(false);
       setIsEmployeeDeleteOpen(false);
     }
@@ -42,23 +52,25 @@ export const EmployeeDeleteForm = () => {
     setIsEmployeeDeleteOpen(false);
   };
 
+  // Определяем, заблокирована ли кнопка
+  const isButtonDisabled = isLoading;
+
   return (
-    <Form title='Удалить работника?' titleClassName={styles.title}>
+    <Form title='Удалить работника?' className={styles.title}>
       <span className={styles.info}>
         При удалении данные станут недоступны для отчётности. Вместо удаления
         укажите дату увольнения в профиле: так данные останутся доступны для
         отчётности.
       </span>
 
-      <Spinner
-        isLoading={isLoading}
-        serverError={serverError}
-        className={styles.spinner}
-      />
+      <div className={styles.message}>
+        {isLoading ? <Spinner /> : <ServerError text={serverError} />}
+      </div>
 
       <div className={styles.buttons__wrapper}>
         <Button
           type='button'
+          disabled={isButtonDisabled}
           onClick={handleDeleteClick}
           className={styles.button__ok}
         >

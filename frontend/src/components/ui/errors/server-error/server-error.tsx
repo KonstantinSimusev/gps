@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import styles from './server-error.module.css';
 
 interface IProps {
-  text?: string | null;
+  text: string | null;
   className?: string;
 }
 

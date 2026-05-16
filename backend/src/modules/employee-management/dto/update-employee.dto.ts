@@ -1,4 +1,4 @@
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 import {
   IsDate,
@@ -59,20 +59,15 @@ export class UpdateEmployeeDto {
   @MaxLength(10, { message: 'Штатная позиция не может превышать 10 символов' })
   positionCode: string;
 
-  @IsNotEmpty({ message: 'Дата рождения не может быть пустой' })
-  @Transform(({ value }) => new Date(value))
+  @Type(() => Date)
   @IsDate({ message: 'Дата рождения должна быть валидной датой' })
   birthDay: Date;
 
-  @IsNotEmpty({ message: 'Дата назначения не может быть пустой' })
-  @Transform(({ value }) => new Date(value))
-  @IsDate({ message: 'Дата назначения должна быть валидной датой' })
+  @Type(() => Date)
+  @IsDate({ message: 'Дата рождения должна быть валидной датой' })
   startDate: Date;
 
-  @Transform(({ value }) => {
-    if (value === null) return null;
-    return new Date(value);
-  })
+  @Type(() => Date)
   @IsOptional()
   @IsDate({ message: 'Дата увольнения должна быть валидной датой' })
   endDate: Date | null;
@@ -82,8 +77,7 @@ export class UpdateEmployeeDto {
     return value.trim();
   })
   @IsOptional()
-  @Matches(/^\S+$/, { message: 'Роль не должна содержать лишних пробелов' })
-  @MinLength(0, { message: 'Роль может быть пустой' })
+  @Matches(/^\S*$/, { message: 'Роль не должна содержать пробелов' })
   @MaxLength(40, { message: 'Роль не может превышать 40 символов' })
   role: string | null;
 }

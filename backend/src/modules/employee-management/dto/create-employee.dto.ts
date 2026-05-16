@@ -1,4 +1,4 @@
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 import {
   IsDate,
@@ -52,13 +52,11 @@ export class CreateEmployeeDto {
   @MaxLength(10, { message: 'Штатная позиция не может превышать 10 символов' })
   positionCode: string;
 
-  @IsNotEmpty({ message: 'Дата рождения не может быть пустой' })
-  @Transform(({ value }) => new Date(value))
+  @Type(() => Date)
   @IsDate({ message: 'Дата рождения должна быть валидной датой' })
   birthDay: Date;
 
-  @IsNotEmpty({ message: 'Дата назначения не может быть пустой' })
-  @Transform(({ value }) => new Date(value))
+  @Type(() => Date)
   @IsDate({ message: 'Дата назначения должна быть валидной датой' })
   startDate: Date;
 }

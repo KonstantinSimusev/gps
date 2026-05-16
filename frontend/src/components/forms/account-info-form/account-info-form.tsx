@@ -1,25 +1,28 @@
 import { useContext, useState } from 'react';
 
-import { LayerContext } from '../../../contexts/layer/layerContext';
-import { useSelector } from '../../../services/store';
-import { selectCreateEmployee } from '../../../services/slices/employee/slice';
-
-import { Form } from '../../ui/form/form';
-import { Button } from '../../ui/button/button';
-import { InfoBlock } from '../../ui/info-block/info-block';
-
-import styles from './account-info-form.module.css';
-import { SuccessIcon } from '../../ui/icons/success/success';
-import { Spinner } from '../../ui/spinner/spinner';
 import { delay } from '../../../utils/utils';
+
+import { useSelector } from '../../../services/store';
+
+import { selectCreateEmployee } from '../../../services/slices/employee/slice';
 import { selectUpdateAccountInfo } from '../../../services/slices/account/slice';
 
-export const AccountInfoForm = () => {
-  const { setIsOverlayOpen, setIsAccountInfoOpen, setIsPasswordUpdateOpen } =
-    useContext(LayerContext);
+import { LayerContext } from '../../../contexts/layer/layerContext';
 
+import { Button } from '../../ui/buttons/button/button';
+import { Form } from '../../ui/form/form';
+import { InfoBlock } from '../../ui/info-block/info-block';
+import { Spinner } from '../../ui/spinner/spinner';
+import { SuccessIcon } from '../../ui/icons/success/success';
+
+import styles from './account-info-form.module.css';
+
+export const AccountInfoForm = () => {
   const createAccountInfo = useSelector(selectCreateEmployee);
   const updateAccountInfo = useSelector(selectUpdateAccountInfo);
+
+  const { setIsOverlayOpen, setIsAccountInfoOpen, setIsPasswordUpdateOpen } =
+    useContext(LayerContext);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -57,7 +60,7 @@ ${accountInfo.password}
   };
 
   return (
-    <Form title={'Работник создан'} titleClassName={styles.title}>
+    <Form title={'Работник создан'}>
       <div className={styles.icon__wrapper}>
         <SuccessIcon />
       </div>
@@ -73,12 +76,12 @@ ${accountInfo.password}
       )}
 
       <span className={styles.text}>
-        Скопируйте и вставьте информацию в&nbsp;безопасном&nbsp;месте.
+        Скопируйте и вставьте информацию в&nbsp;безопасное&nbsp;место.
       </span>
 
-      <Spinner isLoading={isLoading} className={styles.spinner} />
+      <div className={styles.message}>{isLoading && <Spinner />}</div>
 
-      <Button type='button' onClick={handleCopyClick} className={styles.button}>
+      <Button type='button' className={styles.button} onClick={handleCopyClick}>
         Скопировать
       </Button>
     </Form>

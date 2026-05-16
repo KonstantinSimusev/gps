@@ -1,9 +1,9 @@
-import { formatDateForUI, getRoleLabel } from '../../../utils/utils';
 import { IEmployeeInfo, IProfile } from '../../../utils/api.interface';
+import { formatDateForUI, getRoleLabel } from '../../../utils/utils';
 
 import { CardContainer } from '../../../components/ui/card-container/card-container';
-import { IconButton } from '../../../components/ui/icon-button/icon-button';
-import { InfoBlock } from '../../../components/ui/info-block/info-block';
+import { IconButton } from '../../ui/buttons/icon-button/icon-button';
+import { TableBlock } from '../../ui/table-block/table-block';
 
 import { DeleteIcon } from '../../../components/ui/icons/delete/delete';
 import { EditIcon } from '../../../components/ui/icons/edit/edit';
@@ -12,7 +12,7 @@ import { ProfileIcon } from '../../../components/ui/icons/profile/profile';
 
 import styles from './profile-card.module.css';
 
-interface IProfileCardProps {
+interface IProps {
   employee: IEmployeeInfo;
   profile: IProfile | null;
   onUpdateProfile: () => void;
@@ -26,9 +26,9 @@ export const ProfileCard = ({
   onUpdateProfile,
   onUpdatePassword,
   onDeleteProfile,
-}: IProfileCardProps) => {
+}: IProps) => {
   return (
-    <CardContainer className={styles.card__container}>
+    <CardContainer className={styles.container}>
       <div className={styles.profile}>
         <ProfileIcon />
         <span className={styles.fullname}>
@@ -39,62 +39,58 @@ export const ProfileCard = ({
       </div>
 
       {profile?.workshopCode === employee.workshop && (
-        <div className={styles.buttons__wrapper}>
+        <div className={styles.buttons}>
           <IconButton type='button' onClick={onUpdateProfile}>
-            <EditIcon width={30} height={30} />
+            <EditIcon width={28} height={28} />
           </IconButton>
 
           {employee.isActive === true && (
             <IconButton type='button' onClick={onUpdatePassword}>
-              <PasswordIcon width={27} height={27} />
+              <PasswordIcon width={25} height={25} />
             </IconButton>
           )}
 
           <IconButton type='button' onClick={onDeleteProfile}>
-            <DeleteIcon width={30} height={30} />
+            <DeleteIcon width={28} height={28} />
           </IconButton>
         </div>
       )}
 
-      <div className={styles.employee__wrapper}>
-        <div className={styles.container}>
-          <InfoBlock title='Цех' text={employee.workshop} />
-          <InfoBlock title='Бригада' text={employee.team} />
-          <InfoBlock title='Личный номер' text={employee.personalNumber} />
-          <InfoBlock title='Штатная позиция' text={employee.positionCode} />
-          <InfoBlock title='Разряд' text={employee.grade} />
-          <InfoBlock title='График' text={employee.schedule} />
-        </div>
+      <div className={styles.table}>
+        <TableBlock title='Цех' text={employee.workshop} />
+        <TableBlock title='Бригада' text={employee.team} />
+        <TableBlock title='Личный номер' text={employee.personalNumber} />
+        <TableBlock title='Штатная позиция' text={employee.positionCode} />
+        <TableBlock title='Разряд' text={employee.grade} />
+        <TableBlock title='График' text={employee.schedule} />
+      </div>
 
-        <div className={styles.container}>
-          {employee.birthDay && (
-            <InfoBlock
-              title='Дата рождения'
-              text={formatDateForUI(employee.birthDay)}
-            />
-          )}
+      <div className={styles.table}>
+        {employee.birthDay && (
+          <TableBlock
+            title='Дата рождения'
+            text={formatDateForUI(employee.birthDay)}
+          />
+        )}
 
-          {employee.startDate && (
-            <InfoBlock
-              title='Дата назначения'
-              text={formatDateForUI(employee.startDate)}
-            />
-          )}
+        {employee.startDate && (
+          <TableBlock
+            title='Дата назначения'
+            text={formatDateForUI(employee.startDate)}
+          />
+        )}
 
-          {employee.endDate && (
-            <InfoBlock
-              title='Дата увольнения'
-              text={formatDateForUI(employee.endDate)}
-            />
-          )}
-        </div>
-
-        {employee.role && (
-          <div className={styles.container}>
-            <InfoBlock title='Роль' text={getRoleLabel(employee.role)} />
-          </div>
+        {employee.endDate && (
+          <TableBlock
+            title='Дата увольнения'
+            text={formatDateForUI(employee.endDate)}
+          />
         )}
       </div>
+
+      {employee.role && (
+        <TableBlock title='Роль' text={getRoleLabel(employee.role)} />
+      )}
     </CardContainer>
   );
 };

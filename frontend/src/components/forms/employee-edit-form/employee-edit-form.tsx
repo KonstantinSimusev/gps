@@ -1,14 +1,17 @@
 import { useContext, useEffect, useState } from 'react';
 
-import { useDispatch, useSelector } from '../../../services/store';
-
-import { LayerContext } from '../../../contexts/layer/layerContext';
+import { IUpdateEmployee } from '../../../utils/api.interface';
+import { ROLE_OPTIONS } from '../../../utils/types';
 
 import {
   validateField,
   validateForm,
   validationRules,
 } from '../../../utils/validation';
+
+import { formatDateForInput } from '../../../utils/utils';
+
+import { useDispatch, useSelector } from '../../../services/store';
 
 import { updateEmployee } from '../../../services/slices/employee/actions';
 
@@ -19,15 +22,14 @@ import {
   selectUpdateEmployeeError,
 } from '../../../services/slices/employee/slice';
 
-import { IUpdateEmployee } from '../../../utils/api.interface';
-import { ROLE_OPTIONS } from '../../../utils/types';
-import { formatDateForInput } from '../../../utils/utils';
+import { LayerContext } from '../../../contexts/layer/layerContext';
 
+import { Button } from '../../ui/buttons/button/button';
 import { Form } from '../../ui/form/form';
 import { TextInput } from '../../ui/inputs/text-input/text-input';
+import { ServerError } from '../../ui/errors/server-error/server-error';
 import { SelectInput } from '../../ui/inputs/select-input/select-input';
 import { Spinner } from '../../ui/spinner/spinner';
-import { Button } from '../../ui/button/button';
 
 import styles from './employee-edit-form.module.css';
 
@@ -323,11 +325,9 @@ export const EmployeeEditForm = () => {
         onBlur={handleBlur}
       />
 
-      <Spinner
-        isLoading={isLoading}
-        serverError={serverError}
-        className={styles.spinner}
-      />
+      <div className={styles.message}>
+        {isLoading ? <Spinner /> : <ServerError text={serverError} />}
+      </div>
 
       <Button
         type='submit'

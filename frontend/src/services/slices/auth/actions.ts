@@ -1,15 +1,14 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
+import { IProfile, ILoginData, ISuccess } from '../../../utils/api.interface';
+
+import { delay } from '../../../utils/utils';
+
 import {
   checkAccessTokenApi,
   loginEmployeeApi,
   logoutEmployeeApi,
 } from '../../../utils/api/auth.api';
-
-import { IProfile, ILoginData, ISuccess } from '../../../utils/api.interface';
-
-import { delay } from '../../../utils/utils';
-// import { setRoleStatusApi } from '../../../utils/api/role.api';
 
 export const loginEmployee = createAsyncThunk(
   'auth/login',

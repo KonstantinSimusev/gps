@@ -1,13 +1,7 @@
-import clsx from 'clsx';
-
 import { useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-import { CloseButton } from '../buttons/close/close';
-
-import { LayerContext } from '../../contexts/layer/layerContext';
-import { useSelector } from '../../services/store';
-import { selectProfile } from '../../services/slices/auth/slice';
+import clsx from 'clsx';
 
 import {
   ADMIN_ROLE,
@@ -16,7 +10,63 @@ import {
   PACKER_ROLE,
 } from '../../utils/types';
 
+import { useSelector } from '../../services/store';
+import { selectProfile } from '../../services/slices/auth/slice';
+
+import { LayerContext } from '../../contexts/layer/layerContext';
+
+import { CloseButton } from '../ui/buttons/close-button/close-button';
+
 import styles from './sidebar.module.css';
+
+// Конфигурация меню: путь, текст и роли, которым доступен пункт
+const menuItems = [
+  {
+    path: '/home',
+    label: 'Главная',
+    roles: [ADMIN_ROLE, HEAD_ROLE, MASTER_ROLE],
+  },
+  {
+    path: '/admin',
+    label: 'Пользователи',
+    roles: [ADMIN_ROLE],
+  },
+  {
+    path: '/timesheet',
+    label: 'Табель',
+    roles: [MASTER_ROLE],
+  },
+  {
+    path: '/production',
+    label: 'Производство',
+    roles: [MASTER_ROLE],
+  },
+  {
+    path: '/shipment',
+    label: 'Отгрузка',
+    roles: [MASTER_ROLE],
+  },
+  {
+    path: '/pack',
+    label: 'Упаковка',
+    roles: [MASTER_ROLE],
+  },
+  {
+    path: '/fix',
+    label: 'Раскрепление',
+    roles: [MASTER_ROLE],
+  },
+  {
+    path: '/residue',
+    label: 'Остаток',
+    roles: [MASTER_ROLE],
+  },
+  {
+    path: '/scan',
+    label: 'Сканирование',
+    roles: [PACKER_ROLE],
+  },
+];
 
 export const Sidebar = () => {
   const { isMenuOpen, setIsOverlayOpen, setIsMenuOpen, setIsLogoutOpen } =
@@ -41,6 +91,17 @@ export const Sidebar = () => {
     event.stopPropagation();
   };
 
+  // Функция проверки активности пункта меню
+  const isActive = (path: string): boolean => {
+    if (path === '/timesheet') {
+      return (
+        location.pathname === '/timesheet' ||
+        location.pathname.startsWith('/timesheet/')
+      );
+    }
+    return location.pathname === path;
+  };
+
   return (
     <div
       className={clsx(styles.container, isMenuOpen && styles.menu__open)}
@@ -50,56 +111,24 @@ export const Sidebar = () => {
 
       <nav className={styles.navigation}>
         <ul className={styles.navigation__list}>
-          {(profile?.role === ADMIN_ROLE ||
-            profile?.role === HEAD_ROLE ||
-            profile?.role === MASTER_ROLE) && (
-            <li
-              className={clsx(
-                styles.link,
-                location.pathname === '/home' && styles.link__active,
-              )}
-              onClick={handleClick}
-            >
-              <Link to='/home'>Главная</Link>
-            </li>
-          )}
+          {menuItems.map(({ path, label, roles }) => {
+            // Проверяем, есть ли у пользователя доступ к пункту меню
+            const hasAccess = roles.some((role) => profile?.role === role);
+            if (!hasAccess) return null;
 
-          {profile?.role === ADMIN_ROLE && (
-            <li
-              className={clsx(
-                styles.link,
-                location.pathname === '/admin' && styles.link__active,
-              )}
-              onClick={handleClick}
-            >
-              <Link to='/admin'>Пользователи</Link>
-            </li>
-          )}
-
-          {profile?.role === MASTER_ROLE && (
-            <li
-              className={clsx(
-                styles.link,
-                location.pathname === '/master/timesheet' &&
-                  styles.link__active,
-              )}
-              onClick={handleClick}
-            >
-              <Link to='/master/timesheet'>Табель</Link>
-            </li>
-          )}
-
-          {profile?.role === PACKER_ROLE && (
-            <li
-              className={clsx(
-                styles.link,
-                location.pathname === '/packer/scan' && styles.link__active,
-              )}
-              onClick={handleClick}
-            >
-              <Link to='/packer/scan'>Сканирование</Link>
-            </li>
-          )}
+            return (
+              <li
+                key={path}
+                className={clsx(
+                  styles.link,
+                  isActive(path) && styles.link__active,
+                )}
+                onClick={handleClick}
+              >
+                <Link to={path}>{label}</Link>
+              </li>
+            );
+          })}
 
           <li className={clsx(styles.link)} onClick={handleClickLogout}>
             Выйти

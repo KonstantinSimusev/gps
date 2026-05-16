@@ -1,17 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useDispatch, useSelector } from '../../../services/store';
-
-import {
-  selectAuthError,
-  selectIsAuthLoading,
-  clearAuthError,
-} from '../../../services/slices/auth/slice';
-
-import { loginEmployee } from '../../../services/slices/auth/actions';
-
-import { LayerContext } from '../../../contexts/layer/layerContext';
+import { ROLE_TO_PAGE } from '../../../utils/utils';
 
 import {
   validateField,
@@ -19,12 +9,23 @@ import {
   validationRules,
 } from '../../../utils/validation';
 
-import { ROLE_TO_PAGE } from '../../../utils/utils';
+import { useDispatch, useSelector } from '../../../services/store';
 
+import { loginEmployee } from '../../../services/slices/auth/actions';
+
+import {
+  clearAuthError,
+  selectAuthError,
+  selectIsAuthLoading,
+} from '../../../services/slices/auth/slice';
+
+import { LayerContext } from '../../../contexts/layer/layerContext';
+
+import { Button } from '../../ui/buttons/button/button';
 import { Form } from '../../ui/form/form';
 import { TextInput } from '../../ui/inputs/text-input/text-input';
+import { ServerError } from '../../ui/errors/server-error/server-error';
 import { Spinner } from '../../ui/spinner/spinner';
-import { Button } from '../../ui/button/button';
 
 import styles from './login-form.module.css';
 
@@ -126,7 +127,11 @@ export const LoginForm = () => {
   };
 
   // Определяем, заблокирована ли кнопка
-  const isButtonDisabled = isLoading || !formData.login || !formData.password;
+  const isButtonDisabled =
+    isLoading ||
+    Object.values(errors).some(Boolean) ||
+    !formData.login ||
+    !formData.password;
 
   return (
     <Form title='Авторизация' onSubmit={handleSubmit}>
@@ -151,11 +156,9 @@ export const LoginForm = () => {
         onBlur={handleBlur}
       />
 
-      <Spinner
-        isLoading={isLoading}
-        serverError={serverError}
-        className={styles.spinner}
-      />
+      <div className={styles.message}>
+        {isLoading ? <Spinner /> : <ServerError text={serverError} />}
+      </div>
 
       <Button
         type='submit'

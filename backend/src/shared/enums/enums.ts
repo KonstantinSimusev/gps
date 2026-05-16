@@ -1,3 +1,9 @@
+export enum ERole {
+  USER = 'USER',
+  ADMIN = 'ADMIN',
+  PACKER = 'PACKER',
+}
+
 export enum EUnit {
   // ЛПЦ-5
   LPC_4 = 'ЛПЦ-4',
