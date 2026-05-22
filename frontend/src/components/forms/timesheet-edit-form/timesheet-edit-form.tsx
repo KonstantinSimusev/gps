@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 
 // import { IUpdateEmployee } from '../../../utils/api.interface';
 import { ROLE_OPTIONS } from '../../../utils/types';
+import { formatDateForUI } from '../../../utils/utils';
 
 import {
   validateField,
@@ -9,11 +10,10 @@ import {
   validationRules,
 } from '../../../utils/validation';
 
-import { formatDateForInput } from '../../../utils/utils';
-
-import { 
-  // useDispatch, 
-  useSelector } from '../../../services/store';
+import {
+  // useDispatch,
+  useSelector,
+} from '../../../services/store';
 
 // import { updateEmployee } from '../../../services/slices/employee/actions';
 
@@ -70,12 +70,12 @@ export const TimesheetEditForm = () => {
     lastName: employee.lastName,
     firstName: employee.firstName,
     patronymic: employee.patronymic,
-    personalNumber: employee.personalNumber,
-    teamNumber: employee.team,
-    positionCode: employee.positionCode,
-    birthDay: formatDateForInput(employee.birthDay),
-    startDate: formatDateForInput(employee.startDate),
-    endDate: formatDateForInput(employee.endDate),
+    personalNumber: String(employee.personalNumber),
+    teamNumber: String(employee.teamNumber),
+    positionCode: String(employee.positionCode),
+    birthDay: formatDateForUI(employee.birthDay),
+    startDate: formatDateForUI(employee.startDate),
+    endDate: formatDateForUI(employee.endDate || ''),
     role: employee.role || '',
   });
 

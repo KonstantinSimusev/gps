@@ -1,24 +1,23 @@
-import { Max, Min } from 'class-validator';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
+// import { EmployeeShift } from '../../employee-shift/entities/employee-shift.entity';
+import { ShiftSchedule } from '../../shift-schedule/entities/shift-schedule.entity';
+import { Team } from '../../team/entities/team.entity';
 
 @Entity({
   schema: 'gps',
   name: 'shifts',
 })
-@Unique(['workshopCode', 'date', 'shiftNumber'])
-@Unique(['workshopCode', 'date', 'teamNumber'])
 export class Shift {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
-  @Column({
-    name: 'workshop_code',
-    type: 'varchar',
-    length: 20,
-    nullable: false,
-  })
-  workshopCode: string;
 
   @Column({
     name: 'date',
@@ -27,21 +26,17 @@ export class Shift {
   })
   date: Date;
 
-  @Column({
-    name: 'shift_number',
-    type: 'integer',
-    nullable: false,
-  })
-  @Min(1)
-  @Max(2)
-  shiftNumber: number;
+  // Связь: много смен — одна бригада
+  @ManyToOne(() => Team, (team) => team.shifts)
+  @JoinColumn({ name: 'team_id' })
+  team: Team;
 
-  @Column({
-    name: 'team_number',
-    type: 'integer',
-    nullable: false,
-  })
-  @Min(1)
-  @Max(5)
-  teamNumber: number;
+  // Связь: много смен — один тип смены
+  @ManyToOne(() => ShiftSchedule, (shiftSchedule) => shiftSchedule.shifts)
+  @JoinColumn({ name: 'shift_schedule_id' })
+  shiftSchedule: ShiftSchedule;
+
+  // // Связь: одна смена — много смен сотрудника
+  // @OneToMany(() => EmployeeShift, (employeeShift) => employeeShift.shift)
+  // employeeShifts: EmployeeShift[];
 }

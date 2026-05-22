@@ -12,12 +12,11 @@ export class Grade {
 
   @Column({
     name: 'grade_code',
-    type: 'varchar',
-    length: 10,
+    type: 'integer',
     nullable: false,
     unique: true,
   })
-  gradeCode: string;
+  gradeCode: number;
 
   // Связь: один разряд — много штатных позиций
   @OneToMany(() => Position, (position) => position.grade)

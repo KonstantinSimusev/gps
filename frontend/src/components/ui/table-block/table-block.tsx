@@ -6,7 +6,7 @@ import styles from './table-block.module.css';
 
 interface IProps {
   title: string;
-  text: string;
+  text: string | number;
   className?: string;
 }
 

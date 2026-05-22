@@ -22,7 +22,7 @@ export interface IJwtPayload {
 export interface IProfile {
   employeeId: string;
   workshopCode: string;
-  teamNumber: string;
+  teamNumber: number;
   role: string;
 }
 
@@ -40,11 +40,11 @@ export interface IEmployeeInfo {
   firstName: string;
   patronymic: string;
   workshop: string;
-  team: string;
+  teamNumber: number;
   profession: string;
-  personalNumber: string;
-  positionCode: string;
-  grade: string;
+  personalNumber: number;
+  positionCode: number;
+  grade: number;
   schedule: string;
   birthDay: Date;
   startDate: Date;

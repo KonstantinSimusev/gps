@@ -1,19 +1,12 @@
 import { Transform } from 'class-transformer';
+import { IsInt, Max, Min } from 'class-validator';
 
-import {
-  IsNotEmpty,
-  IsString,
-  Matches,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { toNumber } from '../../../shared/utils/utils';
 
 export class SearchEmployeeDto {
-  @Transform(({ value }) => value.trim())
-  @IsNotEmpty({ message: 'Личный номер не может быть пустым' })
-  @IsString({ message: 'Личный номер должен быть строкой' })
-  @Matches(/^\d+$/, { message: 'Личный номер должен содержать только цифры' })
-  @MinLength(1, { message: 'Личный номер должен быть от 1 символа' })
-  @MaxLength(10, { message: 'Личный номер не может превышать 10 символов' })
-  personalNumber: string;
+  @Transform(({ value }) => toNumber(value))
+  @IsInt({ message: 'Личный номер должен быть целым числом' })
+  @Min(1, { message: 'Личный номер должен быть не менее 1' })
+  @Max(999999999, { message: 'Личный номер должен быть не более 999999999' })
+  personalNumber: number;
 }

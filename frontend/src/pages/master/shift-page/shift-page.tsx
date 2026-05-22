@@ -37,16 +37,15 @@ export const ShiftPage = () => {
           title='Руководитель'
           text={`${masterData.lastName} ${masterData.firstName} ${masterData.patronymic}`}
         />
-       
+
         <InfoBlock title='Должность' text={masterData.profession} />
-        
+
         <InfoBlock
           title='Структурное подразделение'
           text={`УУМ ${masterData.workshopCode}`}
         />
-       
+
         <InfoBlock title='№ бригады' text={masterData.teamNumber} />
-        
       </div>
 
       <IconButton

@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Position } from '../../position/entities/position.entity';
+import { ShiftSchedule } from '../../shift-schedule/entities/shift-schedule.entity';
 
 @Entity({
   schema: 'gps',
@@ -29,4 +30,8 @@ export class Schedule {
   // Связь: один график — много штатных позиций
   @OneToMany(() => Position, (position) => position.schedule)
   positions: Position[];
+
+  // Связь: один график — много расписаний
+  @OneToMany(() => ShiftSchedule, (shiftSchedule) => shiftSchedule.schedule)
+  shiftSchedules: ShiftSchedule[];
 }

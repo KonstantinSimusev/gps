@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 import { Employee } from '../../employee/entities/employee.entity';
+import { Shift } from '../../shift/entities/shift.entity';
 
 @Entity({
   schema: 'gps',
@@ -12,14 +13,17 @@ export class Team {
 
   @Column({
     name: 'team_number',
-    type: 'varchar',
-    length: 1,
+    type: 'integer',
     nullable: false,
     unique: true,
   })
-  teamNumber: string;
+  teamNumber: number;
 
-  // Новая связь: одна бригада — много работников
+  // Связь: одна бригада — много сотрудников
   @OneToMany(() => Employee, (employee) => employee.team)
   employees: Employee[];
+
+  // Связь: одна бригада — много смен
+  @OneToMany(() => Shift, (shift) => shift.team)
+  shifts: Shift[];
 }

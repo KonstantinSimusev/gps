@@ -24,12 +24,11 @@ export class Position {
 
   @Column({
     name: 'position_code',
-    type: 'varchar',
-    length: 10,
+    type: 'integer',
     nullable: false,
     unique: true,
   })
-  positionCode: string;
+  positionCode: number;
 
   // Связь: одна позиция — много сотрудников
   @OneToMany(() => Employee, (employee) => employee.position)

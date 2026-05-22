@@ -28,7 +28,7 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
 
   -- Создание таблицы accounts
   CREATE TABLE IF NOT EXISTS gps.accounts (
-    id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    id UUID DEFAULT gps.uuid_generate_v4 () NOT NULL PRIMARY KEY,
     login VARCHAR(255) NOT NULL UNIQUE,
     hashed_password VARCHAR(512) NOT NULL,
     hashed_refresh_token VARCHAR(512)
@@ -43,7 +43,7 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
   -- Создание таблицы teams
   CREATE TABLE IF NOT EXISTS gps.teams (
     id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
-    team_number VARCHAR(1) NOT NULL UNIQUE
+    team_number INTEGER NOT NULL UNIQUE
   );
 
   -- Создание таблицы workshops
@@ -61,7 +61,7 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
   -- Создание таблицы grades
   CREATE TABLE IF NOT EXISTS gps.grades (
     id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
-    grade_code VARCHAR(10) NOT NULL UNIQUE
+    grade_code INTEGER NOT NULL UNIQUE
   );
 
   -- Создание таблицы schedules
@@ -71,10 +71,51 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     duration TIME NOT NULL
   );
 
+  -- Создание таблицы shift_types
+  CREATE TABLE IF NOT EXISTS gps.shift_types (
+    id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    category VARCHAR(20) NOT NULL
+  );
+
+  -- Создание таблицы attendance_types
+  CREATE TABLE IF NOT EXISTS gps.attendance_types (
+    id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    attendance_code VARCHAR(10) NOT NULL UNIQUE,
+    description VARCHAR(255) NOT NULL
+  );
+
+  -- Создание таблицы shift_schedules (расписания смен)
+  CREATE TABLE IF NOT EXISTS gps.shift_schedules (
+    id UUID DEFAULT gps.uuid_generate_v4() PRIMARY KEY,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+
+    workshop_id UUID NOT NULL,
+    schedule_id UUID NOT NULL,
+    shift_type_id UUID NOT NULL,
+
+    CONSTRAINT fk__shift_schedule_workshop FOREIGN KEY (workshop_id) REFERENCES gps.workshops(id),
+    CONSTRAINT fk__shift_schedule_schedule FOREIGN KEY (schedule_id) REFERENCES gps.schedules(id),
+    CONSTRAINT fk__shift_schedule_shift_type FOREIGN KEY (shift_type_id) REFERENCES gps.shift_types(id)
+  );
+
+  -- Создание таблицы shifts (смены)
+  CREATE TABLE IF NOT EXISTS gps.shifts (
+    id UUID DEFAULT gps.uuid_generate_v4() PRIMARY KEY,
+    date DATE NOT NULL,
+
+    team_id UUID NOT NULL,
+    shift_schedule_id UUID NOT NULL,
+
+    CONSTRAINT fk__shift_team FOREIGN KEY (team_id) REFERENCES gps.teams(id),
+    CONSTRAINT fk__shift_shift_schedule FOREIGN KEY (shift_schedule_id) REFERENCES gps.shift_schedules(id)
+  );
+
   -- Создание таблицы positions
   CREATE TABLE IF NOT EXISTS gps.positions (
     id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
-    position_code VARCHAR(10) NOT NULL UNIQUE,
+    position_code INTEGER NOT NULL UNIQUE,
 
     workshop_id UUID NOT NULL,
     profession_id UUID NOT NULL,
@@ -82,20 +123,20 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     schedule_id UUID NOT NULL,
     role_id UUID NOT NULL,
 
-    CONSTRAINT fk__workshop FOREIGN KEY (workshop_id) REFERENCES gps.workshops(id),
-    CONSTRAINT fk__profession FOREIGN KEY (profession_id) REFERENCES gps.professions(id),
-    CONSTRAINT fk__grade FOREIGN KEY (grade_id) REFERENCES gps.grades(id),
-    CONSTRAINT fk__schedule FOREIGN KEY (schedule_id) REFERENCES gps.schedules(id),
-    CONSTRAINT fk__role FOREIGN KEY (role_id) REFERENCES gps.roles(id)
+    CONSTRAINT fk__position_workshop FOREIGN KEY (workshop_id) REFERENCES gps.workshops(id),
+    CONSTRAINT fk__position_profession FOREIGN KEY (profession_id) REFERENCES gps.professions(id),
+    CONSTRAINT fk__position_grade FOREIGN KEY (grade_id) REFERENCES gps.grades(id),
+    CONSTRAINT fk__position_schedule FOREIGN KEY (schedule_id) REFERENCES gps.schedules(id),
+    CONSTRAINT fk__position_role FOREIGN KEY (role_id) REFERENCES gps.roles(id)
   );
 
   -- Создание таблицы employees
   CREATE TABLE IF NOT EXISTS gps.employees (
     id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
     last_name VARCHAR(50) NOT NULL,
-    first_name VARCHAR(30) NOT NULL,
-    patronymic VARCHAR(40) NOT NULL,
-    personal_number VARCHAR(10) NOT NULL UNIQUE,
+    first_name VARCHAR(50) NOT NULL,
+    patronymic VARCHAR(50) NOT NULL,
+    personal_number INTEGER NOT NULL UNIQUE,
     birth_day DATE NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE,
@@ -107,9 +148,9 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
 
     CONSTRAINT unique_person_full_name UNIQUE (last_name, first_name, patronymic),
 
-    CONSTRAINT fk__account FOREIGN KEY (account_id) REFERENCES gps.accounts(id),
-    CONSTRAINT fk__position FOREIGN KEY (position_id) REFERENCES gps.positions(id),
-    CONSTRAINT fk__team FOREIGN KEY (team_id) REFERENCES gps.teams(id)
+    CONSTRAINT fk__employee_account FOREIGN KEY (account_id) REFERENCES gps.accounts(id) ON DELETE CASCADE,
+    CONSTRAINT fk__employee_position FOREIGN KEY (position_id) REFERENCES gps.positions(id),
+    CONSTRAINT fk__employee_team FOREIGN KEY (team_id) REFERENCES gps.teams(id)
   );
 
   -- Создание таблицы employee_roles
@@ -123,18 +164,6 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
 
     CONSTRAINT fk__employee_role_role FOREIGN KEY (role_id) REFERENCES gps.roles(id),
     CONSTRAINT fk__employee_role_employee FOREIGN KEY (employee_id) REFERENCES gps.employees(id) ON DELETE CASCADE
-  );
-
-  -- Создание таблицы shifts
-  CREATE TABLE IF NOT EXISTS gps.shifts (
-    id uuid DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
-    workshop_code VARCHAR(20) NOT NULL,
-    date DATE NOT NULL,
-    shift_number INTEGER NOT NULL,
-    team_number INTEGER NOT NULL,
-    
-    CONSTRAINT unique_date_team_workshop UNIQUE (workshop_code, date, team_number),
-    CONSTRAINT unique_date_shift_workshop UNIQUE (workshop_code, date, shift_number)
   );
 
   -- Вставляем номера бригад в таблицу
@@ -251,6 +280,98 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     ('STACKER'), -- Штабелировщик металла
     ('CUTTER'); -- Резчик холодного металла
 
+  -- Вставляем типы посещаемости в таблицу attendance_types
+  INSERT INTO gps.attendance_types (attendance_code, description)
+  VALUES
+    ('А', 'Арест или задержания за правонарушения'),
+    ('Б', 'Временная нетрудоспособность и отпуска по уходу за больными, оформленные листками нетрудоспособности'),
+    ('БЖ', 'Освобождение женщины от работы в связи с беременностью'),
+    ('БЖЧ', 'Сокращение рабочей смены беременным женщинам (в часах)'),
+    ('В', 'Выходные и праздничные дни'),
+    ('ВЗ', 'Время работы водолаза под водой'),
+    ('ВП', 'Целые сменные и внутрисменные простои по причинам, не зависящим от работодателя и работника'),
+    ('ВПА', 'Целые сменные и внутрисменные простои по вине работодателя'),
+    ('ВПП', 'Целосменные и внутресменные простои по причинам, не зависящим от работодателя и работника (более 2/3 тарифа)'),
+    ('ВПР', 'Целые сменные и внутрисменные простои по вине работника'),
+    ('ГИА', 'Работа в газоизолирующих аппаратах'),
+    ('ГС', 'Целодневные невыходы с полным сохранением заработной платы в случаях, предусмотренных законодательством'),
+    ('ГЧ', 'Нецелодневные (часовые) невыходы с сохранением заработной платы в случаях, предусмотренных законодательством'),
+    ('Д', 'Донорский день'),
+    ('ДД', 'Другой день отдыха'),
+    ('ДИ', 'Нерабочий день с сохранением заработной платы'),
+    ('ДНД', 'Дополнительный нерабочий день после дня проведения вакцинации'),
+    ('ДО', 'Время прохождения диспансеризации'),
+    ('ДСР', 'Время работы с доплатой до среднего заработка'),
+    ('ДУ', 'Обучение с использованием дистанционных технологий'),
+    ('ЗБ', 'Массовые неявки - забастовки (разрешенные законом)'),
+    ('К', 'Служебные командировки'),
+    ('КО', 'Компенсация за неиспользованные дни ежегодного отпуска при увольнении работника'),
+    ('КОТ', 'Кратковременный целосменный отпуск с последующей отработкой'),
+    ('КОЧ', 'Кратковременный нецелосменный отпуск с последующей отработкой'),
+    ('КУ', 'Направление на обучение'),
+    ('КУВ', 'Направление на обучение (часовое во время работы)'),
+    ('КУД', 'Направление на обучение (дополнительно к часам работы)'),
+    ('ЛА', 'Ликвидация аварии'),
+    ('М', 'Перерывы для кормления ребенка'),
+    ('МО', 'Медицинский осмотр (обследование) в Диагностическом центре'),
+    ('НБ', 'Целосменные невыходы: отпуска без сохранения заработной платы и неявки по уважительным причинам'),
+    ('НД', 'Нерабочий праздничный день'),
+    ('НН', 'Неявки по невыясненным причинам'),
+    ('НС', 'Неотработанные часы'),
+    ('ОА', 'Отпуск (оплачиваемый частично) по инициативе администрации в связи с простоем в организации'),
+    ('ОД', 'Ежегодный дополнительный отпуск, предусмотренный законодательством и/или коллективным договором'),
+    ('ОЖ', 'Отпуск по уходу за ребенком от 1,5 до 3-х лет'),
+    ('ОИ', 'Дополнительные выходные дни работникам, осуществляющим уход за детьми-инвалидами'),
+    ('ОЛ', 'Отпуск для лечения'),
+    ('ОП', 'Доп.отпуск для профилактики проф.заболеваний'),
+    ('ОРС', 'Целосменное время отстранения от работы работодателем (недопущение к работе)'),
+    ('ОРЧ', 'Часовое время отстранения от работы работодателем (недопущение к работе)'),
+    ('ОС', 'Отпуск социальный'),
+    ('ОСР', 'Время работы с оплатой по среднему заработку'),
+    ('ОТ', 'Ежегодный основной отпуск'),
+    ('ОТД', 'Отработка кратковременного отпуска'),
+    ('ОТР', 'Работа в выходной и/или нерабочий праздничный день с предоставлением другого дня отдыха'),
+    ('ОТЧ', 'Часовое время отработки кратковременного отпуска'),
+    ('ОУ', 'Отпуск уполномоченным по охране труда'),
+    ('ОУТ', 'Доп. доплата за особые условия труда'),
+    ('ОЧ', 'Частично оплачиваемый отпуск, предоставляемый по уходу за ребенком до достижения им возраста 1,5 лет'),
+    ('П', 'Время в пути при выполнении работ вахтовым методом'),
+    ('ПВ', 'Время вынужденного прогула'),
+    ('ПМ', 'Периодический медицинский осмотр'),
+    ('ПР', 'Прогулы; неявки на работу без уважительной причины, отсутствие на работе без уважительной причины более четырех часов'),
+    ('ПТД', 'Приостановление действия трудового договора'),
+    ('ПУ', 'Опоздание и/или преждевременный уход'),
+    ('Р', 'Отпуск по беременности и родам'),
+    ('РВ', 'Работа в выходной и/или нерабочий праздничный день вне графика'),
+    ('РДЧ', 'Длительность перерыва при разделении рабочего дня на части'),
+    ('РН', 'Работа в нерабочие дни'),
+    ('С', 'Сверхурочные часы работы'),
+    ('СД', 'Сокращенный рабочий день для женщин, не берущих частично оплачиваемый отпуск, предоставляемый по уходу за ребенком до достижения им возраста 1,5 лет'),
+    ('СДН', 'Сокращенная рабочая неделя для женщин, не берущих частично оплачиваемый отпуск, предоставляемый по уходу за ребенком до достижения им возраста 1,5 лет'),
+    ('СИ', 'Самоизоляция'),
+    ('СН', 'Сокращенная неделя по личному заявлению'),
+    ('СЧ', 'Сокращенный день по личному заявлению'),
+    ('У', 'Отпуск в связи с обучением с полным сохранением заработной платы'),
+    ('УД', 'Отпуск в связи с обучением без сохранения заработной платы'),
+    ('УЧ', 'Отпуска в связи с обучением с частичным сохранением заработной платы (50%)'),
+    ('ХС', 'Время работы сдельщиков за целые повременные смены (без премии)'),
+    ('ХЧ', 'Время работы сдельщиков за нецелые повременные смены'),
+    ('ЧИ', 'Дополнительные часы отдыха для работника-инвалида'),
+    ('Я', 'Часы работы');
+
+  -- Вставляем типы смен в таблицу shift_types
+  INSERT INTO gps.shift_types (name, category)
+  VALUES
+    ('Смена 1', 'ночная'),
+    ('Смена 1', 'дневная'),
+    ('Смена 2', 'дневная'),
+    ('Понедельник', 'дневная'),
+    ('Вторник', 'дневная'),
+    ('Среда', 'дневная'),
+    ('Четверг', 'дневная'),
+    ('Пятница', 'дневная'),
+    ('Выходной день', 'дневная');
+
   -- Вставляем позиции в таблицу
   INSERT INTO gps.positions (position_code, workshop_id, profession_id, grade_id, schedule_id, role_id)
   VALUES
@@ -278,5 +399,21 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     ('643844', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Укладчик-упаковщик'), (SELECT id FROM gps.grades WHERE grade_code = '3'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'), (SELECT id FROM gps.roles WHERE name = 'PACKER')),
     ('643849', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Укладчик-упаковщик ЛУМ'), (SELECT id FROM gps.grades WHERE grade_code = '3'), (SELECT id FROM gps.schedules WHERE schedule_code = '2'), (SELECT id FROM gps.roles WHERE name = 'UNIT_PACKER')),
     ('643845', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Штабелировщик металла'), (SELECT id FROM gps.grades WHERE grade_code = '3'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'), (SELECT id FROM gps.roles WHERE name = 'STACKER')),
-    ('643857', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Резчик холодного металла'), (SELECT id FROM gps.grades WHERE grade_code = '3'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'), (SELECT id FROM gps.roles WHERE name = 'CUTTER'))
+    ('643857', (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'), (SELECT id FROM gps.professions WHERE name = 'Резчик холодного металла'), (SELECT id FROM gps.grades WHERE grade_code = '3'), (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'), (SELECT id FROM gps.roles WHERE name = 'CUTTER'));
+
+  -- Вставляем данные в таблицу shift_schedules (расписания смен)
+  INSERT INTO gps.shift_schedules (start_time, end_time, workshop_id, schedule_id, shift_type_id)
+  VALUES
+    ('19:30', '07:30',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.shift_types WHERE name = 'Смена 1' AND category = 'ночная')),
+    ('07:30', '19:30',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.shift_types WHERE name = 'Смена 2' AND category = 'дневная')),
+    ('08:00', '17:00',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.shift_types WHERE name = 'Понедельник' AND category = 'дневная'))
 EOSQL

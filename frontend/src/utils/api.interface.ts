@@ -33,9 +33,9 @@ export interface IEmployeeInfo {
   firstName: string;
   patronymic: string;
   workshop: string;
-  team: string;
   profession: string;
   personalNumber: string;
+  teamNumber: string;
   positionCode: string;
   grade: string;
   schedule: string;
@@ -64,9 +64,9 @@ export interface IUpdateEmployee {
   personalNumber: string;
   teamNumber: string;
   positionCode: string;
-  birthDay: Date;
-  startDate: Date;
-  endDate: Date | null;
+  birthDay: string;
+  startDate: string;
+  endDate: string | null;
   role: string | null;
 }
 

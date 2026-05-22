@@ -9,7 +9,7 @@ import {
   validationRules,
 } from '../../../utils/validation';
 
-import { formatDateForInput } from '../../../utils/utils';
+import { formatDateForUI, formatDateForISO } from '../../../utils/utils';
 
 import { useDispatch, useSelector } from '../../../services/store';
 
@@ -65,11 +65,11 @@ export const EmployeeEditForm = () => {
     firstName: employee.firstName,
     patronymic: employee.patronymic,
     personalNumber: employee.personalNumber,
-    teamNumber: employee.team,
+    teamNumber: employee.teamNumber,
     positionCode: employee.positionCode,
-    birthDay: formatDateForInput(employee.birthDay),
-    startDate: formatDateForInput(employee.startDate),
-    endDate: formatDateForInput(employee.endDate),
+    birthDay: formatDateForUI(employee.birthDay),
+    startDate: formatDateForUI(employee.startDate),
+    endDate: formatDateForUI(employee.endDate || ''),
     role: employee.role || '',
   });
 
@@ -155,11 +155,12 @@ export const EmployeeEditForm = () => {
       positionCode: formData.positionCode,
 
       // Преобразование строк в Date
-      birthDay: new Date(formData.birthDay),
-      startDate: new Date(formData.startDate),
+      birthDay: formatDateForISO(formData.birthDay),
+      startDate: formatDateForISO(formData.startDate),
 
       // endDate: если пустая строка — null, иначе Date
-      endDate: formData.endDate === '' ? null : new Date(formData.endDate),
+      endDate:
+        formData.endDate === '' ? null : formatDateForISO(formData.endDate),
 
       role: formData.role === '' ? null : formData.role,
     };
@@ -168,6 +169,8 @@ export const EmployeeEditForm = () => {
       id: employee.id,
       data: dataForBackend,
     };
+
+    console.log(payload)
 
     try {
       await dispatch(updateEmployee(payload)).unwrap();
@@ -286,7 +289,7 @@ export const EmployeeEditForm = () => {
         name='birthDay'
         label='Дата рождения'
         value={formData.birthDay}
-        placeholder='гггг-мм-дд'
+        placeholder='дд.мм.гггг'
         error={errors.birthDay}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -297,7 +300,7 @@ export const EmployeeEditForm = () => {
         name='startDate'
         label='Дата назначения'
         value={formData.startDate}
-        placeholder='гггг-мм-дд'
+        placeholder='дд.мм.гггг'
         error={errors.startDate}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -308,7 +311,7 @@ export const EmployeeEditForm = () => {
         name='endDate'
         label='Дата увольнения'
         value={formData.endDate}
-        placeholder='гггг-мм-дд'
+        placeholder='дд.мм.гггг'
         error={errors.endDate}
         onChange={handleChange}
         onBlur={handleBlur}

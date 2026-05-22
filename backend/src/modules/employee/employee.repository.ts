@@ -48,7 +48,7 @@ export class EmployeeRepository {
     });
   }
 
-  async findByPersonalNumber(personalNumber: string): Promise<Employee | null> {
+  async findByPersonalNumber(personalNumber: number): Promise<Employee | null> {
     return this.employeeRepository.findOne({
       where: { personalNumber },
       relations: [
@@ -106,7 +106,7 @@ export class EmployeeRepository {
     });
   }
 
-  async existsByPersonalNumber(personalNumber: string): Promise<boolean> {
+  async existsByPersonalNumber(personalNumber: number): Promise<boolean> {
     return this.employeeRepository.exists({
       where: { personalNumber },
     });
@@ -130,7 +130,7 @@ export class EmployeeRepository {
 
   async existsByPersonalNumberExcluding(
     employeeId: string,
-    personalNumber: string,
+    personalNumber: number,
   ): Promise<boolean> {
     return this.employeeRepository.exists({
       where: {

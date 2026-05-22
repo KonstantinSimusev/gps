@@ -1,6 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { formatDateForISO } from '../../../utils/utils';
+
 import {
   validateField,
   validateForm,
@@ -26,6 +28,7 @@ import { Spinner } from '../../ui/spinner/spinner';
 import { TextInput } from '../../ui/inputs/text-input/text-input';
 
 import styles from './employee-create-form.module.css';
+import { ICreateEmployee } from '../../../utils/api.interface';
 
 interface IFormData extends Record<string, string> {
   lastName: string;
@@ -129,19 +132,20 @@ export const EmployeeCreateForm = () => {
       return;
     }
 
-    const data = {
+    // Преобразование данных перед отправкой
+    const dataForBackend: ICreateEmployee = {
       lastName: formData.lastName,
       firstName: formData.firstName,
       patronymic: formData.patronymic,
       personalNumber: formData.personalNumber,
       teamNumber: formData.teamNumber,
       positionCode: formData.position,
-      birthDay: formData.birthDay,
-      startDate: formData.startDate,
+      birthDay: formatDateForISO(formData.birthDay),
+      startDate: formatDateForISO(formData.startDate),
     };
 
     try {
-      await dispatch(createEmployee(data)).unwrap();
+      await dispatch(createEmployee(dataForBackend)).unwrap();
 
       navigate('/admin');
 
@@ -260,7 +264,7 @@ export const EmployeeCreateForm = () => {
       <TextInput
         type='text'
         name='birthDay'
-        placeholder='гггг-мм-дд'
+        placeholder='дд.мм.гггг'
         value={formData.birthDay}
         label='Дата рождения'
         error={errors.birthDay}
@@ -271,7 +275,7 @@ export const EmployeeCreateForm = () => {
       <TextInput
         type='text'
         name='startDate'
-        placeholder='гггг-мм-дд'
+        placeholder='дд.мм.гггг'
         value={formData.startDate}
         label='Дата назначения'
         error={errors.startDate}

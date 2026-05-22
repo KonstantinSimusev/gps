@@ -58,7 +58,7 @@ export const ProfileCard = ({
 
       <div className={styles.table}>
         <TableBlock title='Цех' text={employee.workshop} />
-        <TableBlock title='Бригада' text={employee.team} />
+        <TableBlock title='Бригада' text={employee.teamNumber} />
         <TableBlock title='Личный номер' text={employee.personalNumber} />
         <TableBlock title='Штатная позиция' text={employee.positionCode} />
         <TableBlock title='Разряд' text={employee.grade} />

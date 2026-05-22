@@ -1,56 +1,41 @@
 import { Transform, Type } from 'class-transformer';
+import { IsDate, IsInt, Max, MaxLength, Min, MinLength } from 'class-validator';
 
-import {
-  IsDate,
-  IsNotEmpty,
-  IsString,
-  Matches,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { toNumber, toString } from '../../../shared/utils/utils';
 
 export class CreateEmployeeDto {
-  @Transform(({ value }) => value.trim()) // удаляем пробелы по краям
-  @IsNotEmpty({ message: 'Фамилия не может быть пустой' })
+  @Transform(({ value }) => toString(value))
   @MinLength(2, { message: 'Фамилия должна быть от 2 символов' })
   @MaxLength(50, { message: 'Фамилия не может превышать 50 символов' })
   lastName: string;
 
-  @Transform(({ value }) => value.trim())
-  @IsNotEmpty({ message: 'Имя не может быть пустым' })
+  @Transform(({ value }) => toString(value))
   @MinLength(2, { message: 'Имя должно быть от 2 символов' })
-  @MaxLength(30, { message: 'Имя не может превышать 30 символов' })
+  @MaxLength(50, { message: 'Имя не может превышать 50 символов' })
   firstName: string;
 
-  @Transform(({ value }) => value.trim())
-  @IsNotEmpty({ message: 'Отчество не может быть пустым' })
+  @Transform(({ value }) => toString(value))
   @MinLength(2, { message: 'Отчество должно быть от 2 символов' })
-  @MaxLength(40, { message: 'Отчество не может превышать 40 символов' })
+  @MaxLength(50, { message: 'Отчество не может превышать 50 символов' })
   patronymic: string;
 
-  @Transform(({ value }) => value.trim())
-  @IsNotEmpty({ message: 'Личный номер не может быть пустым' })
-  @IsString({ message: 'Личный номер должен быть строкой' })
-  @Matches(/^\d+$/, { message: 'Личный номер должен содержать только цифры' })
-  @MinLength(1, { message: 'Личный номер должен быть от 1 символа' })
-  @MaxLength(10, { message: 'Личный номер не может превышать 10 символов' })
-  personalNumber: string;
+  @Transform(({ value }) => toNumber(value))
+  @IsInt({ message: 'Личный номер должен быть целым числом' })
+  @Min(1, { message: 'Личный номер должен быть не менее 1' })
+  @Max(999999999, { message: 'Личный номер должен быть не более 999999999' })
+  personalNumber: number;
 
-  @Transform(({ value }) => value.trim())
-  @IsNotEmpty({ message: 'Номер бригады не может быть пустым' })
-  @IsString({ message: 'Номер бригады должен быть строкой' })
-  @Matches(/^[1-5]$/, { message: 'Номер бригады должен быть от 1 до 5' })
-  teamNumber: string;
+  @Transform(({ value }) => toNumber(value))
+  @IsInt({ message: 'Номер бригады должен быть целым числом' })
+  @Min(1, { message: 'Номер бригады должен быть не менее 1' })
+  @Max(5, { message: 'Номер бригады должен быть не более 5' })
+  teamNumber: number;
 
-  @Transform(({ value }) => value.trim())
-  @IsNotEmpty({ message: 'Штатная позиция не может быть пустой' })
-  @IsString({ message: 'Штатная позиция должна быть строкой' })
-  @Matches(/^\d+$/, {
-    message: 'Штатная позиция должна содержать только цифры',
-  })
-  @MinLength(1, { message: 'Штатная позиция должна быть от 1 символа' })
-  @MaxLength(10, { message: 'Штатная позиция не может превышать 10 символов' })
-  positionCode: string;
+  @Transform(({ value }) => toNumber(value))
+  @IsInt({ message: 'Штатная позиция должна быть целым числом' })
+  @Min(1, { message: 'Штатная позиция должна быть не менее 1' })
+  @Max(999999999, { message: 'Штатная позиция должна быть не более 999999999' })
+  positionCode: number;
 
   @Type(() => Date)
   @IsDate({ message: 'Дата рождения должна быть валидной датой' })

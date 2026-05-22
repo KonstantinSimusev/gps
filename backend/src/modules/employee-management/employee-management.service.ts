@@ -281,7 +281,7 @@ export class EmployeeManagementService {
     };
   }
 
-  async getEmployeeInfo(personalNumber: string): Promise<IEmployeeInfo> {
+  async getEmployeeInfo(personalNumber: number): Promise<IEmployeeInfo> {
     const employee =
       await this.employeeRepository.findByPersonalNumber(personalNumber);
 
@@ -295,7 +295,7 @@ export class EmployeeManagementService {
       firstName: employee.firstName,
       patronymic: employee.patronymic,
       workshop: employee.position.workshop.workshopCode,
-      team: employee.team.teamNumber,
+      teamNumber: employee.team.teamNumber,
       profession: employee.position.profession.name,
       personalNumber: employee.personalNumber,
       positionCode: employee.position.positionCode,

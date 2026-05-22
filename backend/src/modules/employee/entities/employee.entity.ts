@@ -6,10 +6,12 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   Unique,
+  OneToMany,
 } from 'typeorm';
 
 import { Account } from '../../account/entities/account.entity';
 import { EmployeeRole } from '../../employee-role/entities/employee-role.entity';
+// import { EmployeeShift } from '../../employee-shift/entities/employee-shift.entity';
 import { Position } from '../../position/entities/position.entity';
 import { Team } from '../../team/entities/team.entity';
 
@@ -33,7 +35,7 @@ export class Employee {
   @Column({
     name: 'first_name',
     type: 'varchar',
-    length: 30,
+    length: 50,
     nullable: false,
   })
   firstName: string;
@@ -41,19 +43,18 @@ export class Employee {
   @Column({
     name: 'patronymic',
     type: 'varchar',
-    length: 40,
+    length: 50,
     nullable: false,
   })
   patronymic: string;
 
   @Column({
     name: 'personal_number',
-    type: 'varchar',
-    length: 10,
+    type: 'integer',
     nullable: false,
     unique: true,
   })
-  personalNumber: string;
+  personalNumber: number;
 
   @Column({
     name: 'birth_day',
@@ -84,9 +85,17 @@ export class Employee {
   isActive: boolean;
 
   // Связь: один сотрудник — один аккаунт
-  @OneToOne(() => Account, (account) => account.employee)
+  @OneToOne(() => Account, (account) => account.employee, {
+    cascade: ['remove'],
+  })
   @JoinColumn({ name: 'account_id' })
   account: Account;
+
+  // Связь: один сотрудник — одна роль сотрудника
+  @OneToOne(() => EmployeeRole, (employeeRole) => employeeRole.employee, {
+    cascade: ['remove'],
+  })
+  employeeRole: EmployeeRole;
 
   // Связь: много сотрудников — одна позиция
   @ManyToOne(() => Position, (position) => position.employees)
@@ -98,9 +107,7 @@ export class Employee {
   @JoinColumn({ name: 'team_id' })
   team: Team;
 
-  // Связь: один сотрудник — одна роль сотрудника
-  @OneToOne(() => EmployeeRole, (employeeRole) => employeeRole.employee, {
-    cascade: ['remove'],
-  })
-  employeeRole: EmployeeRole;
+  // // Связь: один сотрудник — много смен сотрудника
+  // @OneToMany(() => EmployeeShift, (employeeShift) => employeeShift.employee)
+  // employeeShifts: EmployeeShift[];
 }
