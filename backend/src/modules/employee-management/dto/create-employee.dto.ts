@@ -1,5 +1,14 @@
 import { Transform, Type } from 'class-transformer';
-import { IsDate, IsInt, Max, MaxLength, Min, MinLength } from 'class-validator';
+
+import {
+  IsDate,
+  IsInt,
+  IsOptional,
+  Max,
+  MaxLength,
+  Min,
+  MinLength,
+} from 'class-validator';
 
 import { toNumber, toString } from '../../../shared/utils/utils';
 

@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -22,8 +22,18 @@ export class EmployeeRoleRepository {
     return this.employeeRoleRepository.save(employeeRole);
   }
 
+  // 2. CRUD: Read (общие методы поиска)
+  async findOneById(id: string): Promise<EmployeeRole | null> {
+    return this.employeeRoleRepository.findOneBy({ id });
+  }
+
   // 3. CRUD: Update
   async save(employeeRole: EmployeeRole): Promise<EmployeeRole> {
     return this.employeeRoleRepository.save(employeeRole);
+  }
+
+  // 4. CRUD: Delete
+  async remove(id: string): Promise<DeleteResult> {
+    return this.employeeRoleRepository.delete(id);
   }
 }

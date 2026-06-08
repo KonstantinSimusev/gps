@@ -328,7 +328,7 @@ export const TimesheetEditForm = () => {
         name='role'
         label='Роль'
         value={formData.role}
-        placeholder='Не назначена'
+        // placeholder='Не назначена'
         options={ROLE_OPTIONS}
         error={errors.role}
         onChange={handleChange}

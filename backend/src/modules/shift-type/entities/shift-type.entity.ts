@@ -2,7 +2,10 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { ShiftSchedule } from '../../shift-schedule/entities/shift-schedule.entity';
 
-@Entity({ name: 'shift_types' })
+@Entity({
+  schema: 'gps',
+  name: 'shift_types',
+})
 export class ShiftType {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -23,7 +26,7 @@ export class ShiftType {
   })
   category: string;
 
-  // Связь: один тип смены — много расписаний
+  // Связь: один тип смены — много расписаний смен
   @OneToMany(() => ShiftSchedule, (shiftSchedule) => shiftSchedule.shiftType)
   shiftSchedules: ShiftSchedule[];
 }

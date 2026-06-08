@@ -49,6 +49,11 @@ export interface IEmployeeInfo {
   birthDay: Date;
   startDate: Date;
   endDate: Date | null;
-  role: string | null;
+  hasAccess: boolean;
   isActive: boolean;
+  
+  currentTeamNumber: number | null;
+  currentPositionCode: number | null;
+
+  role: string | null;
 }

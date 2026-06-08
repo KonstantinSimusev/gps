@@ -5,7 +5,6 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 
@@ -26,7 +25,7 @@ export class EmployeeAccountService {
     employeeId: string,
     profile: IProfile,
   ): Promise<IAccountInfo> {
-    // Проверяем права на данную операцию
+    // Проверяем права на обновление логина и пароля
     if (profile.role !== ERole.ADMIN) {
       throw new ForbiddenException('Недостаточно прав');
     }
@@ -39,9 +38,9 @@ export class EmployeeAccountService {
       throw new NotFoundException('Работник не найден');
     }
 
-    // Сравниваем цеха работника и профиля
+    // Проверяем совместимость цехов сотрудника и администратора
     if (employee.position.workshop.workshopCode !== profile.workshopCode) {
-      throw new ConflictException('Разные цеха');
+      throw new ConflictException('Сотрудник из другого цеха');
     }
 
     // Генерируем новый логин

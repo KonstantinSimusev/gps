@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 
 import { IUpdateEmployee } from '../../../utils/api.interface';
-import { ROLE_OPTIONS } from '../../../utils/types';
 
 import {
   validateField,
@@ -9,6 +8,7 @@ import {
   validationRules,
 } from '../../../utils/validation';
 
+import { ROLE, ROLE_OPTIONS } from '../../../utils/types';
 import { formatDateForUI, formatDateForISO } from '../../../utils/utils';
 
 import { useDispatch, useSelector } from '../../../services/store';
@@ -26,10 +26,13 @@ import { LayerContext } from '../../../contexts/layer/layerContext';
 
 import { Button } from '../../ui/buttons/button/button';
 import { Form } from '../../ui/form/form';
-import { TextInput } from '../../ui/inputs/text-input/text-input';
 import { ServerError } from '../../ui/errors/server-error/server-error';
-import { SelectInput } from '../../ui/inputs/select-input/select-input';
 import { Spinner } from '../../ui/spinner/spinner';
+import { Switch } from '../../ui/switch/switch';
+
+import { CheckboxInput } from '../../ui/inputs/checkbox-input/checkbox-input';
+import { SelectInput } from '../../ui/inputs/select-input/select-input';
+import { TextInput } from '../../ui/inputs/text-input/text-input';
 
 import styles from './employee-edit-form.module.css';
 
@@ -40,9 +43,14 @@ interface IFormData extends Record<string, string> {
   personalNumber: string;
   teamNumber: string;
   positionCode: string;
+
+  currentTeamNumber: string;
+  currentPositionCode: string;
+
   birthDay: string;
   startDate: string;
   endDate: string;
+
   role: string;
 }
 
@@ -59,6 +67,9 @@ export const EmployeeEditForm = () => {
     return;
   }
 
+  const [isShow, setIsShow] = useState(false);
+  const [hasAccess, setHasAccess] = useState(employee.hasAccess);
+
   // Состояние для хранения значений полей формы
   const [formData, setFormData] = useState<IFormData>({
     lastName: employee.lastName,
@@ -67,10 +78,15 @@ export const EmployeeEditForm = () => {
     personalNumber: employee.personalNumber,
     teamNumber: employee.teamNumber,
     positionCode: employee.positionCode,
+
+    currentTeamNumber: employee.currentTeamNumber || '',
+    currentPositionCode: employee.currentPositionCode || '',
+
     birthDay: formatDateForUI(employee.birthDay),
     startDate: formatDateForUI(employee.startDate),
     endDate: formatDateForUI(employee.endDate || ''),
-    role: employee.role || '',
+
+    role: employee.role === ROLE.ADMIN ? employee.role : '',
   });
 
   // Состояние для хранения ошибок валидации
@@ -81,10 +97,15 @@ export const EmployeeEditForm = () => {
     personalNumber: '',
     teamNumber: '',
     positionCode: '',
+    currentTeamNumber: '',
+    currentPositionCode: '',
+
     birthDay: '',
     startDate: '',
     endDate: '',
+
     role: '',
+    hasAccess: '',
   });
 
   useEffect(() => {
@@ -131,6 +152,18 @@ export const EmployeeEditForm = () => {
     });
   };
 
+  const handleAccessChange = (checked: boolean) => {
+    setHasAccess(checked);
+    // Сбрасываем ошибку для этого поля
+    setErrors((prev) => ({
+      ...prev,
+      hasAccess: '',
+    }));
+
+    // Очищаем ошибки с сервера
+    dispatch(clearUpdateEmployeeError());
+  };
+
   const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -154,6 +187,16 @@ export const EmployeeEditForm = () => {
       teamNumber: formData.teamNumber,
       positionCode: formData.positionCode,
 
+      // Поля текущей бригады
+      currentTeamNumber:
+        formData.currentTeamNumber === '' ? null : formData.currentTeamNumber,
+
+      // Поля текущей позиции
+      currentPositionCode:
+        formData.currentPositionCode === ''
+          ? null
+          : formData.currentPositionCode,
+
       // Преобразование строк в Date
       birthDay: formatDateForISO(formData.birthDay),
       startDate: formatDateForISO(formData.startDate),
@@ -162,15 +205,15 @@ export const EmployeeEditForm = () => {
       endDate:
         formData.endDate === '' ? null : formatDateForISO(formData.endDate),
 
+      // Роль и допуск
       role: formData.role === '' ? null : formData.role,
+      hasAccess: hasAccess,
     };
 
     const payload = {
       id: employee.id,
       data: dataForBackend,
     };
-
-    console.log(payload)
 
     try {
       await dispatch(updateEmployee(payload)).unwrap();
@@ -188,6 +231,11 @@ export const EmployeeEditForm = () => {
         birthDay: '',
         startDate: '',
         endDate: '',
+        hasAccess: '',
+
+        currentTeamNumber: '',
+        currentPositionCode: '',
+
         role: '',
       });
 
@@ -201,6 +249,11 @@ export const EmployeeEditForm = () => {
         birthDay: '',
         startDate: '',
         endDate: '',
+        hasAccess: '',
+
+        currentTeamNumber: '',
+        currentPositionCode: '',
+
         role: '',
       });
     } catch (error) {
@@ -225,10 +278,10 @@ export const EmployeeEditForm = () => {
     <Form title='Профиль' onSubmit={handleSubmit} className={styles.container}>
       <TextInput
         type='text'
-        name='lastName'
-        label='Фамилия'
-        value={formData.lastName}
-        error={errors.lastName}
+        name='currentTeamNumber'
+        label='Текущая бригада'
+        value={formData.currentTeamNumber}
+        error={errors.currentTeamNumber}
         onChange={handleChange}
         onBlur={handleBlur}
         className={styles.input}
@@ -236,83 +289,10 @@ export const EmployeeEditForm = () => {
 
       <TextInput
         type='text'
-        name='firstName'
-        label='Имя'
-        value={formData.firstName}
-        error={errors.firstName}
-        onChange={handleChange}
-        onBlur={handleBlur}
-      />
-
-      <TextInput
-        type='text'
-        name='patronymic'
-        label='Отчество'
-        value={formData.patronymic}
-        error={errors.patronymic}
-        onChange={handleChange}
-        onBlur={handleBlur}
-      />
-
-      <TextInput
-        type='text'
-        name='personalNumber'
-        label='Личный номер'
-        value={formData.personalNumber}
-        error={errors.personalNumber}
-        onChange={handleChange}
-        onBlur={handleBlur}
-      />
-
-      <TextInput
-        type='text'
-        name='teamNumber'
-        label='Бригада'
-        value={formData.teamNumber}
-        error={errors.teamNumber}
-        onChange={handleChange}
-        onBlur={handleBlur}
-      />
-
-      <TextInput
-        type='text'
-        name='positionCode'
-        label='Штатная позиция'
-        value={formData.positionCode}
-        error={errors.positionCode}
-        onChange={handleChange}
-        onBlur={handleBlur}
-      />
-
-      <TextInput
-        type='text'
-        name='birthDay'
-        label='Дата рождения'
-        value={formData.birthDay}
-        placeholder='дд.мм.гггг'
-        error={errors.birthDay}
-        onChange={handleChange}
-        onBlur={handleBlur}
-      />
-
-      <TextInput
-        type='text'
-        name='startDate'
-        label='Дата назначения'
-        value={formData.startDate}
-        placeholder='дд.мм.гггг'
-        error={errors.startDate}
-        onChange={handleChange}
-        onBlur={handleBlur}
-      />
-
-      <TextInput
-        type='text'
-        name='endDate'
-        label='Дата увольнения'
-        value={formData.endDate}
-        placeholder='дд.мм.гггг'
-        error={errors.endDate}
+        name='currentPositionCode'
+        label='Текущая штатная позиция'
+        value={formData.currentPositionCode}
+        error={errors.currentPositionCode}
         onChange={handleChange}
         onBlur={handleBlur}
       />
@@ -321,12 +301,124 @@ export const EmployeeEditForm = () => {
         name='role'
         label='Роль'
         value={formData.role}
-        placeholder='Не назначена'
         options={ROLE_OPTIONS}
         error={errors.role}
         onChange={handleChange}
         onBlur={handleBlur}
       />
+
+      <Switch
+        label='Доступ в личный кабинет'
+        checked={hasAccess}
+        onChange={handleAccessChange}
+        className={styles.switch}
+      />
+
+      <CheckboxInput
+        text='Внести изменения в КЛС'
+        checked={isShow}
+        onChange={(e) => setIsShow(e.target.checked)}
+        className={styles.input}
+      />
+
+      {isShow && (
+        <>
+          <TextInput
+            type='text'
+            name='lastName'
+            label='Фамилия'
+            value={formData.lastName}
+            error={errors.lastName}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={styles.input}
+          />
+
+          <TextInput
+            type='text'
+            name='firstName'
+            label='Имя'
+            value={formData.firstName}
+            error={errors.firstName}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+
+          <TextInput
+            type='text'
+            name='patronymic'
+            label='Отчество'
+            value={formData.patronymic}
+            error={errors.patronymic}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+
+          <TextInput
+            type='text'
+            name='personalNumber'
+            label='Личный номер'
+            value={formData.personalNumber}
+            error={errors.personalNumber}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+
+          <TextInput
+            type='text'
+            name='teamNumber'
+            label='Бригада'
+            value={formData.teamNumber}
+            error={errors.teamNumber}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+
+          <TextInput
+            type='text'
+            name='positionCode'
+            label='Штатная позиция'
+            value={formData.positionCode}
+            error={errors.positionCode}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={styles.border}
+          />
+
+          <TextInput
+            type='text'
+            name='birthDay'
+            label='Дата рождения'
+            value={formData.birthDay}
+            placeholder='дд.мм.гггг'
+            error={errors.birthDay}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+
+          <TextInput
+            type='text'
+            name='startDate'
+            label='Дата назначения'
+            value={formData.startDate}
+            placeholder='дд.мм.гггг'
+            error={errors.startDate}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+
+          <TextInput
+            type='text'
+            name='endDate'
+            label='Дата увольнения'
+            value={formData.endDate}
+            placeholder='дд.мм.гггг'
+            error={errors.endDate}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+        </>
+      )}
 
       <div className={styles.message}>
         {isLoading ? <Spinner /> : <ServerError text={serverError} />}

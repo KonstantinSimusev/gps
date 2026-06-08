@@ -196,22 +196,7 @@ export const validationRules: IValidationRules = {
       },
     ],
   },
-  teamNumber: {
-    required: true,
-    validators: [
-      {
-        type: 'required',
-        pattern: /^.+$/,
-        message: 'Это поле обязательно',
-      },
-      {
-        type: 'length',
-        pattern: /^(1|2|3|4|5)$/,
-        message: 'Введите чило от 1 до 5',
-      },
-    ],
-  },
-  position: {
+  replacedPersonalNumber: {
     required: true,
     validators: [
       {
@@ -227,6 +212,66 @@ export const validationRules: IValidationRules = {
       {
         type: 'length',
         pattern: /^.{3,10}$/,
+        message: 'Введите 3-10 символов',
+      },
+    ],
+  },
+  teamNumber: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
+      },
+      {
+        type: 'length',
+        pattern: /^(1|2|3|4|5)$/,
+        message: 'Введите чило от 1 до 5',
+      },
+    ],
+  },
+  currentTeamNumber: {
+    required: false,
+    validators: [
+      {
+        type: 'length',
+        pattern: /^$|^(1|2|3|4|5)$/,
+        message: 'Введите чило от 1 до 5',
+      },
+    ],
+  },
+  positionCode: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
+      },
+      {
+        type: 'number',
+        pattern: /^\d+$/,
+        message: 'Введите только цифры',
+      },
+      {
+        type: 'length',
+        pattern: /^.{3,10}$/,
+        message: 'Введите 3-10 символов',
+      },
+    ],
+  },
+  currentPositionCode: {
+    required: false,
+    validators: [
+      {
+        type: 'number',
+        pattern: /^$|^\d+$/,
+        message: 'Введите только цифры',
+      },
+      {
+        type: 'length',
+        pattern: /^$|^.{3,10}$/,
         message: 'Введите 3-10 символов',
       },
     ],
@@ -274,12 +319,56 @@ export const validationRules: IValidationRules = {
       },
     ],
   },
+  positionStartDate: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Выберите дату',
+      },
+      {
+        type: 'dateFormat',
+        pattern:
+          /^((0[1-9]|[12][0-9]|3[01])\.(0[13578]|1[02])\.|(0[1-9]|[12][0-9]|30)\.(0[469]|11)\.|(0[1-9]|1[0-9]|2[0-9])\.02\.)(19|20)\d{2}$/,
+        message: 'Введите дату в формате ДД.ММ.ГГГГ',
+      },
+    ],
+  },
+  positionEndDate: {
+    required: false,
+    validators: [
+      {
+        type: 'dateFormat',
+        pattern:
+          /^$|((0[1-9]|[12][0-9]|3[01])\.(0[13578]|1[02])\.|(0[1-9]|[12][0-9]|30)\.(0[469]|11)\.|(0[1-9]|1[0-9]|2[0-9])\.02\.)(19|20)\d{2}$/,
+        message: 'Введите дату в формате ДД.ММ.ГГГГ',
+      },
+    ],
+  },
+  transferReason: {
+    required: false,
+    validators: [
+      {
+        type: 'in',
+        options: [
+          '',
+          'Свободная позиция',
+          'На время отсутствия',
+          'На время отвлечения',
+          'Для ознакомления',
+          'Производство',
+        ],
+        message: 'Выберите причину из списка',
+      },
+    ],
+  },
   role: {
     required: false,
     validators: [
       {
         type: 'in',
-        options: ['ADMIN', 'HEAD', 'MASTER', 'PACKER', ''],
+        options: ['', 'ADMIN'],
         message: 'Выберите роль из списка',
       },
     ],

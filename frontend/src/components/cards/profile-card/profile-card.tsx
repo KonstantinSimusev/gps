@@ -1,5 +1,5 @@
 import { IEmployeeInfo, IProfile } from '../../../utils/api.interface';
-import { formatDateForUI, getRoleLabel } from '../../../utils/utils';
+import { formatDateForUI, getRoleName } from '../../../utils/utils';
 
 import { CardContainer } from '../../../components/ui/card-container/card-container';
 import { IconButton } from '../../ui/buttons/icon-button/icon-button';
@@ -66,31 +66,41 @@ export const ProfileCard = ({
       </div>
 
       <div className={styles.table}>
-        {employee.birthDay && (
-          <TableBlock
-            title='Дата рождения'
-            text={formatDateForUI(employee.birthDay)}
-          />
-        )}
+        <TableBlock
+          title='Текущая бригада'
+          text={employee.currentTeamNumber ?? '-'}
+        />
 
-        {employee.startDate && (
-          <TableBlock
-            title='Дата назначения'
-            text={formatDateForUI(employee.startDate)}
-          />
-        )}
-
-        {employee.endDate && (
-          <TableBlock
-            title='Дата увольнения'
-            text={formatDateForUI(employee.endDate)}
-          />
-        )}
+        <TableBlock
+          title='Текущая штатная позиция'
+          text={employee.currentPositionCode ?? '-'}
+        />
       </div>
 
-      {employee.role && (
-        <TableBlock title='Роль' text={getRoleLabel(employee.role)} />
-      )}
+      <div className={styles.table}>
+        <TableBlock
+          title='Дата рождения'
+          text={formatDateForUI(employee.birthDay)}
+        />
+
+        <TableBlock
+          title='Дата назначения'
+          text={formatDateForUI(employee.startDate)}
+        />
+
+        <TableBlock
+          title='Дата увольнения'
+          text={formatDateForUI(employee.endDate)}
+        />
+      </div>
+
+      <div className={styles.table}>
+        <TableBlock title='Роль' text={getRoleName(employee.role)} />
+        <TableBlock
+          title='Доступ в кабинет'
+          text={employee.hasAccess ? 'Разрешён' : 'Запрещён'}
+        />
+      </div>
     </CardContainer>
   );
 };

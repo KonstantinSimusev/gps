@@ -5,13 +5,12 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   OneToOne,
-  Unique,
   OneToMany,
 } from 'typeorm';
 
 import { Account } from '../../account/entities/account.entity';
 import { EmployeeRole } from '../../employee-role/entities/employee-role.entity';
-// import { EmployeeShift } from '../../employee-shift/entities/employee-shift.entity';
+import { EmployeeShift } from '../../employee-shift/entities/employee-shift.entity';
 import { Position } from '../../position/entities/position.entity';
 import { Team } from '../../team/entities/team.entity';
 
@@ -19,7 +18,6 @@ import { Team } from '../../team/entities/team.entity';
   schema: 'gps',
   name: 'employees',
 })
-@Unique(['lastName', 'firstName', 'patronymic'])
 export class Employee {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -78,6 +76,13 @@ export class Employee {
   endDate: Date | null;
 
   @Column({
+    name: 'has_access',
+    default: true,
+    nullable: false,
+  })
+  hasAccess: boolean;
+
+  @Column({
     name: 'is_active',
     default: true,
     nullable: false,
@@ -91,23 +96,33 @@ export class Employee {
   @JoinColumn({ name: 'account_id' })
   account: Account;
 
+  // Связь: много сотрудников — одна бригада
+  @ManyToOne(() => Team, (team) => team.employees)
+  @JoinColumn({ name: 'team_id' })
+  team: Team;
+
+  // Связь: много сотрудников — одна штатная позиция
+  @ManyToOne(() => Position, (position) => position.employees)
+  @JoinColumn({ name: 'position_id' })
+  position: Position;
+
+  // Связь: много сотрудников — одна текущая бригада
+  @ManyToOne(() => Team, { nullable: true })
+  @JoinColumn({ name: 'current_team_id' })
+  currentTeam: Team | null;
+
+  // Связь: много сотрудников — одна текущая штатная позиция
+  @ManyToOne(() => Position, { nullable: true })
+  @JoinColumn({ name: 'current_position_id' })
+  currentPosition: Position | null;
+
   // Связь: один сотрудник — одна роль сотрудника
   @OneToOne(() => EmployeeRole, (employeeRole) => employeeRole.employee, {
     cascade: ['remove'],
   })
   employeeRole: EmployeeRole;
 
-  // Связь: много сотрудников — одна позиция
-  @ManyToOne(() => Position, (position) => position.employees)
-  @JoinColumn({ name: 'position_id' })
-  position: Position;
-
-  // Связь: много сотрудников — одна бригада
-  @ManyToOne(() => Team, (team) => team.employees)
-  @JoinColumn({ name: 'team_id' })
-  team: Team;
-
-  // // Связь: один сотрудник — много смен сотрудника
-  // @OneToMany(() => EmployeeShift, (employeeShift) => employeeShift.employee)
-  // employeeShifts: EmployeeShift[];
+  // Связь: один сотрудник — много смен сотрудника
+  @OneToMany(() => EmployeeShift, (employeeShift) => employeeShift.employee)
+  employeeShifts: EmployeeShift[];
 }

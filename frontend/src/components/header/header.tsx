@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { ADMIN_ROLE } from '../../utils/types';
+import { ROLE } from '../../utils/types';
 
 import { useSelector } from '../../services/store';
 
@@ -58,7 +58,7 @@ export const Header = () => {
           <h1 className={styles.title}>Global Pack Studio</h1>
 
           <div className={styles.buttons}>
-            {profile && profile.role === ADMIN_ROLE && (
+            {profile && profile.role === ROLE.ADMIN && (
               <>
                 <IconButton type='button' onClick={searchEmployee}>
                   <SearchIcon width={24} height={24} />

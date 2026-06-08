@@ -1,4 +1,4 @@
-import { DeleteResult, Not, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, In, IsNull, Not, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -21,7 +21,13 @@ export class EmployeeRepository {
   async findEmployeeById(id: string): Promise<Employee | null> {
     return this.employeeRepository.findOne({
       where: { id },
-      relations: ['team', 'position', 'employeeRole', 'employeeRole.role'],
+      relations: [
+        'team',
+        'position',
+        'position.workshop',
+        'employeeRole',
+        'employeeRole.role',
+      ],
     });
   }
 
@@ -58,6 +64,10 @@ export class EmployeeRepository {
         'position.profession',
         'position.grade',
         'position.schedule',
+        'position.role',
+        'currentTeam',
+        'currentPosition',
+        'currentPosition.role',
         'employeeRole',
         'employeeRole.role',
       ],
@@ -137,6 +147,139 @@ export class EmployeeRepository {
         id: Not(employeeId),
         personalNumber,
       },
+    });
+  }
+
+  async existsCurrentMasterCreate(
+    teamId: string,
+    workshopId: string,
+  ): Promise<boolean> {
+    return this.employeeRepository.exists({
+      where: [
+        // Сценарий 1: currentTeam заполнен, currentPosition заполнен
+        {
+          hasAccess: true,
+          isActive: true,
+          currentTeam: { id: teamId },
+          currentPosition: {
+            workshop: { id: workshopId },
+            role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
+          },
+        },
+        // Сценарий 2: currentTeam NULL, currentPosition заполнен
+        {
+          hasAccess: true,
+          isActive: true,
+          currentTeam: IsNull(),
+          team: { id: teamId },
+          currentPosition: {
+            workshop: { id: workshopId },
+            role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
+          },
+        },
+        // Сценарий 3: currentTeam заполнен, currentPosition NULL
+        {
+          hasAccess: true,
+          isActive: true,
+          currentTeam: { id: teamId },
+          currentPosition: IsNull(),
+          position: {
+            workshop: { id: workshopId },
+            role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
+          },
+        },
+        // Сценарий 4: currentTeam NULL, currentPosition NULL
+        {
+          hasAccess: true,
+          isActive: true,
+          currentTeam: IsNull(),
+          team: { id: teamId },
+          currentPosition: IsNull(),
+          position: {
+            workshop: { id: workshopId },
+            role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
+          },
+        },
+      ],
+      relations: [
+        'currentTeam',
+        'team',
+        'currentPosition',
+        'currentPosition.workshop',
+        'currentPosition.role',
+        'position',
+        'position.workshop',
+        'position.role',
+      ],
+    });
+  }
+
+  async existsCurrentMasterUpdate(
+    employeeId: string,
+    teamId: string,
+    workshopId: string,
+  ): Promise<boolean> {
+    return this.employeeRepository.exists({
+      where: [
+        // Сценарий 1: currentTeam заполнен, currentPosition заполнен
+        {
+          id: Not(employeeId),
+          hasAccess: true,
+          isActive: true,
+          currentTeam: { id: teamId },
+          currentPosition: {
+            workshop: { id: workshopId },
+            role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
+          },
+        },
+        // Сценарий 2: currentTeam NULL, currentPosition заполнен
+        {
+          id: Not(employeeId),
+          hasAccess: true,
+          isActive: true,
+          currentTeam: IsNull(),
+          team: { id: teamId },
+          currentPosition: {
+            workshop: { id: workshopId },
+            role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
+          },
+        },
+        // Сценарий 3: currentTeam заполнен, currentPosition NULL
+        {
+          id: Not(employeeId),
+          hasAccess: true,
+          isActive: true,
+          currentTeam: { id: teamId },
+          currentPosition: IsNull(),
+          position: {
+            workshop: { id: workshopId },
+            role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
+          },
+        },
+        // Сценарий 4: currentTeam NULL, currentPosition NULL
+        {
+          id: Not(employeeId),
+          hasAccess: true,
+          isActive: true,
+          currentTeam: IsNull(),
+          team: { id: teamId },
+          currentPosition: IsNull(),
+          position: {
+            workshop: { id: workshopId },
+            role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
+          },
+        },
+      ],
+      relations: [
+        'currentTeam',
+        'team',
+        'currentPosition',
+        'currentPosition.workshop',
+        'currentPosition.role',
+        'position',
+        'position.workshop',
+        'position.role',
+      ],
     });
   }
 }

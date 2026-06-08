@@ -8,11 +8,12 @@ import {
 } from 'typeorm';
 
 import { Employee } from '../../employee/entities/employee.entity';
-import { Workshop } from '../../workshop/entities/workshop.entity';
-import { Profession } from '../../profession/entities/profession.entity';
+// import { EmployeeTransfer } from '../../employee-transfer/entities/employee-transfer.entity';
 import { Grade } from '../../grade/entities/grade.entity';
-import { Role } from '../../role/entities/role.entity';
+import { Profession } from '../../profession/entities/profession.entity';
 import { Schedule } from '../../schedule/entities/schedule.entity';
+import { Workshop } from '../../workshop/entities/workshop.entity';
+import { Role } from '../../role/entities/role.entity';
 
 @Entity({
   schema: 'gps',
@@ -29,10 +30,6 @@ export class Position {
     unique: true,
   })
   positionCode: number;
-
-  // Связь: одна позиция — много сотрудников
-  @OneToMany(() => Employee, (employee) => employee.position)
-  employees: Employee[];
 
   // Связь: много позиций — один цех
   @ManyToOne(() => Workshop, (workshop) => workshop.positions)
@@ -58,4 +55,15 @@ export class Position {
   @ManyToOne(() => Role, (role) => role.positions)
   @JoinColumn({ name: 'role_id' })
   role: Role;
+
+  // Связь: одна позиция — много сотрудников
+  @OneToMany(() => Employee, (employee) => employee.position)
+  employees: Employee[];
+
+  // // Связь: одна позиция — много переводов сотрудников
+  // @OneToMany(
+  //   () => EmployeeTransfer,
+  //   (employeeTransfer) => employeeTransfer.currentPosition,
+  // )
+  // employeeTransfers: EmployeeTransfer[];
 }

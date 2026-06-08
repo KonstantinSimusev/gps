@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-// import { EmployeeShift } from '../../employee-shift/entities/employee-shift.entity';
+import { EmployeeShift } from '../../employee-shift/entities/employee-shift.entity';
 
 @Entity({
   schema: 'gps',
@@ -17,7 +17,7 @@ export class AttendanceType {
     nullable: false,
     unique: true,
   })
-  attendanceСode: string;
+  attendanceCode: string;
 
   @Column({
     name: 'description',
@@ -27,10 +27,10 @@ export class AttendanceType {
   })
   description: string;
 
-  // // Связь: одна посещаемость — много смен сотрудника
-  // @OneToMany(
-  //   () => EmployeeShift,
-  //   (employeeShift) => employeeShift.attendanceType,
-  // )
-  // employeeShifts: EmployeeShift[];
+  // Связь: один тип посещаемости — много смен сотрудника
+  @OneToMany(
+    () => EmployeeShift,
+    (employeeShift) => employeeShift.attendanceType,
+  )
+  employeeShifts: EmployeeShift[];
 }

@@ -1,6 +1,10 @@
 export enum ERole {
   USER = 'USER',
   ADMIN = 'ADMIN',
+  HEAD = 'HEAD',
+  LEAD_MASTER = 'LEAD_MASTER',
+  MASTER = 'MASTER',
+  DETAIL_MASTER = 'DETAIL_MASTER',
   PACKER = 'PACKER',
 }
 

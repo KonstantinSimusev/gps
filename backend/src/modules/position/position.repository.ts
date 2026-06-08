@@ -15,7 +15,7 @@ export class PositionRepository {
   async findByPositionCode(positionCode: number): Promise<Position | null> {
     return this.positionRepository.findOne({
       where: { positionCode },
-      relations: ['workshop', 'role'],
+      relations: ['workshop', 'schedule', 'role'],
     });
   }
 }

@@ -47,28 +47,36 @@ export const TimesheetCard = ({ employee, onClick }: IProps) => {
 
       <div className={styles.timesheet}>
         <div className={styles.status}>
-          <InfoBlock
-            title='Статус работы'
-            text={employee.shift.status}
-          />
+          <InfoBlock title='Статус работы' text={employee.shift.status} />
           <IconButton type='button' onClick={onClick} className={styles.button}>
             <EditIcon width={22} height={22} />
           </IconButton>
         </div>
 
-        <InfoBlock
-          title='Профессия в смене'
-          text={employee.shift.profession}
-        />
-        <InfoBlock
-          title='Рабочее место'
-          text={employee.shift.area}
-        />
-        <InfoBlock
-          title='Отработано часов'
-          text={employee.shift.hours}
-        />
+        <InfoBlock title='Профессия в смене' text={employee.shift.profession} />
+        <InfoBlock title='Рабочее место' text={employee.shift.area} />
+        <InfoBlock title='Отработано часов' text={employee.shift.hours} />
       </div>
+
+      {/* <TableBlock
+          title='Причина перевода'
+          text={employee.transferReason ?? '-'}
+        />
+
+        <TableBlock
+          title='Личный номер заменяемого'
+          text={employee.replacedPersonalNumber ?? '-'}
+        />
+
+        <TableBlock
+          title='Дата назначения позиции'
+          text={employee.positionStartDate ?? '-'}
+        />
+
+        <TableBlock
+          title='Дата завершения позиции'
+          text={employee.positionEndDate ?? '-'}
+        /> */}
     </CardContainer>
   );
 };

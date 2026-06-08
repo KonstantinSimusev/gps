@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { ROLE_TO_PAGE } from '../../../utils/utils';
+import { ROLE_TO_PAGE } from '../../../utils/types';
 
 import {
   validateField,

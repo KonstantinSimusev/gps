@@ -89,9 +89,16 @@ export class AuthService {
 
     return {
       employeeId: account.employee.id,
-      workshopCode: account.employee.position.workshop.workshopCode,
-      teamNumber: account.employee.team.teamNumber,
-      role: account.employee.employeeRole.role.name,
+      workshopCode:
+        account.employee.currentPosition?.workshop?.workshopCode ??
+        account.employee.position.workshop.workshopCode,
+      teamNumber:
+        account.employee.currentTeam?.teamNumber ??
+        account.employee.team.teamNumber,
+      role:
+        account.employee.employeeRole?.role?.name ??
+        account.employee.currentPosition?.role?.name ??
+        account.employee.position.role.name,
     };
   }
 
@@ -207,9 +214,16 @@ export class AuthService {
 
     return {
       employeeId: account.employee.id,
-      workshopCode: account.employee.position.workshop.workshopCode,
-      teamNumber: account.employee.team.teamNumber,
-      role: account.employee.employeeRole.role.name,
+      workshopCode:
+        account.employee.currentPosition?.workshop?.workshopCode ??
+        account.employee.position.workshop.workshopCode,
+      teamNumber:
+        account.employee.currentTeam?.teamNumber ??
+        account.employee.team.teamNumber,
+      role:
+        account.employee.employeeRole?.role?.name ??
+        account.employee.currentPosition?.role?.name ??
+        account.employee.position.role.name,
     };
   }
 
@@ -264,9 +278,16 @@ export class AuthService {
 
       return {
         employeeId: account.employee.id,
-        workshopCode: account.employee.position.workshop.workshopCode,
-        teamNumber: account.employee.team.teamNumber,
-        role: account.employee.employeeRole.role.name,
+        workshopCode:
+          account.employee.currentPosition?.workshop?.workshopCode ??
+          account.employee.position.workshop.workshopCode,
+        teamNumber:
+          account.employee.currentTeam?.teamNumber ??
+          account.employee.team.teamNumber,
+        role:
+          account.employee.employeeRole?.role?.name ??
+          account.employee.currentPosition?.role?.name ??
+          account.employee.position.role.name,
       };
     } catch (error) {
       if (error instanceof UnauthorizedException) {

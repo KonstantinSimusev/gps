@@ -1,11 +1,4 @@
-import { ROLE_OPTIONS } from './types';
-
-export const ROLE_TO_PAGE: { [key: string]: string } = {
-  ADMIN: '/admin',
-  HEAD: '/home',
-  MASTER: '/timesheet',
-  PACKER: '/scan',
-};
+import { PROFILE_ROLE_OPTIONS } from './types';
 
 export const delay = (ms: number = 500): Promise<void> =>
   new Promise((resolve) => {
@@ -15,7 +8,11 @@ export const delay = (ms: number = 500): Promise<void> =>
     }, ms);
   });
 
-export const formatDateForUI = (date: string): string => {
+export const formatDateForUI = (date: string | null): string => {
+  if (date === null) {
+    return '-';
+  }
+
   // Преобразуем вход в Date — работает и для строки, и для объекта Date
   const parsedDate = new Date(date);
 
@@ -38,7 +35,7 @@ export const formatDateForISO = (date: string): string => {
   return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 };
 
-export const getRoleLabel = (roleValue: string): string => {
-  const option = ROLE_OPTIONS.find((opt) => opt.value === roleValue);
+export const getRoleName = (roleValue: string): string => {
+  const option = PROFILE_ROLE_OPTIONS.find((opt) => opt.value === roleValue);
   return option?.label || 'Не создана';
 };

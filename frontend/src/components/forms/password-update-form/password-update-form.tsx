@@ -44,7 +44,6 @@ export const PasswordUpdateForm = () => {
 
     // Очищаем состояние оверлеев и модальных окон
     if (result.payload) {
-      setIsOverlayOpen(false);
       setIsPasswordUpdateOpen(false);
       setIsAccountInfoOpen(true);
     }

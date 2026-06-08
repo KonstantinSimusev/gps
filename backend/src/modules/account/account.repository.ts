@@ -23,14 +23,20 @@ export class AccountRepository {
       where: {
         login,
         employee: {
+          hasAccess: true,
           isActive: true,
         },
       },
       relations: [
         'employee',
         'employee.team',
+        'employee.currentTeam',
         'employee.position',
         'employee.position.workshop',
+        'employee.position.role',
+        'employee.currentPosition',
+        'employee.currentPosition.workshop',
+        'employee.currentPosition.role',
         'employee.employeeRole',
         'employee.employeeRole.role',
       ],
@@ -43,11 +49,30 @@ export class AccountRepository {
             id: true,
             teamNumber: true,
           },
+          currentTeam: {
+            id: true,
+            teamNumber: true,
+          },
           position: {
             id: true,
             workshop: {
               id: true,
               workshopCode: true,
+            },
+            role: {
+              id: true,
+              name: true,
+            },
+          },
+          currentPosition: {
+            id: true,
+            workshop: {
+              id: true,
+              workshopCode: true,
+            },
+            role: {
+              id: true,
+              name: true,
             },
           },
           employeeRole: {
@@ -67,14 +92,20 @@ export class AccountRepository {
       where: {
         id,
         employee: {
+          hasAccess: true,
           isActive: true,
         },
       },
       relations: [
         'employee',
         'employee.team',
+        'employee.currentTeam',
         'employee.position',
         'employee.position.workshop',
+        'employee.position.role',
+        'employee.currentPosition',
+        'employee.currentPosition.workshop',
+        'employee.currentPosition.role',
         'employee.employeeRole',
         'employee.employeeRole.role',
       ],
@@ -86,11 +117,30 @@ export class AccountRepository {
             id: true,
             teamNumber: true,
           },
+          currentTeam: {
+            id: true,
+            teamNumber: true,
+          },
           position: {
             id: true,
             workshop: {
               id: true,
               workshopCode: true,
+            },
+            role: {
+              id: true,
+              name: true,
+            },
+          },
+          currentPosition: {
+            id: true,
+            workshop: {
+              id: true,
+              workshopCode: true,
+            },
+            role: {
+              id: true,
+              name: true,
             },
           },
           employeeRole: {
@@ -111,6 +161,7 @@ export class AccountRepository {
       where: {
         hashedRefreshToken: Not(IsNull()),
         employee: {
+          hasAccess: true,
           isActive: true,
         },
       },

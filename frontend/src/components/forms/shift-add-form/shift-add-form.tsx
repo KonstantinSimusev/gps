@@ -26,7 +26,6 @@ import styles from './shift-add-form.module.css';
 
 interface IFormData extends Record<string, string> {
   shiftDate: string;
-  shiftNumber: string;
 }
 
 export const ShiftAddForm = () => {
@@ -43,13 +42,11 @@ export const ShiftAddForm = () => {
   // Состояние для хранения значений полей формы
   const [formData, setFormData] = useState<IFormData>({
     shiftDate: '',
-    shiftNumber: '',
   });
 
   // Состояние для хранения ошибок валидации
   const [errors, setErrors] = useState<{ [key: string]: string }>({
     shiftDate: '',
-    shiftNumber: '',
   });
 
   useEffect(() => {
@@ -112,8 +109,8 @@ export const ShiftAddForm = () => {
       setIsShiftAddOpen(false);
       setIsOverlayOpen(false);
 
-      setFormData({ shiftDate: '', shiftNumber: '' });
-      setErrors({ shiftDate: '', shiftNumber: '' });
+      setFormData({ shiftDate: '' });
+      setErrors({ shiftDate: '' });
     } catch (error) {
       throw new Error();
     }
@@ -121,10 +118,7 @@ export const ShiftAddForm = () => {
 
   // Определяем, заблокирована ли кнопка
   const isButtonDisabled =
-    isLoading ||
-    Object.values(errors).some(Boolean) ||
-    !formData.shiftDate ||
-    !formData.shiftNumber;
+    isLoading || Object.values(errors).some(Boolean) || !formData.shiftDate;
 
   return (
     <Form
@@ -142,16 +136,6 @@ export const ShiftAddForm = () => {
         onChange={handleChange}
         onBlur={handleBlur}
         className={styles.input}
-      />
-
-      <TextInput
-        type='text'
-        name='shiftNumber'
-        label='№ смены'
-        value={formData.shiftNumber}
-        error={errors.shiftNumber}
-        onChange={handleChange}
-        onBlur={handleBlur}
       />
 
       <div className={styles.message}>

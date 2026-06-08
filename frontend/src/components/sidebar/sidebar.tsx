@@ -3,12 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 import clsx from 'clsx';
 
-import {
-  ADMIN_ROLE,
-  HEAD_ROLE,
-  MASTER_ROLE,
-  PACKER_ROLE,
-} from '../../utils/types';
+import { ROLE } from '../../utils/types';
 
 import { useSelector } from '../../services/store';
 import { selectProfile } from '../../services/slices/auth/slice';
@@ -24,47 +19,53 @@ const menuItems = [
   {
     path: '/home',
     label: 'Главная',
-    roles: [ADMIN_ROLE, HEAD_ROLE, MASTER_ROLE],
+    roles: [
+      ROLE.ADMIN,
+      ROLE.HEAD,
+      ROLE.LEAD_MASTER,
+      ROLE.MASTER,
+      ROLE.DETAIL_MASTER,
+    ],
   },
   {
     path: '/admin',
     label: 'Пользователи',
-    roles: [ADMIN_ROLE],
+    roles: [ROLE.ADMIN],
   },
   {
     path: '/timesheet',
     label: 'Табель',
-    roles: [MASTER_ROLE],
+    roles: [ROLE.LEAD_MASTER, ROLE.MASTER, ROLE.DETAIL_MASTER],
   },
   {
     path: '/production',
     label: 'Производство',
-    roles: [MASTER_ROLE],
+    roles: [ROLE.MASTER],
   },
   {
     path: '/shipment',
     label: 'Отгрузка',
-    roles: [MASTER_ROLE],
+    roles: [ROLE.MASTER],
   },
   {
     path: '/pack',
     label: 'Упаковка',
-    roles: [MASTER_ROLE],
+    roles: [ROLE.MASTER],
   },
   {
     path: '/fix',
     label: 'Раскрепление',
-    roles: [MASTER_ROLE],
+    roles: [ROLE.MASTER],
   },
   {
     path: '/residue',
     label: 'Остаток',
-    roles: [MASTER_ROLE],
+    roles: [ROLE.MASTER],
   },
   {
     path: '/scan',
     label: 'Сканирование',
-    roles: [PACKER_ROLE],
+    roles: [ROLE.PACKER],
   },
 ];
 

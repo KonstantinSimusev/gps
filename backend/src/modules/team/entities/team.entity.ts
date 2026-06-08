@@ -2,6 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 import { Employee } from '../../employee/entities/employee.entity';
 import { Shift } from '../../shift/entities/shift.entity';
+// import { EmployeeTransfer } from 'src/modules/employee-transfer/entities/employee-transfer.entity';
 
 @Entity({
   schema: 'gps',
@@ -26,4 +27,11 @@ export class Team {
   // Связь: одна бригада — много смен
   @OneToMany(() => Shift, (shift) => shift.team)
   shifts: Shift[];
+
+  // // Связь: одна бригада — много переводов сотрудников
+  // @OneToMany(
+  //   () => EmployeeTransfer,
+  //   (employeeTransfer) => employeeTransfer.currentTeam,
+  // )
+  // employeeTransfers: EmployeeTransfer[];
 }
