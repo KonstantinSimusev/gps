@@ -21,6 +21,13 @@ export class ShiftSchedule {
   id: string;
 
   @Column({
+    name: 'day_of_week',
+    type: 'integer',
+    nullable: false,
+  })
+  dayOfWeek: number;
+
+  @Column({
     name: 'start_time',
     type: 'time',
     nullable: false,
@@ -33,6 +40,20 @@ export class ShiftSchedule {
     nullable: false,
   })
   endTime: string;
+
+  @Column({
+    name: 'lunch_start',
+    type: 'time',
+    nullable: true,
+  })
+  lunchStart: string | null;
+
+  @Column({
+    name: 'lunch_end',
+    type: 'time',
+    nullable: true,
+  })
+  lunchEnd: string | null;
 
   // Связь: много расписаний смен - один цех
   @ManyToOne(() => Workshop, (workshop) => workshop.shiftSchedules)

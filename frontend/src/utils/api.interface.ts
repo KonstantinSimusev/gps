@@ -22,8 +22,13 @@ export interface IAccountInfo {
 
 export interface IProfile {
   employeeId: string;
+  lastName: string;
+  firstName: string;
+  patronymic: string;
+  profession: string;
   workshopCode: string;
-  teamNumber: string;
+  teamNumber: number;
+  scheduleCode: string;
   role: string;
 }
 
@@ -95,10 +100,14 @@ export interface IMaster {
   teamNumber: string;
 }
 
+export interface ICreateShift {
+  date: string; // формат 'YYYY-MM-DD'
+}
+
 export interface IShift {
   id: string;
   date: string; // формат 'YYYY-MM-DD'
-  shiftNumber: string;
+  shiftNumber: number;
 }
 
 export interface IEmployee {

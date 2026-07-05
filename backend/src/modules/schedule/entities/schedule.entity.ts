@@ -20,13 +20,6 @@ export class Schedule {
   })
   scheduleCode: string;
 
-  @Column({
-    name: 'duration',
-    type: 'time', // Для хранения времени без даты
-    nullable: false,
-  })
-  duration: string;
-
   // Связь: один график — много штатных позиций
   @OneToMany(() => Position, (position) => position.schedule)
   positions: Position[];

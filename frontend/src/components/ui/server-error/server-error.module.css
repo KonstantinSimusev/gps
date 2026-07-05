@@ -2,7 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 16px;
-  opacity: 0.6;
-  flex-grow: 1;
+  height: 26px;
+  color: var(--color-error);
+  font-size: 14px;
 }

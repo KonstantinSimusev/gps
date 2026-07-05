@@ -14,7 +14,7 @@ import { LayerContext } from '../../../contexts/layer/layerContext';
 
 import { Button } from '../../ui/buttons/button/button';
 import { Form } from '../../ui/form/form';
-import { ServerError } from '../../ui/errors/server-error/server-error';
+import { ServerError } from '../../ui/server-error/server-error';
 import { Spinner } from '../../ui/spinner/spinner';
 
 import styles from './password-update-form.module.css';

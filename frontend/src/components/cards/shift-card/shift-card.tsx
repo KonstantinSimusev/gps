@@ -1,5 +1,5 @@
 import { IShift } from '../../../utils/api.interface';
-import { formatDateForUI } from '../../../utils/utils';
+import { formatDateFormUI } from '../../../utils/utils';
 
 import { CardContainer } from '../../../components/ui/card-container/card-container';
 
@@ -16,7 +16,7 @@ export const ShiftCard = ({ index, shift, onClick }: IProps) => {
     <CardContainer onClick={onClick} className={styles.container}>
       <span className={styles.index}>{index}</span>
       <div className={styles.info}>
-        <span className={styles.date}>{formatDateForUI(shift.date)}</span>
+        <span className={styles.date}>{formatDateFormUI(shift.date)}</span>
         <span className={styles.shift}>Смена {shift.shiftNumber}</span>
       </div>
     </CardContainer>

@@ -11,20 +11,12 @@ export class ShiftType {
   id: string;
 
   @Column({
-    name: 'name',
-    type: 'varchar',
-    length: 50,
+    name: 'shift_code',
+    type: 'integer',
     nullable: false,
+    unique: true,
   })
-  name: string;
-
-  @Column({
-    name: 'category',
-    type: 'varchar',
-    length: 20,
-    nullable: false,
-  })
-  category: string;
+  shiftCode: number;
 
   // Связь: один тип смены — много расписаний смен
   @OneToMany(() => ShiftSchedule, (shiftSchedule) => shiftSchedule.shiftType)

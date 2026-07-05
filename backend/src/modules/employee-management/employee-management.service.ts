@@ -149,7 +149,7 @@ export class EmployeeManagementService {
         items: employees,
       };
     } catch (error) {
-      throw new InternalServerErrorException('Не удалось создать работника');
+      throw new InternalServerErrorException('Не удалось создать работников');
     }
   }
 

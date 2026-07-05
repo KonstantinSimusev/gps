@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Response, Request } from 'express';
 
 import {
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -89,12 +90,19 @@ export class AuthService {
 
     return {
       employeeId: account.employee.id,
+      lastName: account.employee.lastName,
+      firstName: account.employee.firstName,
+      patronymic: account.employee.patronymic,
+      profession: account.employee.position.profession.name,
       workshopCode:
         account.employee.currentPosition?.workshop?.workshopCode ??
         account.employee.position.workshop.workshopCode,
       teamNumber:
         account.employee.currentTeam?.teamNumber ??
         account.employee.team.teamNumber,
+      scheduleCode:
+        account.employee.currentPosition?.schedule?.scheduleCode ??
+        account.employee.position.schedule.scheduleCode,
       role:
         account.employee.employeeRole?.role?.name ??
         account.employee.currentPosition?.role?.name ??
@@ -214,12 +222,19 @@ export class AuthService {
 
     return {
       employeeId: account.employee.id,
+      lastName: account.employee.lastName,
+      firstName: account.employee.firstName,
+      patronymic: account.employee.patronymic,
+      profession: account.employee.position.profession.name,
       workshopCode:
         account.employee.currentPosition?.workshop?.workshopCode ??
         account.employee.position.workshop.workshopCode,
       teamNumber:
         account.employee.currentTeam?.teamNumber ??
         account.employee.team.teamNumber,
+      scheduleCode:
+        account.employee.currentPosition?.schedule?.scheduleCode ??
+        account.employee.position.schedule.scheduleCode,
       role:
         account.employee.employeeRole?.role?.name ??
         account.employee.currentPosition?.role?.name ??
@@ -278,12 +293,19 @@ export class AuthService {
 
       return {
         employeeId: account.employee.id,
+        lastName: account.employee.lastName,
+        firstName: account.employee.firstName,
+        patronymic: account.employee.patronymic,
+        profession: account.employee.position.profession.name,
         workshopCode:
           account.employee.currentPosition?.workshop?.workshopCode ??
           account.employee.position.workshop.workshopCode,
         teamNumber:
           account.employee.currentTeam?.teamNumber ??
           account.employee.team.teamNumber,
+        scheduleCode:
+          account.employee.currentPosition?.schedule?.scheduleCode ??
+          account.employee.position.schedule.scheduleCode,
         role:
           account.employee.employeeRole?.role?.name ??
           account.employee.currentPosition?.role?.name ??

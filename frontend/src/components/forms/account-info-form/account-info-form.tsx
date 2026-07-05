@@ -60,7 +60,7 @@ ${accountInfo.password}
   };
 
   return (
-    <Form title={'Работник создан'}>
+    <Form title={'Данные обновлены'}>
       <div className={styles.icon__wrapper}>
         <SuccessIcon />
       </div>

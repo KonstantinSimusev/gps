@@ -18,7 +18,7 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
   const [isEmployeeDeleteOpen, setIsEmployeeDeleteOpen] = useState(false);
   const [isAccountInfoOpen, setIsAccountInfoOpen] = useState(false);
   const [isPasswordUpdateOpen, setIsPasswordUpdateOpen] = useState(false);
-  const [isShiftAddOpen, setIsShiftAddOpen] = useState(false);
+  const [isShiftSearchOpen, setIsShiftSearchOpen] = useState(false);
   const [isEmployeeAddOpen, setIsEmployeeAddOpen] = useState(false);
   const [isTimesheetEditOpen, setIsTimesheetEditOpen] = useState(false);
 
@@ -39,7 +39,7 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
       isEmployeeDeleteOpen,
       isAccountInfoOpen,
       isPasswordUpdateOpen,
-      isShiftAddOpen,
+      isShiftSearchOpen,
       isEmployeeAddOpen,
       isTimesheetEditOpen,
 
@@ -57,7 +57,7 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
       setIsEmployeeDeleteOpen,
       setIsAccountInfoOpen,
       setIsPasswordUpdateOpen,
-      setIsShiftAddOpen,
+      setIsShiftSearchOpen,
       setIsEmployeeAddOpen,
       setIsTimesheetEditOpen,
 
@@ -76,7 +76,7 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
       isEmployeeDeleteOpen,
       isAccountInfoOpen,
       isPasswordUpdateOpen,
-      isShiftAddOpen,
+      isShiftSearchOpen,
       isEmployeeAddOpen,
       isTimesheetEditOpen,
 

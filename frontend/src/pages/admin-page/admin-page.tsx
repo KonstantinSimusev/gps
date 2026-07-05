@@ -19,7 +19,7 @@ export const AdminPage = () => {
     setIsPasswordUpdateOpen,
     setSelectedId,
   } = useContext(LayerContext);
-
+  
   const profile = useSelector(selectProfile);
   const employee = useSelector(selectSearсhEmployee);
 
@@ -29,9 +29,8 @@ export const AdminPage = () => {
       left: 0,
       behavior: 'smooth',
     });
-
   }, []);
-  
+
   const updateProfile = () => {
     if (!employee) {
       return;

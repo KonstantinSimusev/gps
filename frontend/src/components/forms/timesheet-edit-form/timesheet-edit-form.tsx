@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 
 // import { IUpdateEmployee } from '../../../utils/api.interface';
 import { ROLE_OPTIONS } from '../../../utils/types';
-import { formatDateForUI } from '../../../utils/utils';
+import { formatDateFormUI } from '../../../utils/utils';
 
 import {
   validateField,
@@ -29,7 +29,7 @@ import { LayerContext } from '../../../contexts/layer/layerContext';
 import { Button } from '../../ui/buttons/button/button';
 import { Form } from '../../ui/form/form';
 import { TextInput } from '../../ui/inputs/text-input/text-input';
-import { ServerError } from '../../ui/errors/server-error/server-error';
+import { ServerError } from '../../ui/server-error/server-error';
 import { SelectInput } from '../../ui/inputs/select-input/select-input';
 import { Spinner } from '../../ui/spinner/spinner';
 
@@ -73,9 +73,9 @@ export const TimesheetEditForm = () => {
     personalNumber: String(employee.personalNumber),
     teamNumber: String(employee.teamNumber),
     positionCode: String(employee.positionCode),
-    birthDay: formatDateForUI(employee.birthDay),
-    startDate: formatDateForUI(employee.startDate),
-    endDate: formatDateForUI(employee.endDate || ''),
+    birthDay: formatDateFormUI(employee.birthDay),
+    startDate: formatDateFormUI(employee.startDate),
+    endDate: formatDateFormUI(employee.endDate || ''),
     role: employee.role || '',
   });
 

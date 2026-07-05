@@ -9,6 +9,7 @@ import { GlobalAuthModule } from './global/global-auth.module';
 
 import { EmployeeManagementModule } from './modules/employee-management/employee-management.module';
 import { EmployeeAccountModule } from './modules/employee-account/employee-account.module';
+import { ShiftManagementModule } from './modules/shift-management/shift-management.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { EmployeeAccountModule } from './modules/employee-account/employee-accou
     GlobalAuthModule,
     EmployeeManagementModule,
     EmployeeAccountModule,
+    ShiftManagementModule,
     ServeStaticModule.forRoot(
       {
         rootPath: path.join(__dirname, '..', 'dist', 'assets'),

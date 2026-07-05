@@ -58,5 +58,5 @@ export class EmployeeShift {
   // Связь: много смен сотрудника — одно рабочее место
   @ManyToOne(() => WorkPlace, (workPlace) => workPlace.employeeShifts)
   @JoinColumn({ name: 'work_place_id' })
-  workPlace: WorkPlace;
+  workPlace: WorkPlace | null;
 }

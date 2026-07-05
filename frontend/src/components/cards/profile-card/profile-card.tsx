@@ -1,5 +1,5 @@
 import { IEmployeeInfo, IProfile } from '../../../utils/api.interface';
-import { formatDateForUI, getRoleName } from '../../../utils/utils';
+import { formatDateFormUI, getRoleName } from '../../../utils/utils';
 
 import { CardContainer } from '../../../components/ui/card-container/card-container';
 import { IconButton } from '../../ui/buttons/icon-button/icon-button';
@@ -80,17 +80,17 @@ export const ProfileCard = ({
       <div className={styles.table}>
         <TableBlock
           title='Дата рождения'
-          text={formatDateForUI(employee.birthDay)}
+          text={formatDateFormUI(employee.birthDay)}
         />
 
         <TableBlock
           title='Дата назначения'
-          text={formatDateForUI(employee.startDate)}
+          text={formatDateFormUI(employee.startDate)}
         />
 
         <TableBlock
           title='Дата увольнения'
-          text={formatDateForUI(employee.endDate)}
+          text={formatDateFormUI(employee.endDate)}
         />
       </div>
 

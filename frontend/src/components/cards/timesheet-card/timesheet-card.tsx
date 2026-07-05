@@ -1,5 +1,5 @@
 import { IEmployee } from '../../../utils/api.interface';
-import { formatDateForUI } from '../../../utils/utils';
+import { formatDateFormUI } from '../../../utils/utils';
 
 import { CardContainer } from '../../ui/card-container/card-container';
 import { IconButton } from '../../ui/buttons/icon-button/icon-button';
@@ -41,7 +41,7 @@ export const TimesheetCard = ({ employee, onClick }: IProps) => {
         <TableBlock title='График работы' text={employee.schedule} />
         <TableBlock
           title='Дата рождения'
-          text={formatDateForUI(employee.birthDay)}
+          text={formatDateFormUI(employee.birthDay)}
         />
       </div>
 

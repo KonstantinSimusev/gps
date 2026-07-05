@@ -36,7 +36,7 @@
 
 .error {
   padding: 0 6px;
-  color: #bc1818;
+  color: var(--color-error);
   font-size: 12px;
 }
 

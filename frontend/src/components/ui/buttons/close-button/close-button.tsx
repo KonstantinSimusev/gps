@@ -18,7 +18,7 @@ export const CloseButton = () => {
     setIsEmployeeEditOpen,
     setIsEmployeeDeleteOpen,
     setIsPasswordUpdateOpen,
-    setIsShiftAddOpen,
+    setIsShiftSearchOpen,
     setIsEmployeeAddOpen,
     setIsTimesheetEditOpen,
   } = useContext(LayerContext);
@@ -37,7 +37,7 @@ export const CloseButton = () => {
     setIsEmployeeEditOpen(false);
     setIsEmployeeDeleteOpen(false);
     setIsPasswordUpdateOpen(false);
-    setIsShiftAddOpen(false);
+    setIsShiftSearchOpen(false);
     setIsEmployeeAddOpen(false);
     setIsTimesheetEditOpen(false);
   };

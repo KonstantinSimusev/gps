@@ -18,6 +18,29 @@ export class EmployeeRepository {
   }
 
   // 2. CRUD: Read (общие методы поиска)
+  async findAllWithWorkshopAndTeam(
+    teamNumber: number,
+    workshopCode: string,
+    scheduleCode: string,
+  ): Promise<Employee[]> {
+    return this.employeeRepository.find({
+      where: {
+        isActive: true,
+        team: { teamNumber },
+        position: {
+          workshop: { workshopCode },
+          schedule: { scheduleCode },
+        },
+      },
+      relations: [
+        'position',
+        'position.workshop',
+        'position.profession',
+        'position.schedule',
+      ],
+    });
+  }
+
   async findEmployeeById(id: string): Promise<Employee | null> {
     return this.employeeRepository.findOne({
       where: { id },

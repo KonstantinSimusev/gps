@@ -21,8 +21,13 @@ export interface IJwtPayload {
 
 export interface IProfile {
   employeeId: string;
+  lastName: string;
+  firstName: string;
+  patronymic: string;
+  profession: string;
   workshopCode: string;
   teamNumber: number;
+  scheduleCode: string;
   role: string;
 }
 
@@ -51,9 +56,16 @@ export interface IEmployeeInfo {
   endDate: Date | null;
   hasAccess: boolean;
   isActive: boolean;
-  
+
   currentTeamNumber: number | null;
   currentPositionCode: number | null;
 
   role: string | null;
+}
+
+export interface IShift {
+  id: string;
+  date: Date; // формат 'YYYY-MM-DD'
+  dayOfWeek: string | null; // бригада 1-4 - null, бригада 5 - понедельник (например)
+  description: string | null; // бригада 1-4 - Смена 1/2, бригада 5 - null
 }

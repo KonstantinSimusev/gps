@@ -18,7 +18,7 @@ export const Overlay = () => {
     isEmployeeDeleteOpen,
     isAccountInfoOpen,
     isPasswordUpdateOpen,
-    isShiftAddOpen,
+    isShiftSearchOpen,
     isEmployeeAddOpen,
     isTimesheetEditOpen,
 
@@ -31,7 +31,7 @@ export const Overlay = () => {
     setIsEmployeeEditOpen,
     setIsEmployeeDeleteOpen,
     setIsPasswordUpdateOpen,
-    setIsShiftAddOpen,
+    setIsShiftSearchOpen,
     setIsEmployeeAddOpen,
     setIsTimesheetEditOpen,
   } = useContext(LayerContext);
@@ -77,8 +77,8 @@ export const Overlay = () => {
       setIsPasswordUpdateOpen(false);
     }
 
-    if (isShiftAddOpen) {
-      setIsShiftAddOpen(false);
+    if (isShiftSearchOpen) {
+      setIsShiftSearchOpen(false);
     }
 
     if (isEmployeeAddOpen) {
@@ -106,7 +106,7 @@ export const Overlay = () => {
       setIsEmployeeEditOpen(false);
       setIsEmployeeDeleteOpen(false);
       setIsPasswordUpdateOpen(false);
-      setIsShiftAddOpen(false);
+      setIsShiftSearchOpen(false);
       setIsEmployeeAddOpen(false);
       setIsTimesheetEditOpen(false);
     }

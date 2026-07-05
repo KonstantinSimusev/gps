@@ -19,16 +19,16 @@ import { LayerContext } from '../../../contexts/layer/layerContext';
 import { Button } from '../../ui/buttons/button/button';
 import { Form } from '../../ui/form/form';
 import { TextInput } from '../../ui/inputs/text-input/text-input';
-import { ServerError } from '../../ui/errors/server-error/server-error';
+import { ServerError } from '../../ui/server-error/server-error';
 import { Spinner } from '../../ui/spinner/spinner';
 
-import styles from './shift-add-form.module.css';
+import styles from './shift-search-form.module.css';
 
 interface IFormData extends Record<string, string> {
   shiftDate: string;
 }
 
-export const ShiftAddForm = () => {
+export const ShiftSearchForm = () => {
   // const dispatch = useDispatch();
   // const isLoading = useSelector(selectIsSearchEmployeeLoading);
   // const serverError = useSelector(selectSearchEmployeeError);
@@ -36,7 +36,7 @@ export const ShiftAddForm = () => {
   const isLoading = false;
   const serverError = 'Hello, World!';
 
-  const { isShiftAddOpen, setIsOverlayOpen, setIsShiftAddOpen } =
+  const { isShiftSearchOpen, setIsOverlayOpen, setIsShiftSearchOpen } =
     useContext(LayerContext);
 
   // Состояние для хранения значений полей формы
@@ -50,10 +50,10 @@ export const ShiftAddForm = () => {
   });
 
   useEffect(() => {
-    if (isShiftAddOpen) {
+    if (isShiftSearchOpen) {
       // dispatch(clearSearchEmployeeError());
     }
-  }, [isShiftAddOpen]);
+  }, [isShiftSearchOpen]);
 
   // Обработчик изменения поля ввода
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,7 +106,7 @@ export const ShiftAddForm = () => {
     try {
       // await dispatch(searchEmployee(formData.personalNumber)).unwrap();
 
-      setIsShiftAddOpen(false);
+      setIsShiftSearchOpen(false);
       setIsOverlayOpen(false);
 
       setFormData({ shiftDate: '' });
@@ -122,14 +122,14 @@ export const ShiftAddForm = () => {
 
   return (
     <Form
-      title='Новая смена'
+      title='Поиск смены'
       onSubmit={handleSubmit}
       className={styles.container}
     >
       <TextInput
         type='text'
         name='shiftDate'
-        placeholder='гггг-мм-дд'
+        placeholder='дд.мм.гггг'
         value={formData.shiftDate}
         label='Дата'
         error={errors.shiftDate}
@@ -147,7 +147,7 @@ export const ShiftAddForm = () => {
         disabled={isButtonDisabled}
         className={styles.button}
       >
-        Создать
+        Найти
       </Button>
     </Form>
   );

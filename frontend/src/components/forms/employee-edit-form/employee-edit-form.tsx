@@ -9,7 +9,7 @@ import {
 } from '../../../utils/validation';
 
 import { ROLE, ROLE_OPTIONS } from '../../../utils/types';
-import { formatDateForUI, formatDateForISO } from '../../../utils/utils';
+import { formatDateFormUI, formatDateForISO } from '../../../utils/utils';
 
 import { useDispatch, useSelector } from '../../../services/store';
 
@@ -26,7 +26,7 @@ import { LayerContext } from '../../../contexts/layer/layerContext';
 
 import { Button } from '../../ui/buttons/button/button';
 import { Form } from '../../ui/form/form';
-import { ServerError } from '../../ui/errors/server-error/server-error';
+import { ServerError } from '../../ui/server-error/server-error';
 import { Spinner } from '../../ui/spinner/spinner';
 import { Switch } from '../../ui/switch/switch';
 
@@ -64,7 +64,7 @@ export const EmployeeEditForm = () => {
   const serverError = useSelector(selectUpdateEmployeeError);
 
   if (!employee) {
-    return;
+    return null;
   }
 
   const [isShow, setIsShow] = useState(false);
@@ -82,9 +82,9 @@ export const EmployeeEditForm = () => {
     currentTeamNumber: employee.currentTeamNumber || '',
     currentPositionCode: employee.currentPositionCode || '',
 
-    birthDay: formatDateForUI(employee.birthDay),
-    startDate: formatDateForUI(employee.startDate),
-    endDate: formatDateForUI(employee.endDate || ''),
+    birthDay: formatDateFormUI(employee.birthDay),
+    startDate: formatDateFormUI(employee.startDate),
+    endDate: formatDateFormUI(employee.endDate || ''),
 
     role: employee.role === ROLE.ADMIN ? employee.role : '',
   });

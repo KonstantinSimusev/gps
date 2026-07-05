@@ -17,7 +17,7 @@ import { Form } from '../../ui/form/form';
 import { Spinner } from '../../ui/spinner/spinner';
 
 import styles from './employee-delete-form.module.css';
-import { ServerError } from '../../ui/errors/server-error/server-error';
+import { ServerError } from '../../ui/server-error/server-error';
 
 export const EmployeeDeleteForm = () => {
   const {

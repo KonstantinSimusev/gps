@@ -1,9 +1,12 @@
 import { useContext, useEffect } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 import clsx from 'clsx';
 
-import { useDispatch } from '../components/../services/store';
+import { ROLE_TO_PAGE } from '../utils/types';
+
+import { useDispatch, useSelector } from '../components/../services/store';
+import { selectProfile } from '../services/slices/auth/slice';
 
 import { checkAccessToken } from '../components/../services/slices/auth/actions';
 
@@ -39,7 +42,7 @@ import { LoginForm } from '../components/forms/login-form/login-form';
 import { LogoutForm } from '../components/forms/loguot-form/logout-form';
 import { PasswordUpdateForm } from '../components/forms/password-update-form/password-update-form';
 import { EmployeeAddForm } from '../components/forms/employee-add-form/employee-add-form';
-import { ShiftAddForm } from '../components/forms/shift-add-form/shift-add-form';
+// import { ShiftSearchForm } from '../components/forms/shift-search-form/shift-search-form';
 import { TimesheetEditForm } from '../components/forms/timesheet-edit-form/timesheet-edit-form';
 
 import styles from './app.module.css';
@@ -55,14 +58,17 @@ const App = () => {
     isEmployeeDeleteOpen,
     isAccountInfoOpen,
     isPasswordUpdateOpen,
-    isShiftAddOpen,
+    // isShiftSearchOpen,
     isEmployeeAddOpen,
     isTimesheetEditOpen,
     selectedScrollPosition,
     setSelectedScrollPosition,
   } = useContext(LayerContext);
 
+  const location = useLocation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const profile = useSelector(selectProfile);
 
   // Текущая позициция на странице
   const scrollPosition = window.scrollY;
@@ -90,6 +96,24 @@ const App = () => {
   useEffect(() => {
     dispatch(checkAccessToken());
   }, []);
+
+  useEffect(() => {
+    const currentRole = profile?.role;
+    const currentPath = location.pathname;
+
+    if (currentPath === '/') {
+      sessionStorage.removeItem('userRole');
+      return;
+    }
+
+    const prevRole = sessionStorage.getItem('userRole');
+
+    if (currentRole && currentRole !== prevRole) {
+      const targetPath = ROLE_TO_PAGE[currentRole] || '/home';
+      sessionStorage.setItem('userRole', currentRole);
+      navigate(targetPath, { replace: true });
+    }
+  }, [profile?.role, location.pathname]);
 
   return (
     <div
@@ -162,11 +186,11 @@ const App = () => {
         </Modal>
       )}
 
-      {isShiftAddOpen && (
+      {/* {isShiftSearchOpen && (
         <Modal>
-          <ShiftAddForm />
+          <ShiftSearchForm />
         </Modal>
-      )}
+      )} */}
 
       {isEmployeeAddOpen && (
         <Modal>

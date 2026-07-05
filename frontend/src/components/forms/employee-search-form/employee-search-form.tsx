@@ -22,7 +22,7 @@ import { LayerContext } from '../../../contexts/layer/layerContext';
 import { Button } from '../../ui/buttons/button/button';
 import { Form } from '../../ui/form/form';
 import { TextInput } from '../../ui/inputs/text-input/text-input';
-import { ServerError } from '../../ui/errors/server-error/server-error';
+import { ServerError } from '../../ui/server-error/server-error';
 import { Spinner } from '../../ui/spinner/spinner';
 
 import styles from './employee-seach-form.module.css';

@@ -33,9 +33,12 @@ export class AccountRepository {
         'employee.currentTeam',
         'employee.position',
         'employee.position.workshop',
+        'employee.position.profession',
+        'employee.position.schedule',
         'employee.position.role',
         'employee.currentPosition',
         'employee.currentPosition.workshop',
+        'employee.currentPosition.schedule',
         'employee.currentPosition.role',
         'employee.employeeRole',
         'employee.employeeRole.role',
@@ -45,6 +48,9 @@ export class AccountRepository {
         hashedPassword: true,
         employee: {
           id: true,
+          lastName: true,
+          firstName: true,
+          patronymic: true,
           team: {
             id: true,
             teamNumber: true,
@@ -59,6 +65,14 @@ export class AccountRepository {
               id: true,
               workshopCode: true,
             },
+            profession: {
+              id: true,
+              name: true,
+            },
+            schedule: {
+              id: true,
+              scheduleCode: true,
+            },
             role: {
               id: true,
               name: true,
@@ -69,6 +83,14 @@ export class AccountRepository {
             workshop: {
               id: true,
               workshopCode: true,
+            },
+            profession: {
+              id: true,
+              name: true,
+            },
+            schedule: {
+              id: true,
+              scheduleCode: true,
             },
             role: {
               id: true,
@@ -102,17 +124,24 @@ export class AccountRepository {
         'employee.currentTeam',
         'employee.position',
         'employee.position.workshop',
+        'employee.position.profession',
+        'employee.position.schedule',
         'employee.position.role',
         'employee.currentPosition',
         'employee.currentPosition.workshop',
+        'employee.currentPosition.schedule',
         'employee.currentPosition.role',
         'employee.employeeRole',
         'employee.employeeRole.role',
       ],
       select: {
         id: true,
+        hashedPassword: true,
         employee: {
           id: true,
+          lastName: true,
+          firstName: true,
+          patronymic: true,
           team: {
             id: true,
             teamNumber: true,
@@ -127,6 +156,14 @@ export class AccountRepository {
               id: true,
               workshopCode: true,
             },
+            profession: {
+              id: true,
+              name: true,
+            },
+            schedule: {
+              id: true,
+              scheduleCode: true,
+            },
             role: {
               id: true,
               name: true,
@@ -137,6 +174,14 @@ export class AccountRepository {
             workshop: {
               id: true,
               workshopCode: true,
+            },
+            profession: {
+              id: true,
+              name: true,
+            },
+            schedule: {
+              id: true,
+              scheduleCode: true,
             },
             role: {
               id: true,

@@ -379,7 +379,7 @@ export const validationRules: IValidationRules = {
       {
         type: 'required',
         pattern: /^.+$/,
-        message: 'Выберите дату',
+        message: 'Введите дату в формате ДД.ММ.ГГГГ',
       },
       {
         type: 'dateFormat',

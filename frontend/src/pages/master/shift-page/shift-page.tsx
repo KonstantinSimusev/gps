@@ -1,21 +1,22 @@
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 
-import { LayerContext } from '../../../contexts/layer/layerContext';
+import { useDispatch, useSelector } from '../../../services/store';
+import { selectProfile } from '../../../services/slices/auth/slice';
 
-import { MainLayout } from '../../../components/ui/layouts/main/main-layout';
-
-import { IconButton } from '../../../components/ui/buttons/icon-button/icon-button';
 import { InfoBlock } from '../../../components/ui/info-block/info-block';
-import { ShiftList } from '../../../components/lists/shift-list/shift-list';
-
-import { AddIcon } from '../../../components/ui/icons/add/add';
+import { MainLayout } from '../../../components/ui/layouts/main/main-layout';
+// import { ShiftList } from '../../../components/lists/shift-list/shift-list';
 
 import styles from './shift-page.module.css';
-
-import { shiftData, masterData } from '../../../utils/memory';
+import { createShift } from '../../../services/slices/shift/actions';
 
 export const ShiftPage = () => {
-  const { setIsOverlayOpen, setIsShiftAddOpen } = useContext(LayerContext);
+  const dispatch = useDispatch();
+  const profile = useSelector(selectProfile);
+
+  if (profile === null) {
+    return null;
+  }
 
   useEffect(() => {
     window.scrollTo({
@@ -25,38 +26,29 @@ export const ShiftPage = () => {
     });
   }, []);
 
-  const handleAddClick = () => {
-    setIsOverlayOpen(true);
-    setIsShiftAddOpen(true);
-  };
+  useEffect(() => {
+    dispatch(createShift())
+  }, []);
 
   return (
     <MainLayout>
       <div className={styles.master}>
         <InfoBlock
-          title='Руководитель'
-          text={`${masterData.lastName} ${masterData.firstName} ${masterData.patronymic}`}
+          title='Структурное подразделение'
+          text={`УУМ ${profile?.workshopCode}`}
         />
 
-        <InfoBlock title='Должность' text={masterData.profession} />
+        <InfoBlock title='№ бригады' text={`${profile?.teamNumber}`} />
 
         <InfoBlock
-          title='Структурное подразделение'
-          text={`УУМ ${masterData.workshopCode}`}
+          title='Руководитель'
+          text={`${profile?.lastName} ${profile?.firstName} ${profile?.patronymic}`}
         />
 
-        <InfoBlock title='№ бригады' text={masterData.teamNumber} />
+        <InfoBlock title='Должность' text={profile?.profession || ''} />
       </div>
 
-      <IconButton
-        type='button'
-        onClick={handleAddClick}
-        className={styles.button}
-      >
-        <AddIcon className={styles.add__icon} />
-      </IconButton>
-
-      <ShiftList shifts={shiftData.shifts} />
+      {/* <ShiftList shifts={[shift]} /> */}
     </MainLayout>
   );
 };

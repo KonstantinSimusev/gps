@@ -17,11 +17,12 @@
   --color-not-found: rgba(255 255 255 / 0.5);
   --color-button-return: rgba(255 255 255 / 0.6);
   --color-shift: rgba(255 255 255 / 0.9);
+  --color-error: #e54848;
   --bg-color-default: #1c1c1c;
   --bg-color-button: rgba(255 255 255 / 0.9);
   --bg-color-button-default: #373737;
   --bg-color-icon-theme: #252525;
-  --bg-color-slider: #2e8b57;
+  --bg-color-slider: #4caf50;
   --bg-color-overlay: rgba(255 255 255 / 0.1);
   --bg-color-link: rgba(255 255 255 / 0.5);
   --bg-button-return: rgba(255 255 255 / 0.2);

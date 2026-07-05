@@ -8,7 +8,43 @@ export const delay = (ms: number = 500): Promise<void> =>
     }, ms);
   });
 
-export const formatDateForUI = (date: string | null): string => {
+export const formatDateForUI = (date: Date | string | null): string => {
+  if (date === null) {
+    return '-';
+  }
+
+  const parsedDate = date instanceof Date ? date : new Date(date);
+
+  if (
+    Number.isNaN(parsedDate.getTime()) ||
+    parsedDate.toString() === 'Invalid Date'
+  ) {
+    return '';
+  }
+
+  const monthNames = [
+    'января',
+    'февраля',
+    'марта',
+    'апреля',
+    'мая',
+    'июня',
+    'июля',
+    'августа',
+    'сентября',
+    'октября',
+    'ноября',
+    'декабря',
+  ];
+
+  const day = parsedDate.getDate();
+  const monthIndex = parsedDate.getMonth();
+  const year = parsedDate.getFullYear();
+
+  return `${day} ${monthNames[monthIndex]} ${year} г.`;
+};
+
+export const formatDateFormUI = (date: string | null): string => {
   if (date === null) {
     return '-';
   }

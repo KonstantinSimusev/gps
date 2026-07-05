@@ -12,7 +12,7 @@ interface ILayerContextValue {
   isEmployeeDeleteOpen: boolean;
   isAccountInfoOpen: boolean;
   isPasswordUpdateOpen: boolean;
-  isShiftAddOpen: boolean;
+  isShiftSearchOpen: boolean;
   isEmployeeAddOpen: boolean;
   isTimesheetEditOpen: boolean;
 
@@ -30,7 +30,7 @@ interface ILayerContextValue {
   setIsEmployeeDeleteOpen: (value: boolean) => void;
   setIsAccountInfoOpen: (value: boolean) => void;
   setIsPasswordUpdateOpen: (value: boolean) => void;
-  setIsShiftAddOpen: (value: boolean) => void;
+  setIsShiftSearchOpen: (value: boolean) => void;
   setIsEmployeeAddOpen: (value: boolean) => void;
   setIsTimesheetEditOpen: (value: boolean) => void;
 
@@ -50,7 +50,7 @@ export const LayerContext = createContext<ILayerContextValue>({
   isEmployeeDeleteOpen: false,
   isAccountInfoOpen: false,
   isPasswordUpdateOpen: false,
-  isShiftAddOpen: false,
+  isShiftSearchOpen: false,
   isEmployeeAddOpen: false,
   isTimesheetEditOpen: false,
 
@@ -68,7 +68,7 @@ export const LayerContext = createContext<ILayerContextValue>({
   setIsEmployeeDeleteOpen: () => {},
   setIsAccountInfoOpen: () => {},
   setIsPasswordUpdateOpen: () => {},
-  setIsShiftAddOpen: () => {},
+  setIsShiftSearchOpen: () => {},
   setIsEmployeeAddOpen: () => {},
   setIsTimesheetEditOpen: () => {},
 
