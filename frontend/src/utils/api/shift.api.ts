@@ -38,58 +38,28 @@ export const createShiftApi = async (): Promise<ISuccess> => {
   }
 };
 
-// export const updateEmployeeApi = async (
-//   id: string,
-//   data: IUpdateEmployee,
-// ): Promise<IEmployeeInfo> => {
-//   try {
-//     const response = await fetch(`${URL}/employee-management/${id}`, {
-//       method: 'PUT',
-//       headers: {
-//         'Content-Type': 'application/json;charset=utf-8',
-//       },
-//       credentials: 'include', // Важно добавить эту строку
-//       body: JSON.stringify(data),
-//     });
+export const getCurrentShiftsApi = async () => {
+  try {
+    const response = await fetch(`${URL}/shift-management/current-shifts`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8',
+      },
+      credentials: 'include', // Важно добавить эту строку
+    });
 
-//     if (!response.ok) {
-//       const errorData = await response.json();
-//       throw new Error(errorData.message);
-//     }
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message);
+    }
 
-//     // Правильно парсим JSON и возвращаем объект
-//     return await response.json();
-//   } catch (error) {
-//     if (error instanceof Error) {
-//       throw error;
-//     }
+    // Правильно парсим JSON и возвращаем объект
+    return await response.json();
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
 
-//     throw new Error('Что-то пошло не так');
-//   }
-// };
-
-// export const deleteEmployeeApi = async (id: string): Promise<ISuccess> => {
-//   try {
-//     const response = await fetch(`${URL}/employee-management/${id}`, {
-//       method: 'DELETE',
-//       headers: {
-//         'Content-Type': 'application/json;charset=utf-8',
-//       },
-//       credentials: 'include', // Важно добавить эту строку
-//     });
-
-//     if (!response.ok) {
-//       const errorData = await response.json();
-//       throw new Error(errorData.message);
-//     }
-
-//     // Правильно парсим JSON и возвращаем объект
-//     return await response.json();
-//   } catch (error) {
-//     if (error instanceof Error) {
-//       throw error;
-//     }
-
-//     throw new Error('Что-то пошло не так');
-//   }
-// };
+    throw new Error('Что-то пошло не так');
+  }
+};

@@ -17,14 +17,22 @@ export class EmployeeShiftRepository {
     return this.employeeShiftRepository.save(employeeShift);
   }
 
-  // 2. CRUD: Read (общие методы поиска)
-  async findAllWithWorkshopAndTeam(
-    teamNumber: number,
-    workshopCode: string,
-  ): Promise<EmployeeShift[]> {
-    return this.employeeShiftRepository.find({
-      where: {},
-      relations: [],
-    });
+  createObject(data: Partial<EmployeeShift>): EmployeeShift {
+    return this.employeeShiftRepository.create(data);
   }
+
+  async saveAll(employeeShifts: EmployeeShift[]): Promise<EmployeeShift[]> {
+    return this.employeeShiftRepository.save(employeeShifts);
+  }
+
+  // 2. CRUD: Read (общие методы поиска)
+  // async findAllWithWorkshopAndTeam(
+  //   teamNumber: number,
+  //   workshopCode: string,
+  // ): Promise<EmployeeShift[]> {
+  //   return this.employeeShiftRepository.find({
+  //     where: {},
+  //     relations: [],
+  //   });
+  // }
 }

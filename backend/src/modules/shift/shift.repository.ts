@@ -49,6 +49,21 @@ export class ShiftRepository {
     });
   }
 
+  async findCurrentShifts(
+    date: Date,
+    workshopId: string,
+    teamId: string,
+  ): Promise<Shift[]> {
+    return this.shiftRepository.find({
+      where: {
+        date,
+        workshop: { id: workshopId },
+        team: { id: teamId },
+      },
+      relations: ['workshop', 'team', 'shiftSchedule', 'employeeShifts'],
+    });
+  }
+
   // 5. Вспомогательные методы проверки существования (Exists)
   async existsByWorkshopTeamDate(
     workshopId: string,

@@ -55,7 +55,7 @@ export const Header = () => {
           <a className={styles.logo} href='/home'>
             <LogoIcon />
           </a>
-          <h1 className={styles.title}>Global Pack Studio</h1>
+          <h1 className={styles.title}>Steel Pack Studio</h1>
 
           <div className={styles.buttons}>
             {profile && profile.role === ROLE.ADMIN && (

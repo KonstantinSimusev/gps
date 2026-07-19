@@ -183,7 +183,7 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
 
     workshop_id UUID NOT NULL,
     team_id UUID NOT NULL,
-    shift_schedule_id UUID NOT NULL,
+    shift_schedule_id UUID NULL,
 
     CONSTRAINT uq_shift_workshop_date_team UNIQUE (workshop_id, date, team_id),
     CONSTRAINT uq_shift_workshop_date_schedule UNIQUE (workshop_id, date, shift_schedule_id),
@@ -505,6 +505,44 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
       (SELECT id FROM gps.grades WHERE grade_code = '3'),
       (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
       (SELECT id FROM gps.roles WHERE name = 'STACKER')),
+
+    -- ЛПЦ-10
+    ('643834',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-10'),
+      (SELECT id FROM gps.professions WHERE name = 'Старший мастер участка'),
+      (SELECT id FROM gps.grades WHERE grade_code = '15'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.roles WHERE name = 'LEAD_MASTER')),
+    ('643835',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-10'),
+      (SELECT id FROM gps.professions WHERE name = 'Мастер участка'),
+      (SELECT id FROM gps.grades WHERE grade_code = '12'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.roles WHERE name = 'MASTER')),
+    ('643837',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-10'),
+      (SELECT id FROM gps.professions WHERE name = 'Слесарь-ремонтник'),
+      (SELECT id FROM gps.grades WHERE grade_code = '6'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.roles WHERE name = 'REPAIR_MECHANIC')),
+    ('643838',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-10'),
+      (SELECT id FROM gps.professions WHERE name = 'Бригадир на участках основного производства'),
+      (SELECT id FROM gps.grades WHERE grade_code = '5'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '9'),
+      (SELECT id FROM gps.roles WHERE name = 'PRODUCTION_FOREMAN')),
+    ('643840',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-10'),
+      (SELECT id FROM gps.professions WHERE name = 'Укладчик-упаковщик'),
+      (SELECT id FROM gps.grades WHERE grade_code = '4'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.roles WHERE name = 'PACKER')),
+    ('643841',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-10'),
+      (SELECT id FROM gps.professions WHERE name = 'Штабелировщик металла'),
+      (SELECT id FROM gps.grades WHERE grade_code = '3'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.roles WHERE name = 'STACKER')),
     
     -- ЛПЦ-11
     ('643842',
@@ -639,10 +677,70 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
       (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
       (SELECT id FROM gps.shift_types WHERE shift_code = 1)),
 
-    -- График 9 (универсальный, день 0)
+    -- График 9-1 (универсальный, день 0)
+    -- Дневная: 02:00-14:00, обед 07:00-08:00, смена 1
+    (0, '02:00', '14:00', '07:00', '08:00',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '9'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 1)),
+
+    -- График 9-2 (универсальный, день 0)
     -- Дневная: 02:00-14:00, обед 07:00-08:00, смена 2
     (0, '02:00', '14:00', '07:00', '08:00',
       (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '9'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+
+    -- ЛПЦ-10
+    -- График 5-Б-1
+    -- Пн-Чт (дни 1-4): 03:00-11:45, обед 07:00-07:30, смена 2
+    (1, '03:00', '11:45', '07:00', '07:30',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-10'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+    (2, '03:00', '11:45', '07:00', '07:30',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-10'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+    (3, '03:00', '11:45', '07:00', '07:30',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-10'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+    (4, '03:00', '11:45', '07:00', '07:30',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-10'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+
+    -- Пт (день 5): 03:00-10:30, обед 07:00-07:30, смена 2
+    (5, '03:00', '10:30', '07:00', '07:30',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-10'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+
+    -- График 2-А (универсальный, день 0)
+    -- Дневная: 03:00-15:00, обед 08:30-09:00, смена 2
+    (0, '03:00', '15:00', '08:30', '09:00',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-10'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+
+    -- Ночная: 15:00-03:00 (пересекает полночь), обед 20:30-21:00, смена 1
+    (0, '15:00', '03:00', '20:30', '21:00',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-10'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 1)),
+
+    -- График 9-1 (универсальный, день 0)
+    -- Дневная: 03:00-15:00, обед 08:00-09:00, смена 1
+    (0, '03:00', '15:00', '08:00', '09:00',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-10'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '9'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 1)),
+
+    -- График 9-2 (универсальный, день 0)
+    -- Дневная: 03:00-15:00, обед 08:00-09:00, смена 2
+    (0, '03:00', '15:00', '08:00', '09:00',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-10'),
       (SELECT id FROM gps.schedules WHERE schedule_code = '9'),
       (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
 

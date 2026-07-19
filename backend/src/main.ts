@@ -21,7 +21,7 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
-      'https://global-pack-studio.ru',
+      'https://steel-pack-studio.ru',
       'http://localhost:3000',
       'http://localhost:5173',
       'http://localhost:81',

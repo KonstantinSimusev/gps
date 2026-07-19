@@ -63,9 +63,33 @@ export interface IEmployeeInfo {
   role: string | null;
 }
 
+export interface ShiftInfo {
+  dayOfWeek: number;
+  date: Date;
+  shiftCode: number | null;
+  teamNumber: number;
+}
+
 export interface IShift {
   id: string;
-  date: Date; // формат 'YYYY-MM-DD'
-  dayOfWeek: string | null; // бригада 1-4 - null, бригада 5 - понедельник (например)
-  description: string | null; // бригада 1-4 - Смена 1/2, бригада 5 - null
+  date: Date;
+  // workshopCode: string;
+  // teamNumber: number;
+  // shiftCode: number | null,
+  // employees: IEmployeeShift[];
+}
+
+export interface IEmployeeShift {
+  id: string;
+  lastName: string;
+  firstName: string;
+  patronymic: string;
+  workshop: string;
+  teamNumber: number;
+  profession: string;
+  personalNumber: number;
+  positionCode: number;
+  grade: number;
+  schedule: string;
+  birthDay: Date;
 }

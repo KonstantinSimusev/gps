@@ -16,8 +16,8 @@ export enum EWorkshop {
   W_LPC8 = 'ЛПЦ-8',
   W_LPC10 = 'ЛПЦ-10',
   W_LPC11 = 'ЛПЦ-11',
-  W_PMP_South = 'ПМП (южный блок)',
   W_PMP_North = 'ПМП (северный блок)',
+  W_PMP_South = 'ПМП (южный блок)',
   W_UVS_LPC4 = 'УВС ЛПЦ-4',
   W_CentralWarehouse = 'Центральный склад',
 }

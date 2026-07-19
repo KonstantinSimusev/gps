@@ -64,11 +64,6 @@ export const toBoolean = (value: unknown): boolean => {
   return false;
 };
 
-// export function convert(duration: string): number {
-//   const [hours, minutes] = duration.split(':').map(Number);
-//   return hours + minutes / 60;
-// }
-
 // Получаем и нормализуем текущую дату в фомате UTC
 export function getUTCToday() {
   const today = new Date();
@@ -85,9 +80,18 @@ export function getUTCTomorrow() {
   return tomorrow;
 }
 
+// Получаем и нормализуем завтра дату в фомате UTC
+export function getUTCYesterday() {
+  const yesterday = new Date();
+  yesterday.setUTCDate(yesterday.getUTCDate() - 1); // Сдвигаем на -1 день
+  yesterday.setUTCHours(0, 0, 0, 0); // Устанавливаем время на 00:00 UTC
+  return yesterday;
+}
+
 export function getShiftFor2A(teamNumber: number): {
+  dayOfWeek: number;
   date: Date;
-  shiftCode: number;
+  shiftCode: number | null; // null - выходной
   teamNumber: number;
 } {
   // Берём завтрашнюю дату в UTC
@@ -139,18 +143,18 @@ export function getShiftFor2A(teamNumber: number): {
   resultDate.setUTCHours(0, 0, 0, 0);
 
   return {
+    dayOfWeek: 0, // график 2-А (универсальный, день - 0)
     date: resultDate,
     shiftCode: shiftNumber,
     teamNumber: teamSchedule.teamNumber,
   };
 }
 
-export function getShiftFor5B1(): {
-  date: Date;
+export function getShiftFor5B1(teamNumber: number): {
   dayOfWeek: number;
-  weekdayName: string;
-  isWorking: boolean;
-  dayType: string;
+  date: Date;
+  shiftCode: number | null; // null - выходной
+  teamNumber: number;
 } {
   // Только официальные нерабочие праздничные дни (ст. 112 ТК РФ)
   const HOLIDAYS_2026 = new Set([
@@ -210,21 +214,21 @@ export function getShiftFor5B1(): {
 
   // Выходной = базовый выходной ИЛИ перенесённый выходной ИЛИ праздник
   const isWorking = !(isWeekendBase || isMovedWeekend || isHoliday);
-  const dayType = isWorking ? 'рабочий' : 'выходной';
+  const shiftCode = isWorking ? 2 : null;
 
   return {
-    date: normalizedDate,
     dayOfWeek: dayOfWeekNumber,
-    weekdayName,
-    isWorking,
-    dayType,
+    date: normalizedDate,
+    shiftCode,
+    teamNumber,
   };
 }
 
-export function getShiftFor9(teamNumber: 1 | 2): {
+export function getShiftFor9(teamNumber: number): {
+  dayOfWeek: number;
   date: Date;
+  shiftCode: number | null; // null - выходной
   teamNumber: number;
-  shiftCode: number | null;
 } {
   const schedules = [
     {
@@ -268,17 +272,19 @@ export function getShiftFor9(teamNumber: 1 | 2): {
     // Если остаток от деления на 4 равен 0 — значит, сегодня как раз начало смены по этому циклу
     if (diffDays >= 0 && diffDays % 4 === 0) {
       return {
+        dayOfWeek: 0, // график 9 (универсальный, день - 0)
         date: now, // возвращаем нормализованную входную дату
-        teamNumber: schedule.teamNumber,
         shiftCode: schedule.shiftNumber,
+        teamNumber: schedule.teamNumber,
       };
     }
   }
 
   return {
+    dayOfWeek: 0, // график 9 (универсальный, день - 0)
     date: now,
+    shiftCode: null, // выходной
     teamNumber,
-    shiftCode: null, // Выходной
   };
 }
 

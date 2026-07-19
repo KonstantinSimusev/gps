@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 
 import { Request } from 'express';
 
@@ -21,5 +21,11 @@ export class ShiftManagementController {
     @Req() req: Request & { profile: IProfile },
   ): Promise<ISuccess> {
     return this.shiftManagementService.createShift(req.profile);
+  }
+
+  @Get('current-shifts')
+  @UseGuards(AuthGuard)
+  async getCurrentShifts(@Req() req: Request & { profile: IProfile }) {
+    return this.shiftManagementService.getCurrentShifts(req.profile);
   }
 }

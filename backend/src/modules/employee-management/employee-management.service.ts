@@ -149,6 +149,8 @@ export class EmployeeManagementService {
         items: employees,
       };
     } catch (error) {
+      console.error('createMany failed:', error);
+
       throw new InternalServerErrorException('Не удалось создать работников');
     }
   }
@@ -477,6 +479,7 @@ export class EmployeeManagementService {
         await this.employeeRepository.existsCurrentMasterCreate(
           team.id,
           position.workshop.id,
+          position.schedule.id,
         );
 
       if (isMasterTaken) {
@@ -506,6 +509,7 @@ export class EmployeeManagementService {
           employee.id,
           team.id,
           position.workshop.id,
+          position.schedule.id,
         );
 
       if (isMasterTaken) {

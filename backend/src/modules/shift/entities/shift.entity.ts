@@ -40,7 +40,7 @@ export class Shift {
   // Связь: много смен — один тип смены
   @ManyToOne(() => ShiftSchedule, (shiftSchedule) => shiftSchedule.shifts)
   @JoinColumn({ name: 'shift_schedule_id' })
-  shiftSchedule: ShiftSchedule;
+  shiftSchedule: ShiftSchedule | null;
 
   // Связь: одна смена — много смен сотрудника
   @OneToMany(() => EmployeeShift, (employeeShift) => employeeShift.shift)

@@ -18,7 +18,7 @@ export class EmployeeRepository {
   }
 
   // 2. CRUD: Read (общие методы поиска)
-  async findAllWithWorkshopAndTeam(
+  async findByTeamAndSchedule(
     teamNumber: number,
     workshopCode: string,
     scheduleCode: string,
@@ -176,6 +176,7 @@ export class EmployeeRepository {
   async existsCurrentMasterCreate(
     teamId: string,
     workshopId: string,
+    scheduleId: string,
   ): Promise<boolean> {
     return this.employeeRepository.exists({
       where: [
@@ -186,6 +187,7 @@ export class EmployeeRepository {
           currentTeam: { id: teamId },
           currentPosition: {
             workshop: { id: workshopId },
+            schedule: { id: scheduleId },
             role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
           },
         },
@@ -197,6 +199,7 @@ export class EmployeeRepository {
           team: { id: teamId },
           currentPosition: {
             workshop: { id: workshopId },
+            schedule: { id: scheduleId },
             role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
           },
         },
@@ -208,6 +211,7 @@ export class EmployeeRepository {
           currentPosition: IsNull(),
           position: {
             workshop: { id: workshopId },
+            schedule: { id: scheduleId },
             role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
           },
         },
@@ -220,6 +224,7 @@ export class EmployeeRepository {
           currentPosition: IsNull(),
           position: {
             workshop: { id: workshopId },
+            schedule: { id: scheduleId },
             role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
           },
         },
@@ -241,6 +246,7 @@ export class EmployeeRepository {
     employeeId: string,
     teamId: string,
     workshopId: string,
+    scheduleId: string,
   ): Promise<boolean> {
     return this.employeeRepository.exists({
       where: [
@@ -252,6 +258,7 @@ export class EmployeeRepository {
           currentTeam: { id: teamId },
           currentPosition: {
             workshop: { id: workshopId },
+            schedule: { id: scheduleId },
             role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
           },
         },
@@ -264,6 +271,7 @@ export class EmployeeRepository {
           team: { id: teamId },
           currentPosition: {
             workshop: { id: workshopId },
+            schedule: { id: scheduleId },
             role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
           },
         },
@@ -276,6 +284,7 @@ export class EmployeeRepository {
           currentPosition: IsNull(),
           position: {
             workshop: { id: workshopId },
+            schedule: { id: scheduleId },
             role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
           },
         },
@@ -289,6 +298,7 @@ export class EmployeeRepository {
           currentPosition: IsNull(),
           position: {
             workshop: { id: workshopId },
+            schedule: { id: scheduleId },
             role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
           },
         },
