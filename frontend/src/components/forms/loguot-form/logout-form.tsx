@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useDispatch, useSelector } from '../../../services/store';
 
+import { clearShifts } from '../../../services/slices/shift/slice';
 import { logoutEmployee } from '../../../services/slices/auth/actions';
 import { selectIsAuthLoading } from '../../../services/slices/auth/slice';
 
@@ -26,6 +27,7 @@ export const LogoutForm = () => {
     try {
       // Диспачим действие выхода
       await dispatch(logoutEmployee());
+      dispatch(clearShifts())
 
       // Очищаем состояние оверлеев и модальных окон
       setIsOverlayOpen(false);

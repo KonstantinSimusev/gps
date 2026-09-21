@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { AttendanceTypeModule } from '../attendance-type/attendance-type.module';
 import { EmployeeModule } from '../employee/employee.module';
 import { EmployeeShiftModule } from '../employee-shift/employee-shift.module';
+import { ScheduleModule } from '../schedule/schedule.module';
 import { ShiftModule } from '../shift/shift.module';
 import { ShiftScheduleModule } from '../shift-schedule/shift-schedule.module';
 import { TeamModule } from '../team/team.module';
@@ -16,6 +17,7 @@ import { ShiftManagementService } from './shift-management.service';
     AttendanceTypeModule,
     EmployeeModule,
     EmployeeShiftModule,
+    ScheduleModule,
     ShiftModule,
     ShiftScheduleModule,
     TeamModule,

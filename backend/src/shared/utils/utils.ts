@@ -40,6 +40,26 @@ export const toString = (value: unknown): string | null => {
   return null;
 };
 
+export const toDateString = (
+  value: string | Date | null | undefined,
+): string | null => {
+  if (!value) {
+    return null;
+  }
+
+  const date = value instanceof Date ? value : new Date(value);
+
+  if (isNaN(date.getTime())) {
+    return null;
+  }
+
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+
+  return `${yyyy}-${mm}-${dd}`;
+};
+
 export const toOptionalString = (value: unknown): string | null => {
   if (value == null) return null;
   if (typeof value === 'string') {
@@ -64,38 +84,53 @@ export const toBoolean = (value: unknown): boolean => {
   return false;
 };
 
+export const getUTC = (date: Date): Date => {
+  const result = new Date(date);
+  result.setUTCHours(0, 0, 0, 0); // Устанавливаем время на 00:00 UTC
+  return result;
+};
+
 // Получаем и нормализуем текущую дату в фомате UTC
-export function getUTCToday() {
-  const today = new Date();
-  today.setUTCDate(today.getUTCDate());
-  today.setUTCHours(0, 0, 0, 0); // Устанавливаем время на 00:00 UTC
-  return today;
-}
+export const getUTCToday = (date: Date | null = null): Date => {
+  const result = date ?? new Date();
+  result.setUTCHours(0, 0, 0, 0);
+  return result;
+};
 
 // Получаем и нормализуем завтра дату в фомате UTC
-export function getUTCTomorrow() {
-  const tomorrow = new Date();
-  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1); // Сдвигаем на +1 день
-  tomorrow.setUTCHours(0, 0, 0, 0); // Устанавливаем время на 00:00 UTC
-  return tomorrow;
-}
+export const getUTCTomorrow = (date: Date | null = null): Date => {
+  const result = date ?? new Date();
+  result.setUTCHours(0, 0, 0, 0); // Устанавливаем время на 00:00 UTC
+  result.setUTCDate(result.getUTCDate() + 1); // Сдвигаем на +1 день
+  return result;
+};
 
 // Получаем и нормализуем завтра дату в фомате UTC
-export function getUTCYesterday() {
-  const yesterday = new Date();
-  yesterday.setUTCDate(yesterday.getUTCDate() - 1); // Сдвигаем на -1 день
-  yesterday.setUTCHours(0, 0, 0, 0); // Устанавливаем время на 00:00 UTC
-  return yesterday;
-}
+export const getUTCYesterday = (date: Date | null = null): Date => {
+  const result = date ?? new Date();
+  result.setUTCHours(0, 0, 0, 0); // Устанавливаем время на 00:00 UTC
+  result.setUTCDate(result.getUTCDate() - 1); // Сдвигаем на -1 день
+  return result;
+};
 
-export function getShiftFor2A(teamNumber: number): {
+// Получаем строку только с датой
+export const getUTCDateString = (date: Date): string => {
+  return date.toISOString().slice(0, 10); // 'YYYY-MM-DD'
+};
+
+export const getShiftFor2A = (
+  teamNumber: number,
+  baseDate: Date | null = null,
+): {
   dayOfWeek: number;
   date: Date;
   shiftCode: number | null; // null - выходной
   teamNumber: number;
-} {
+} => {
   // Берём завтрашнюю дату в UTC
-  const tomorrow = getUTCTomorrow();
+  const now = baseDate ?? new Date();
+  const normalizedDate = new Date(now);
+  const tomorrow = getUTCTomorrow(normalizedDate);
 
   // Расписание стартовых дат и смен для бригад в UTC
   const shiftSchedules = [
@@ -148,14 +183,17 @@ export function getShiftFor2A(teamNumber: number): {
     shiftCode: shiftNumber,
     teamNumber: teamSchedule.teamNumber,
   };
-}
+};
 
-export function getShiftFor5B1(teamNumber: number): {
+export const getShiftFor5B1 = (
+  teamNumber: number,
+  baseDate: Date | null = null,
+): {
   dayOfWeek: number;
   date: Date;
   shiftCode: number | null; // null - выходной
   teamNumber: number;
-} {
+} => {
   // Только официальные нерабочие праздничные дни (ст. 112 ТК РФ)
   const HOLIDAYS_2026 = new Set([
     '2026-01-01',
@@ -180,18 +218,8 @@ export function getShiftFor5B1(teamNumber: number): {
     '2026-12-31', // перенос с 4 января (вс)
   ]);
 
-  const WEEKDAY_NAMES = [
-    'воскресенье', // 0
-    'понедельник', // 1
-    'вторник', // 2
-    'среда', // 3
-    'четверг', // 4
-    'пятница', // 5
-    'суббота', // 6
-  ];
-
   // Берём текущую дату
-  const now = new Date();
+  const now = baseDate ?? new Date();
 
   // Нормализуем до полуночи UTC — это и будет «дата дня»
   const normalizedDate = new Date(now);
@@ -204,10 +232,6 @@ export function getShiftFor5B1(teamNumber: number): {
   const dateKey = `${utcYear}-${utcMonth}-${utcDay}`;
   const utcDayOfWeek = now.getUTCDay(); // 0=вс, 1=пн, ..., 6=сб
 
-  // Формат 1–7 (1=понедельник, 7=воскресенье)
-  const dayOfWeekNumber = utcDayOfWeek === 0 ? 7 : utcDayOfWeek;
-  const weekdayName = WEEKDAY_NAMES[utcDayOfWeek];
-
   const isWeekendBase = utcDayOfWeek === 0 || utcDayOfWeek === 6;
   const isHoliday = HOLIDAYS_2026.has(dateKey);
   const isMovedWeekend = MOVED_WEEKENDS_2026.has(dateKey);
@@ -217,19 +241,22 @@ export function getShiftFor5B1(teamNumber: number): {
   const shiftCode = isWorking ? 2 : null;
 
   return {
-    dayOfWeek: dayOfWeekNumber,
+    dayOfWeek: utcDayOfWeek,
     date: normalizedDate,
     shiftCode,
     teamNumber,
   };
-}
+};
 
-export function getShiftFor9(teamNumber: number): {
+export const getShiftFor9 = (
+  teamNumber: number,
+  baseDate: Date | null = null,
+): {
   dayOfWeek: number;
   date: Date;
   shiftCode: number | null; // null - выходной
   teamNumber: number;
-} {
+} => {
   const schedules = [
     {
       teamNumber: 1,
@@ -254,8 +281,9 @@ export function getShiftFor9(teamNumber: number): {
   ];
 
   // Нормализуем входную дату до 00:00 UTC
-  const now = new Date();
-  now.setUTCHours(0, 0, 0, 0);
+  const now = baseDate ?? new Date();
+  const normalizedDate = new Date(now);
+  normalizedDate.setUTCHours(0, 0, 0, 0);
 
   for (const schedule of schedules) {
     if (schedule.teamNumber !== teamNumber) {
@@ -266,14 +294,14 @@ export function getShiftFor9(teamNumber: number): {
     startDate.setUTCHours(0, 0, 0, 0);
 
     // Разница в днях от старта до целевой даты
-    const diffMs = now.getTime() - startDate.getTime();
+    const diffMs = normalizedDate.getTime() - startDate.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
     // Если остаток от деления на 4 равен 0 — значит, сегодня как раз начало смены по этому циклу
     if (diffDays >= 0 && diffDays % 4 === 0) {
       return {
         dayOfWeek: 0, // график 9 (универсальный, день - 0)
-        date: now, // возвращаем нормализованную входную дату
+        date: normalizedDate, // возвращаем нормализованную входную дату
         shiftCode: schedule.shiftNumber,
         teamNumber: schedule.teamNumber,
       };
@@ -282,22 +310,27 @@ export function getShiftFor9(teamNumber: number): {
 
   return {
     dayOfWeek: 0, // график 9 (универсальный, день - 0)
-    date: now,
+    date: normalizedDate,
     shiftCode: null, // выходной
     teamNumber,
   };
-}
+};
 
-export function calcShiftDuration(schedule: ShiftSchedule | null): number {
+export const calcShiftDuration = (schedule: ShiftSchedule | null): number => {
   if (!schedule) {
     return 0;
   }
 
   const toMin = (t: string | null): number => {
     if (!t) return 0;
+    // Безопасный парсинг времени ЧЧ:ММ
     const [hStr, mStr] = t.split(':');
-    const h = Number(hStr);
+    const h = Number(hStr ?? 0);
     const m = mStr ? Number(mStr) : 0;
+
+    // Защита от некорректных данных
+    if (isNaN(h) || isNaN(m)) return 0;
+
     return h * 60 + m;
   };
 
@@ -314,13 +347,57 @@ export function calcShiftDuration(schedule: ShiftSchedule | null): number {
     const ls = toMin(schedule.lunchStart);
     const le = toMin(schedule.lunchEnd);
 
-    // Обед тоже может пересекать полночь
     lunchDuration = le - ls;
+
+    // Обед тоже может пересекать полночь (редко, но бывает)
     if (lunchDuration < 0) {
       lunchDuration += 24 * 60;
     }
   }
 
-  const totalMinutes = end - start - lunchDuration;
-  return Math.max(0, totalMinutes / 60);
-}
+  const totalMinutes = Math.max(0, end - start - lunchDuration);
+
+  // ✅ Возвращаем сразу минуты (целое число), без округления до четверти часа
+  return Math.round(totalMinutes);
+};
+
+export const formatDateToYYYYMMDD = (date: Date): string => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+};
+
+// export const getCurrentMonthDatesUntilToday = (): Date[] => {
+//   const now = new Date();
+//   const year = now.getUTCFullYear();
+//   const month = now.getUTCMonth();
+//   const todayDay = now.getUTCDate();
+
+//   const dates: Date[] = [];
+
+//   for (let day = 1; day <= todayDay; day++) {
+//     const date = new Date(Date.UTC(year, month, day));
+//     dates.push(date);
+//   }
+
+//   return dates;
+// };
+
+// export const getMissingDays = (monthDates: Date[], shifts: any[]): Date[] => {
+//   // 1. Создаём Set из дат смен (нормализованных на 00:00)
+//   const shiftDateKeys = new Set<number>(
+//     shifts.map((shift) => {
+//       const d = new Date(shift.date);
+//       d.setUTCHours(0, 0, 0, 0);
+//       return d.getTime();
+//     }),
+//   );
+
+//   // 2. Фильтруем полный список месяца: оставляем только те даты, которых нет в сменах
+//   return monthDates.filter((date) => {
+//     const d = new Date(date);
+//     d.setUTCHours(0, 0, 0, 0);
+//     return !shiftDateKeys.has(d.getTime());
+//   });
+// };

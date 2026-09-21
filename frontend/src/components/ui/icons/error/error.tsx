@@ -1,11 +1,11 @@
 import styles from './error.module.css';
 
-interface IErrorIconProps {
+interface IProps {
   width?: number | string;
   height?: number | string;
 }
 
-export const ErrorIcon = ({ width = 40, height = 40 }: IErrorIconProps) => {
+export const ErrorIcon = ({ width = 40, height = 40 }: IProps) => {
   return (
     <svg
       className={styles.icon}

@@ -9,7 +9,6 @@ import {
 } from 'typeorm';
 
 import { Account } from '../../account/entities/account.entity';
-import { EmployeeRole } from '../../employee-role/entities/employee-role.entity';
 import { EmployeeShift } from '../../employee-shift/entities/employee-shift.entity';
 import { Position } from '../../position/entities/position.entity';
 import { Team } from '../../team/entities/team.entity';
@@ -75,6 +74,7 @@ export class Employee {
   })
   endDate: Date | null;
 
+  // Доступ в личный кабинет
   @Column({
     name: 'has_access',
     default: true,
@@ -82,6 +82,7 @@ export class Employee {
   })
   hasAccess: boolean;
 
+  // Уволен/не уволен
   @Column({
     name: 'is_active',
     default: true,
@@ -115,12 +116,6 @@ export class Employee {
   @ManyToOne(() => Position, { nullable: true })
   @JoinColumn({ name: 'current_position_id' })
   currentPosition: Position | null;
-
-  // Связь: один сотрудник — одна роль сотрудника
-  @OneToOne(() => EmployeeRole, (employeeRole) => employeeRole.employee, {
-    cascade: ['remove'],
-  })
-  employeeRole: EmployeeRole;
 
   // Связь: один сотрудник — много смен сотрудника
   @OneToMany(() => EmployeeShift, (employeeShift) => employeeShift.employee)

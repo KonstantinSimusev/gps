@@ -1,11 +1,11 @@
-import { IEmployeeInfo, IProfile } from '../../../utils/api.interface';
+import { IEmployeeInfo } from '../../../utils/api.interface';
 import { formatDateFormUI, getRoleName } from '../../../utils/utils';
 
 import { CardContainer } from '../../../components/ui/card-container/card-container';
 import { IconButton } from '../../ui/buttons/icon-button/icon-button';
 import { TableBlock } from '../../ui/table-block/table-block';
 
-import { DeleteIcon } from '../../../components/ui/icons/delete/delete';
+// import { DeleteIcon } from '../../../components/ui/icons/delete/delete';
 import { EditIcon } from '../../../components/ui/icons/edit/edit';
 import { PasswordIcon } from '../../../components/ui/icons/password/password';
 import { ProfileIcon } from '../../../components/ui/icons/profile/profile';
@@ -14,18 +14,18 @@ import styles from './profile-card.module.css';
 
 interface IProps {
   employee: IEmployeeInfo;
-  profile: IProfile | null;
+  // profile: IProfile | null;
   onUpdateProfile: () => void;
   onUpdatePassword: () => void;
-  onDeleteProfile: () => void;
+  // onDeleteProfile: () => void;
 }
 
 export const ProfileCard = ({
   employee,
-  profile,
+  // profile,
   onUpdateProfile,
   onUpdatePassword,
-  onDeleteProfile,
+  // onDeleteProfile,
 }: IProps) => {
   return (
     <CardContainer className={styles.container}>
@@ -38,42 +38,50 @@ export const ProfileCard = ({
         <span className={styles.profession}>{employee.profession}</span>
       </div>
 
-      {profile?.workshopCode === employee.workshop && (
-        <div className={styles.buttons}>
-          <IconButton type='button' onClick={onUpdateProfile}>
-            <EditIcon width={28} height={28} />
-          </IconButton>
+      <div className={styles.buttons}>
+        <IconButton type='button' onClick={onUpdateProfile}>
+          <EditIcon width={28} height={28} />
+        </IconButton>
 
-          {employee.isActive === true && (
-            <IconButton type='button' onClick={onUpdatePassword}>
-              <PasswordIcon width={25} height={25} />
-            </IconButton>
-          )}
-
-          <IconButton type='button' onClick={onDeleteProfile}>
-            <DeleteIcon width={28} height={28} />
+        {employee.isActive === true && (
+          <IconButton type='button' onClick={onUpdatePassword}>
+            <PasswordIcon width={25} height={25} />
           </IconButton>
-        </div>
-      )}
+        )}
+
+        {/* <IconButton type='button' onClick={onDeleteProfile}>
+          <DeleteIcon width={28} height={28} />
+        </IconButton> */}
+      </div>
 
       <div className={styles.table}>
         <TableBlock title='Цех' text={employee.workshop} />
-        <TableBlock title='Бригада' text={employee.teamNumber} />
-        <TableBlock title='Личный номер' text={employee.personalNumber} />
+        <TableBlock title='Бригада №' text={employee.teamNumber} />
+        <TableBlock title='Личный №' text={employee.personalNumber} />
         <TableBlock title='Штатная позиция' text={employee.positionCode} />
-        <TableBlock title='Разряд' text={employee.grade} />
-        <TableBlock title='График' text={employee.schedule} />
+        <TableBlock title='Разряд' text={employee.gradeCode} />
+        <TableBlock title='График работы' text={employee.scheduleCode} />
       </div>
 
       <div className={styles.table}>
         <TableBlock
-          title='Текущая бригада'
+          title='Фактическая бригада №'
           text={employee.currentTeamNumber ?? '-'}
         />
 
         <TableBlock
-          title='Текущая штатная позиция'
+          title='Фактическая штатная позиция'
           text={employee.currentPositionCode ?? '-'}
+        />
+
+        <TableBlock
+          title='Фактический разряд'
+          text={employee.currentGradeCode ?? '-'}
+        />
+
+        <TableBlock
+          title='Фактический график работы'
+          text={employee.currentScheduleCode ?? '-'}
         />
       </div>
 

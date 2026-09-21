@@ -10,4 +10,13 @@ export class ScheduleRepository {
     @InjectRepository(Schedule)
     private readonly scheduleRepository: Repository<Schedule>,
   ) {}
+
+  // 2. CRUD: Read (общие методы поиска)
+  async findScheduleByCode(scheduleCode: string): Promise<Schedule | null> {
+    return this.scheduleRepository.findOneBy({ scheduleCode });
+  }
+
+  async findScheduleById(id: string): Promise<Schedule | null> {
+    return this.scheduleRepository.findOneBy({ id });
+  }
 }

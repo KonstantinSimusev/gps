@@ -276,6 +276,26 @@ export const validationRules: IValidationRules = {
       },
     ],
   },
+  scheduleCode: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
+      },
+    ],
+  },
+  gradeCode: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
+      },
+    ],
+  },
   birthDay: {
     required: true,
     validators: [
@@ -368,7 +388,14 @@ export const validationRules: IValidationRules = {
     validators: [
       {
         type: 'in',
-        options: ['', 'ADMIN'],
+        // options: [
+        //   '',
+        //   'ADMIN',
+        //   'HEAD',
+        //   'LEAD_MASTER',
+        //   'DETAIL_MASTER',
+        //   'MASTER',
+        // ],
         message: 'Выберите роль из списка',
       },
     ],

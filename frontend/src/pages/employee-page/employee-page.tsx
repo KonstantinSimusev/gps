@@ -1,7 +1,6 @@
 import { useContext, useEffect } from 'react';
 
 import { useSelector } from '../../services/store';
-import { selectProfile } from '../../services/slices/auth/slice';
 import { selectSearсhEmployee } from '../../services/slices/employee/slice';
 
 import { LayerContext } from '../../contexts/layer/layerContext';
@@ -9,18 +8,16 @@ import { LayerContext } from '../../contexts/layer/layerContext';
 import { MainLayout } from '../../components/ui/layouts/main/main-layout';
 import { ProfileCard } from '../../components/cards/profile-card/profile-card';
 
-import styles from './admin-page.module.css';
+import styles from './employee-page.module.css';
 
-export const AdminPage = () => {
+export const EmployeePage = () => {
   const {
     setIsOverlayOpen,
     setIsEmployeeEditOpen,
-    setIsEmployeeDeleteOpen,
     setIsPasswordUpdateOpen,
     setSelectedId,
   } = useContext(LayerContext);
-  
-  const profile = useSelector(selectProfile);
+
   const employee = useSelector(selectSearсhEmployee);
 
   useEffect(() => {
@@ -53,25 +50,13 @@ export const AdminPage = () => {
     }
   };
 
-  const deleteProfile = () => {
-    if (!employee) {
-      return;
-    }
-
-    setSelectedId(employee.id);
-    setIsOverlayOpen(true);
-    setIsEmployeeDeleteOpen(true);
-  };
-
   return (
     <MainLayout className={styles.container}>
       {employee && (
         <ProfileCard
           employee={employee}
-          profile={profile}
           onUpdateProfile={updateProfile}
           onUpdatePassword={updatePassword}
-          onDeleteProfile={deleteProfile}
         />
       )}
     </MainLayout>

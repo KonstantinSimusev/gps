@@ -1,0 +1,30 @@
+.empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  flex-grow: 1;
+  opacity: 0.6;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  display: flex;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255 255 255 / 0.1);
+}
+
+.text,
+.count {
+  font-size: 22px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}

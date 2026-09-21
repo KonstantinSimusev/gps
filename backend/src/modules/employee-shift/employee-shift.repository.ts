@@ -17,22 +17,40 @@ export class EmployeeShiftRepository {
     return this.employeeShiftRepository.save(employeeShift);
   }
 
-  createObject(data: Partial<EmployeeShift>): EmployeeShift {
-    return this.employeeShiftRepository.create(data);
-  }
-
-  async saveAll(employeeShifts: EmployeeShift[]): Promise<EmployeeShift[]> {
-    return this.employeeShiftRepository.save(employeeShifts);
-  }
-
   // 2. CRUD: Read (общие методы поиска)
-  // async findAllWithWorkshopAndTeam(
-  //   teamNumber: number,
-  //   workshopCode: string,
-  // ): Promise<EmployeeShift[]> {
-  //   return this.employeeShiftRepository.find({
-  //     where: {},
-  //     relations: [],
-  //   });
-  // }
+  async findAllByShiftId(shiftId: string): Promise<EmployeeShift[]> {
+    return this.employeeShiftRepository.find({
+      where: {
+        shift: { id: shiftId },
+      },
+      relations: [
+        'employee',
+        'employee.position',
+        'employee.position.profession',
+        'employee.position.grade',
+        'employee.position.schedule',
+        'attendanceType',
+        'currentPosition',
+        'workPlace',
+        'shift',
+        'shift.schedule',
+        'shift.team',
+      ],
+      order: {
+        employee: {
+          position: {
+            grade: {
+              gradeCode: 'DESC', // 1. Разряд: сверху большой, внизу маленький
+            },
+            profession: {
+              name: 'ASC', // 2. Профессия: по алфавиту
+            },
+          },
+          lastName: 'ASC', // 3. Фамилия: по алфавиту
+          firstName: 'ASC', // 4. Имя: по алфавиту (если фамилии совпали)
+          patronymic: 'ASC', // 5. Отчество: по алфавиту (если фамилии совпали)
+        },
+      },
+    });
+  }
 }

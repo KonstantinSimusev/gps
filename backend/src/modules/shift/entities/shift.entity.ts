@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 
 import { EmployeeShift } from '../../employee-shift/entities/employee-shift.entity';
+import { Schedule } from '../../schedule/entities/schedule.entity';
 import { ShiftSchedule } from '../../shift-schedule/entities/shift-schedule.entity';
 import { Team } from '../../team/entities/team.entity';
 import { Workshop } from '../../workshop/entities/workshop.entity';
@@ -27,6 +28,14 @@ export class Shift {
   })
   date: Date;
 
+  @Column({
+    name: 'is_checked',
+    type: 'boolean',
+    nullable: false,
+    default: false,
+  })
+  isChecked: boolean;
+
   // Связь: много смен — один цех
   @ManyToOne(() => Workshop, (workshop) => workshop.shifts)
   @JoinColumn({ name: 'workshop_id' })
@@ -36,6 +45,11 @@ export class Shift {
   @ManyToOne(() => Team, (team) => team.shifts)
   @JoinColumn({ name: 'team_id' })
   team: Team;
+
+  // Связь: много расписаний смен - один график
+  @ManyToOne(() => Schedule, (schedule) => schedule.shiftSchedules)
+  @JoinColumn({ name: 'schedule_id' })
+  schedule: Schedule;
 
   // Связь: много смен — один тип смены
   @ManyToOne(() => ShiftSchedule, (shiftSchedule) => shiftSchedule.shifts)

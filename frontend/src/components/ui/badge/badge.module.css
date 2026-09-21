@@ -1,0 +1,15 @@
+.badge {
+  border-radius: 50%;
+}
+
+.badge--red {
+  background-color: #ff4d4f;
+}
+
+.badge--green {
+  background-color: #00af54;
+}
+
+.badge--orange {
+  background-color: #fa8c16;
+}

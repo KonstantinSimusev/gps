@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { ROLE_TO_PAGE } from '../../../utils/types';
+// import { ROLE_TO_PAGE } from '../../../utils/types';
 
 import {
   validateField,
@@ -111,10 +111,12 @@ export const LoginForm = () => {
     }
 
     try {
-      const employee = await dispatch(loginEmployee(formData)).unwrap();
-      const targetPage = ROLE_TO_PAGE[employee.role || '/'];
+      // const employee = await dispatch(loginEmployee(formData)).unwrap();
+      // const targetPage = ROLE_TO_PAGE[employee.role || '/'];
+      // navigate(targetPage);
 
-      navigate(targetPage);
+      await dispatch(loginEmployee(formData)).unwrap();
+      navigate('/home');
 
       setIsLoginOpen(false);
       setIsOverlayOpen(false);

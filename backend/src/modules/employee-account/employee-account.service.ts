@@ -5,38 +5,27 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
 
 import { IAccountInfo, IProfile } from '../../shared/interfaces/api.interface';
 import { ERole } from '../../shared/enums/enums';
 
 import { AccountRepository } from '../account/account.repository';
-import { EmployeeRepository } from '../employee/employee.repository';
+import { EmployeeService } from '../employee/employee.service';
 
 @Injectable()
 export class EmployeeAccountService {
   constructor(
     private readonly accountRepository: AccountRepository,
-    private readonly employeeRepository: EmployeeRepository,
+    private readonly employeeService: EmployeeService,
   ) {}
 
   async updateLoginAndPassword(
     employeeId: string,
     profile: IProfile,
   ): Promise<IAccountInfo> {
-    // Проверяем права на обновление логина и пароля
-    if (profile.role !== ERole.ADMIN) {
-      throw new ForbiddenException('Недостаточно прав');
-    }
-
     // Находим работника по ID
-    const employee =
-      await this.employeeRepository.findActiveEmployeeById(employeeId);
-
-    if (!employee) {
-      throw new NotFoundException('Работник не найден');
-    }
+    const employee = await this.employeeService.getActiveEmployee(employeeId);
 
     // Проверяем совместимость цехов сотрудника и администратора
     if (employee.position.workshop.workshopCode !== profile.workshopCode) {

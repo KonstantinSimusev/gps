@@ -4,7 +4,7 @@ import { IAccountInfo, IEmployeeInfo } from '../../../utils/api.interface';
 
 import {
   createEmployee,
-  deleteEmployee,
+  // deleteEmployee,
   searchEmployee,
   updateEmployee,
 } from './actions';
@@ -22,8 +22,8 @@ interface IEmployeeState {
   isUpdateEmployeeLoading: boolean;
   updateEmployeeError: string | null;
 
-  isDeleteEmployeeLoading: boolean;
-  deleteEmployeeError: string | null;
+  // isDeleteEmployeeLoading: boolean;
+  // deleteEmployeeError: string | null;
 }
 
 const initialState: IEmployeeState = {
@@ -39,8 +39,8 @@ const initialState: IEmployeeState = {
   isUpdateEmployeeLoading: false,
   updateEmployeeError: null,
 
-  isDeleteEmployeeLoading: false,
-  deleteEmployeeError: null,
+  // isDeleteEmployeeLoading: false,
+  // deleteEmployeeError: null,
 };
 
 export const employeeSlice = createSlice({
@@ -56,9 +56,9 @@ export const employeeSlice = createSlice({
     clearUpdateEmployeeError: (state) => {
       state.updateEmployeeError = null;
     },
-    clearDeleteEmployeeError: (state) => {
-      state.deleteEmployeeError = null;
-    },
+    // clearDeleteEmployeeError: (state) => {
+    //   state.deleteEmployeeError = null;
+    // },
   },
   selectors: {
     selectSearсhEmployee: (state: IEmployeeState) => state.employeeInfo,
@@ -78,14 +78,14 @@ export const employeeSlice = createSlice({
     selectUpdateEmployeeError: (state: IEmployeeState) =>
       state.updateEmployeeError,
 
-    selectIsDeleteEmployeeLoading: (state: IEmployeeState) =>
-      state.isDeleteEmployeeLoading,
-    selectDeleteEmployeeError: (state: IEmployeeState) =>
-      state.deleteEmployeeError,
+    // selectIsDeleteEmployeeLoading: (state: IEmployeeState) =>
+    //   state.isDeleteEmployeeLoading,
+    // selectDeleteEmployeeError: (state: IEmployeeState) =>
+    //   state.deleteEmployeeError,
   },
   extraReducers: (builder) => {
+    // Обработчик для searchEmployee
     builder
-      // Обработчик для searchEmployee
       .addCase(searchEmployee.pending, (state) => {
         state.isSearchEmployeeLoading = true;
         state.searchEmployeeError = null;
@@ -102,8 +102,10 @@ export const employeeSlice = createSlice({
         state.isSearchEmployeeLoading = false;
         state.searchEmployeeError =
           action.error.message ?? 'Ошибка получения данных';
-      })
-      // Обработчик для createEmployee
+      });
+
+    // Обработчик для createEmployee
+    builder
       .addCase(createEmployee.pending, (state) => {
         state.isCreateEmployeeLoading = true;
         state.createEmployeeError = null;
@@ -120,8 +122,10 @@ export const employeeSlice = createSlice({
         state.isCreateEmployeeLoading = false;
         state.createEmployeeError =
           action.error.message ?? 'Ошибка получения данных';
-      })
-      // Обработчик для updateEmployee
+      });
+
+    // Обработчик для updateEmployee
+    builder
       .addCase(updateEmployee.pending, (state) => {
         state.isUpdateEmployeeLoading = true;
         state.updateEmployeeError = null;
@@ -138,22 +142,24 @@ export const employeeSlice = createSlice({
         state.isUpdateEmployeeLoading = false;
         state.updateEmployeeError =
           action.error.message ?? 'Ошибка обновления данных сотрудника';
-      })
-      // Обработчик для deleteEmployee
-      .addCase(deleteEmployee.pending, (state) => {
-        state.isDeleteEmployeeLoading = true;
-        state.deleteEmployeeError = null;
-      })
-      .addCase(deleteEmployee.fulfilled, (state) => {
-        state.employeeInfo = null;
-        state.isDeleteEmployeeLoading = false;
-        state.deleteEmployeeError = null;
-      })
-      .addCase(deleteEmployee.rejected, (state, action) => {
-        state.isDeleteEmployeeLoading = false;
-        state.deleteEmployeeError =
-          action.error.message ?? 'Ошибка обновления данных сотрудника';
       });
+
+    // Обработчик для deleteEmployee
+    // builder
+    //   .addCase(deleteEmployee.pending, (state) => {
+    //     state.isDeleteEmployeeLoading = true;
+    //     state.deleteEmployeeError = null;
+    //   })
+    //   .addCase(deleteEmployee.fulfilled, (state) => {
+    //     state.employeeInfo = null;
+    //     state.isDeleteEmployeeLoading = false;
+    //     state.deleteEmployeeError = null;
+    //   })
+    //   .addCase(deleteEmployee.rejected, (state, action) => {
+    //     state.isDeleteEmployeeLoading = false;
+    //     state.deleteEmployeeError =
+    //       action.error.message ?? 'Ошибка обновления данных сотрудника';
+    //   });
   },
 });
 
@@ -161,7 +167,7 @@ export const {
   clearSearchEmployeeError,
   clearCreateEmployeeError,
   clearUpdateEmployeeError,
-  clearDeleteEmployeeError,
+  // clearDeleteEmployeeError,
 } = employeeSlice.actions;
 
 export const {
@@ -176,6 +182,6 @@ export const {
   selectIsUpdateEmployeeLoading,
   selectUpdateEmployeeError,
 
-  selectIsDeleteEmployeeLoading,
-  selectDeleteEmployeeError,
+  // selectIsDeleteEmployeeLoading,
+  // selectDeleteEmployeeError,
 } = employeeSlice.selectors;

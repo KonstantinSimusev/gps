@@ -4,7 +4,7 @@ import {
   IAccountInfo,
   ICreateEmployee,
   IEmployeeInfo,
-  ISuccess,
+  // ISuccess,
   IUpdateEmployee,
 } from '../../../utils/api.interface';
 
@@ -12,7 +12,7 @@ import { delay } from '../../../utils/utils';
 
 import {
   createEmployeeApi,
-  deleteEmployeeApi,
+  // deleteEmployeeApi,
   searchEmployeeApi,
   updateEmployeeApi,
 } from '../../../utils/api/employee.api';
@@ -67,15 +67,10 @@ export const createEmployee = createAsyncThunk(
 
 export const updateEmployee = createAsyncThunk(
   'employee/update',
-  async (payload: {
-    id: string;
-    data: IUpdateEmployee;
-  }): Promise<IEmployeeInfo> => {
+  async (data: IUpdateEmployee): Promise<IEmployeeInfo> => {
     try {
-      const { id, data } = payload;
-
       // Вызываем API функцию
-      const response = await updateEmployeeApi(id, data);
+      const response = await updateEmployeeApi(data);
 
       // Добавляем задержку кода
       await delay();
@@ -94,26 +89,26 @@ export const updateEmployee = createAsyncThunk(
   },
 );
 
-export const deleteEmployee = createAsyncThunk(
-  'employee/delete',
-  async (id: string): Promise<ISuccess> => {
-    try {
-      // Вызываем API функцию
-      const response = await deleteEmployeeApi(id);
+// export const deleteEmployee = createAsyncThunk(
+//   'employee/delete',
+//   async (id: string): Promise<ISuccess> => {
+//     try {
+//       // Вызываем API функцию
+//       const response = await deleteEmployeeApi(id);
 
-      // Добавляем задержку кода
-      await delay();
+//       // Добавляем задержку кода
+//       await delay();
 
-      return response;
-    } catch (error) {
-      // Добавляем задержку кода
-      await delay();
+//       return response;
+//     } catch (error) {
+//       // Добавляем задержку кода
+//       await delay();
 
-      if (error instanceof Error) {
-        throw error; // передаём точное сообщение от бэкенда
-      }
+//       if (error instanceof Error) {
+//         throw error; // передаём точное сообщение от бэкенда
+//       }
 
-      throw new Error('Что-то пошло не так');
-    }
-  },
-);
+//       throw new Error('Что-то пошло не так');
+//     }
+//   },
+// );

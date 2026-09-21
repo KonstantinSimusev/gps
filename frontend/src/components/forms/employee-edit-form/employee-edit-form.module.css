@@ -5,11 +5,7 @@
 }
 
 .input {
-  margin: clamp(1.875rem, 1.5302rem + 1.7241vw, 2.5rem) 0 0;
-}
-
-.border {
-  margin-bottom: 30px;
+  margin-top: clamp(1.875rem, 1.5302rem + 1.7241vw, 2.5rem);
 }
 
 .switch {
@@ -22,8 +18,7 @@
   justify-content: center;
   align-items: center;
   height: 26px;
-  /* margin-top: clamp(0rem, -0.6897rem + 3.4483vw, 1.25rem); */
-  margin: clamp(1.25rem, 0.5603rem + 3.4483vw, 2.5rem) 0;
+  margin: clamp(0.375rem, -0.1078rem + 2.4138vw, 1.25rem) 0;
 }
 
 .button {

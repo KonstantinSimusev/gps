@@ -3,11 +3,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Schedule } from './entities/schedule.entity';
 import { ScheduleRepository } from './schedule.repository';
+import { ScheduleService } from './schedule.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Schedule])],
   controllers: [],
-  providers: [ScheduleRepository],
-  exports: [ScheduleRepository],
+  providers: [ScheduleRepository, ScheduleService],
+  exports: [ScheduleRepository, ScheduleService],
 })
 export class ScheduleModule {}

@@ -7,9 +7,12 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { GlobalAuthModule } from './global/global-auth.module';
 
-import { EmployeeManagementModule } from './modules/employee-management/employee-management.module';
 import { EmployeeAccountModule } from './modules/employee-account/employee-account.module';
+import { EmployeeManagementModule } from './modules/employee-management/employee-management.module';
+import { EmployeeShiftModule } from './modules/employee-shift/employee-shift.module';
+import { NoticeModule } from './modules/notice/notice.module';
 import { ShiftManagementModule } from './modules/shift-management/shift-management.module';
+import { ShiftModule } from './modules/shift/shift.module';
 
 @Module({
   imports: [
@@ -18,9 +21,12 @@ import { ShiftManagementModule } from './modules/shift-management/shift-manageme
     }),
     DatabaseModule,
     GlobalAuthModule,
-    EmployeeManagementModule,
     EmployeeAccountModule,
+    EmployeeManagementModule,
+    EmployeeShiftModule,
+    NoticeModule,
     ShiftManagementModule,
+    ShiftModule,
     ServeStaticModule.forRoot(
       {
         rootPath: path.join(__dirname, '..', 'dist', 'assets'),

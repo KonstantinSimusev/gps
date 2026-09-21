@@ -9,7 +9,6 @@ interface ILayerContextValue {
   isEmployeeSearchOpen: boolean;
   isEmployeeCreateOpen: boolean;
   isEmployeeEditOpen: boolean;
-  isEmployeeDeleteOpen: boolean;
   isAccountInfoOpen: boolean;
   isPasswordUpdateOpen: boolean;
   isShiftSearchOpen: boolean;
@@ -18,6 +17,7 @@ interface ILayerContextValue {
 
   selectedId: string;
   selectedScrollPosition: number;
+  selectedDate: string | null;
 
   setIsAgreed: (value: boolean) => void;
   setIsOverlayOpen: (value: boolean) => void;
@@ -27,7 +27,6 @@ interface ILayerContextValue {
   setIsEmployeeSearchOpen: (value: boolean) => void;
   setIsEmployeeCreateOpen: (value: boolean) => void;
   setIsEmployeeEditOpen: (value: boolean) => void;
-  setIsEmployeeDeleteOpen: (value: boolean) => void;
   setIsAccountInfoOpen: (value: boolean) => void;
   setIsPasswordUpdateOpen: (value: boolean) => void;
   setIsShiftSearchOpen: (value: boolean) => void;
@@ -36,6 +35,7 @@ interface ILayerContextValue {
 
   setSelectedId: (value: string) => void;
   setSelectedScrollPosition: (value: number) => void;
+  setSelectedDate: (value: string | null) => void;
 }
 
 export const LayerContext = createContext<ILayerContextValue>({
@@ -47,7 +47,6 @@ export const LayerContext = createContext<ILayerContextValue>({
   isEmployeeSearchOpen: false,
   isEmployeeCreateOpen: false,
   isEmployeeEditOpen: false,
-  isEmployeeDeleteOpen: false,
   isAccountInfoOpen: false,
   isPasswordUpdateOpen: false,
   isShiftSearchOpen: false,
@@ -56,6 +55,7 @@ export const LayerContext = createContext<ILayerContextValue>({
 
   selectedId: '',
   selectedScrollPosition: 0,
+  selectedDate: null,
 
   setIsAgreed: () => {},
   setIsOverlayOpen: () => {},
@@ -65,7 +65,6 @@ export const LayerContext = createContext<ILayerContextValue>({
   setIsEmployeeSearchOpen: () => {},
   setIsEmployeeCreateOpen: () => {},
   setIsEmployeeEditOpen: () => {},
-  setIsEmployeeDeleteOpen: () => {},
   setIsAccountInfoOpen: () => {},
   setIsPasswordUpdateOpen: () => {},
   setIsShiftSearchOpen: () => {},
@@ -74,4 +73,5 @@ export const LayerContext = createContext<ILayerContextValue>({
 
   setSelectedId: () => {},
   setSelectedScrollPosition: () => {},
+  setSelectedDate: () => {},
 });

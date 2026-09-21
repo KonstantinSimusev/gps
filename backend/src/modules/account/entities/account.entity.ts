@@ -35,6 +35,7 @@ export class Account {
   })
   hashedRefreshToken: string | null;
 
+  // Связь: один аккаунт — один сотрудник
   @OneToOne(() => Employee, (employee) => employee.account)
   employee: Employee;
 }

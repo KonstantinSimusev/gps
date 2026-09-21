@@ -108,7 +108,7 @@ export const EmployeeSearchForm = () => {
     try {
       await dispatch(searchEmployee(formData.personalNumber)).unwrap();
 
-      navigate('/admin');
+      navigate('/employee');
 
       setIsEmployeeSearchOpen(false);
       setIsOverlayOpen(false);
@@ -135,7 +135,7 @@ export const EmployeeSearchForm = () => {
       <TextInput
         type='text'
         name='personalNumber'
-        label='Личный номер'
+        label='Личный №'
         value={formData.personalNumber}
         error={errors.personalNumber}
         onChange={handleChange}

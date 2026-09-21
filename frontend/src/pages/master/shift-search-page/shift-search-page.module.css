@@ -1,0 +1,13 @@
+.container {
+  justify-content: center;
+  align-items: center;
+}
+
+.empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  opacity: 0.6;
+  flex-grow: 1;
+}

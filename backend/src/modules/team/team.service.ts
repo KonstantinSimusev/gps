@@ -8,7 +8,7 @@ export class TeamService {
   constructor(private readonly teamRepository: TeamRepository) {}
 
   async getTeam(teamNumber: number): Promise<Team> {
-    const team = await this.teamRepository.findTeamByTeamNumber(teamNumber);
+    const team = await this.teamRepository.findOneByNumber(teamNumber);
 
     if (!team) {
       throw new NotFoundException(`Бригада номер ${teamNumber} не найдена`);

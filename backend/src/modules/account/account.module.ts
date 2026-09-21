@@ -3,13 +3,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Account } from './entities/account.entity';
 
-import { AccountService } from './account.service';
 import { AccountRepository } from './account.repository';
+import { AccountService } from './account.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Account])],
   controllers: [],
-  providers: [AccountService, AccountRepository],
-  exports: [AccountService, AccountRepository],
+  providers: [AccountRepository, AccountService],
+  exports: [AccountRepository, AccountService],
 })
 export class AccountModule {}

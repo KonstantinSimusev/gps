@@ -1,4 +1,4 @@
-import { DeleteResult, In, IsNull, Not, Repository } from 'typeorm';
+import { In, IsNull, Not, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -48,8 +48,17 @@ export class EmployeeRepository {
         'team',
         'position',
         'position.workshop',
-        'employeeRole',
-        'employeeRole.role',
+        'position.profession',
+        'position.grade',
+        'position.schedule',
+        'position.role',
+        'currentTeam',
+        'currentPosition',
+        'currentPosition.workshop',
+        'currentPosition.profession',
+        'currentPosition.grade',
+        'currentPosition.schedule',
+        'currentPosition.role',
       ],
     });
   }
@@ -58,22 +67,6 @@ export class EmployeeRepository {
     return this.employeeRepository.findOne({
       where: { id, isActive: true },
       relations: ['account', 'position', 'position.workshop'],
-      select: {
-        id: true,
-        lastName: true,
-        firstName: true,
-        patronymic: true,
-        account: {
-          id: true,
-        },
-        position: {
-          id: true,
-          workshop: {
-            id: true,
-            workshopCode: true,
-          },
-        },
-      },
     });
   }
 
@@ -90,27 +83,19 @@ export class EmployeeRepository {
         'position.role',
         'currentTeam',
         'currentPosition',
+        'currentPosition.workshop',
+        'currentPosition.profession',
+        'currentPosition.grade',
+        'currentPosition.schedule',
         'currentPosition.role',
-        'employeeRole',
-        'employeeRole.role',
       ],
     });
   }
 
-  async findWithWorkshopCodeById(id: string): Promise<Employee | null> {
+  async findWithWorkshopById(id: string): Promise<Employee | null> {
     return this.employeeRepository.findOne({
       where: { id },
       relations: ['position', 'position.workshop'],
-      select: {
-        id: true,
-        position: {
-          id: true,
-          workshop: {
-            id: true,
-            workshopCode: true,
-          },
-        },
-      },
     });
   }
 
@@ -120,17 +105,17 @@ export class EmployeeRepository {
   }
 
   // 4. CRUD: Delete
-  async remove(id: string): Promise<DeleteResult> {
-    return this.employeeRepository.delete(id);
-  }
+  // async remove(id: string): Promise<DeleteResult> {
+  //   return this.employeeRepository.delete(id);
+  // }
 
-  // 5. Вспомогательные методы проверки существования (Exists)
-  async existsByFullName(
+  // 5. Вспомогательные методы проверки существования
+  async countByFullName(
     lastName: string,
     firstName: string,
     patronymic: string,
-  ): Promise<boolean> {
-    return this.employeeRepository.exists({
+  ): Promise<number> {
+    return this.employeeRepository.count({
       where: {
         lastName,
         firstName,
@@ -139,21 +124,21 @@ export class EmployeeRepository {
     });
   }
 
-  async existsByPersonalNumber(personalNumber: number): Promise<boolean> {
-    return this.employeeRepository.exists({
+  async countByPersonalNumber(personalNumber: number): Promise<number> {
+    return this.employeeRepository.count({
       where: { personalNumber },
     });
   }
 
-  async existsByFullNameExcluding(
+  async countByFullNameExcluding(
     employeeId: string,
     lastName: string,
     firstName: string,
     patronymic: string,
-  ): Promise<boolean> {
-    return await this.employeeRepository.exists({
+  ): Promise<number> {
+    return this.employeeRepository.count({
       where: {
-        id: Not(employeeId),
+        id: Not(employeeId), // Исключаем текущего сотрудника
         lastName,
         firstName,
         patronymic,
@@ -161,94 +146,48 @@ export class EmployeeRepository {
     });
   }
 
-  async existsByPersonalNumberExcluding(
+  async countByPersonalNumberExcluding(
     employeeId: string,
     personalNumber: number,
-  ): Promise<boolean> {
-    return this.employeeRepository.exists({
+  ): Promise<number> {
+    return this.employeeRepository.count({
       where: {
-        id: Not(employeeId),
+        id: Not(employeeId), // Исключаем текущего сотрудника
         personalNumber,
       },
     });
   }
 
-  async existsCurrentMasterCreate(
+  async countTeamManagers(
     teamId: string,
     workshopId: string,
     scheduleId: string,
-  ): Promise<boolean> {
-    return this.employeeRepository.exists({
-      where: [
-        // Сценарий 1: currentTeam заполнен, currentPosition заполнен
-        {
-          hasAccess: true,
-          isActive: true,
-          currentTeam: { id: teamId },
-          currentPosition: {
-            workshop: { id: workshopId },
-            schedule: { id: scheduleId },
-            role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
-          },
+    roleId: string,
+  ): Promise<number> {
+    return this.employeeRepository.count({
+      where: {
+        hasAccess: true,
+        isActive: true,
+        team: { id: teamId },
+        position: {
+          workshop: { id: workshopId },
+          schedule: { id: scheduleId },
+          role: { id: roleId },
         },
-        // Сценарий 2: currentTeam NULL, currentPosition заполнен
-        {
-          hasAccess: true,
-          isActive: true,
-          currentTeam: IsNull(),
-          team: { id: teamId },
-          currentPosition: {
-            workshop: { id: workshopId },
-            schedule: { id: scheduleId },
-            role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
-          },
-        },
-        // Сценарий 3: currentTeam заполнен, currentPosition NULL
-        {
-          hasAccess: true,
-          isActive: true,
-          currentTeam: { id: teamId },
-          currentPosition: IsNull(),
-          position: {
-            workshop: { id: workshopId },
-            schedule: { id: scheduleId },
-            role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
-          },
-        },
-        // Сценарий 4: currentTeam NULL, currentPosition NULL
-        {
-          hasAccess: true,
-          isActive: true,
-          currentTeam: IsNull(),
-          team: { id: teamId },
-          currentPosition: IsNull(),
-          position: {
-            workshop: { id: workshopId },
-            schedule: { id: scheduleId },
-            role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
-          },
-        },
-      ],
-      relations: [
-        'currentTeam',
-        'team',
-        'currentPosition',
-        'currentPosition.workshop',
-        'currentPosition.role',
-        'position',
-        'position.workshop',
-        'position.role',
-      ],
+      },
+
+      relations: ['team', 'position', 'position.workshop', 'position.role'],
     });
   }
 
-  async existsCurrentMasterUpdate(
+  async countTeamManagersExcluding(
     employeeId: string,
     teamId: string,
     workshopId: string,
     scheduleId: string,
-  ): Promise<boolean> {
-    return this.employeeRepository.exists({
+    roleId: string,
+  ): Promise<number> {
+    return this.employeeRepository.count({
       where: [
         // Сценарий 1: currentTeam заполнен, currentPosition заполнен
         {
@@ -259,7 +198,7 @@ export class EmployeeRepository {
           currentPosition: {
             workshop: { id: workshopId },
             schedule: { id: scheduleId },
-            role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
+            role: { id: roleId },
           },
         },
         // Сценарий 2: currentTeam NULL, currentPosition заполнен
@@ -272,7 +211,7 @@ export class EmployeeRepository {
           currentPosition: {
             workshop: { id: workshopId },
             schedule: { id: scheduleId },
-            role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
+            role: { id: roleId },
           },
         },
         // Сценарий 3: currentTeam заполнен, currentPosition NULL
@@ -285,7 +224,7 @@ export class EmployeeRepository {
           position: {
             workshop: { id: workshopId },
             schedule: { id: scheduleId },
-            role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
+            role: { id: roleId },
           },
         },
         // Сценарий 4: currentTeam NULL, currentPosition NULL
@@ -299,19 +238,19 @@ export class EmployeeRepository {
           position: {
             workshop: { id: workshopId },
             schedule: { id: scheduleId },
-            role: { name: In(['LEAD_MASTER', 'MASTER', 'DETAIL_MASTER']) },
+            role: { id: roleId },
           },
         },
       ],
       relations: [
-        'currentTeam',
         'team',
-        'currentPosition',
-        'currentPosition.workshop',
-        'currentPosition.role',
         'position',
         'position.workshop',
         'position.role',
+        'currentTeam',
+        'currentPosition',
+        'currentPosition.workshop',
+        'currentPosition.role',
       ],
     });
   }

@@ -1,7 +1,11 @@
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 import { Account } from './entities/account.entity';
 import { AccountRepository } from './account.repository';
@@ -15,30 +19,56 @@ export class AccountService {
     firstName: string,
     patronymic: string,
   ): Promise<{ account: Account; initialPassword: string }> {
-    try {
-      const login = this.generateLogin(lastName, firstName, patronymic);
-      const password = uuidv4();
+    const login = this.generateLogin(lastName, firstName, patronymic);
+    const password = uuidv4();
 
-      // Генерируем соль и хешируем пароль
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
+    // Генерируем соль и хешируем пароль
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-      // Формируем данные для создания аккаунта
-      const data = {
-        login,
-        hashedPassword,
-      };
+    // Сохраняем в базу данных
+    const account = await this.accountRepository.create({
+      login,
+      hashedPassword,
+    });
 
-      // Сохраняем в базу данных
-      const account = await this.accountRepository.create(data);
+    return {
+      account,
+      initialPassword: password, // возвращаем пароль один раз
+    };
+  }
 
-      return {
-        account,
-        initialPassword: password, // возвращаем пароль один раз
-      };
-    } catch (error) {
-      throw new InternalServerErrorException('Не удалось создать аккаунт');
+  async getAccountById(accountId: string): Promise<Account> {
+    const account = await this.accountRepository.findById(accountId);
+
+    if (!account) {
+      throw new NotFoundException('Аккаунт не найден');
     }
+
+    return account;
+  }
+
+  async validateAccountByLogin(
+    login: string,
+    password: string,
+  ): Promise<Account> {
+    const account = await this.accountRepository.findByLogin(login);
+
+    if (!account) {
+      throw new UnauthorizedException('Неверный логин или пароль');
+    }
+
+    // Проверяем пароль
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      account.hashedPassword,
+    );
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Неверный логин или пароль');
+    }
+
+    return account;
   }
 
   private generateLogin(

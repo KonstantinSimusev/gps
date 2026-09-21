@@ -1,17 +1,12 @@
 .container {
   display: flex;
   justify-content: space-between;
-  align-items: start;
-  margin-left: auto;
   width: clamp(19.6875rem, -3.75rem + 100vw, 23.125rem);
+  margin: 0 auto;
   padding: 20px 30px;
   border-radius: 30px;
   cursor: pointer;
   transition: opacity 0.3s ease;
-}
-
-.index {
-  opacity: 0.6;
 }
 
 .border {
@@ -21,12 +16,34 @@
   opacity: 0.2;
 }
 
-.info {
+.date__info {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  align-items: end;
 }
+
+.shift__info {
+  display: flex;
+  flex-direction: column;
+  width: 110px;
+  gap: 6px;
+}
+
+.wrapper {
+  display: flex;
+  gap: 14px;
+}
+
+.shift__raw {
+  display: flex;
+  gap: 10px;
+  /* justify-content: space-between; */
+  justify-content: end;
+}
+
+/* .schedule,
+.team {
+} */
 
 .shift {
   opacity: 0.6;

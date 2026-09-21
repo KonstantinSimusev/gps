@@ -37,12 +37,42 @@
 }
 
 .link {
+  position: relative;
   width: fit-content;
 }
 
+.link a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.4s ease;
+}
+
+.label {
+  letter-spacing: 0.2px;
+}
+
+.badge {
+  position: absolute;
+  top: 50%;
+  right: -26px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #d32f2f;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 400;
+}
+
 .link__active {
-  color: var(--color-link);
-  border-bottom: 1px solid var(--bg-color-link);
+  color: rgba(255 255 255 / 0.8);
+  font-weight: 800;
+  letter-spacing: 1px;
 }
 
 .link:hover {
@@ -50,8 +80,13 @@
 }
 
 .link:active {
-  opacity: 0.6;
+  opacity: 0.8;
   transition: opacity 0.4s ease;
+}
+
+.link:not(.link__active):hover a {
+  opacity: 0.8;
+  cursor: pointer;
 }
 
 .top {

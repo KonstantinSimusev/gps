@@ -8,7 +8,7 @@ import {
 
 import { AttendanceType } from '../../attendance-type/entities/attendance-type.entity';
 import { Employee } from '../../employee/entities/employee.entity';
-import { Profession } from '../../profession/entities/profession.entity';
+import { Position } from 'src/modules/position/entities/position.entity';
 import { Shift } from '../../shift/entities/shift.entity';
 import { WorkPlace } from '../../work-place/entities/work-place.entity';
 
@@ -20,14 +20,22 @@ export class EmployeeShift {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  // Отработанное время в минутах
   @Column({
-    name: 'hours',
-    type: 'decimal',
-    precision: 4,
-    scale: 1,
+    name: 'minutes',
+    type: 'integer',
     nullable: false,
   })
-  hours: number;
+  minutes: number;
+
+  // Посещение сменно-встечных собраний
+  @Column({
+    name: 'is_present',
+    type: 'boolean',
+    nullable: true,
+    default: true,
+  })
+  isPresent: boolean | null;
 
   // Связь: много смен сотрудника — один сотрудник
   @ManyToOne(() => Employee, (employee) => employee.employeeShifts)
@@ -47,13 +55,13 @@ export class EmployeeShift {
   @JoinColumn({ name: 'attendance_type_id' })
   attendanceType: AttendanceType;
 
-  // Связь: много смен сотрудника — одна текущая профессия
+  // Связь: много смен сотрудника — одна текущая позиция
   @ManyToOne(
-    () => Profession,
-    (currentProfession) => currentProfession.employeeShifts,
+    () => Position,
+    (currentPosition) => currentPosition.employeeShifts,
   )
-  @JoinColumn({ name: 'current_profession_id' })
-  currentProfession: Profession;
+  @JoinColumn({ name: 'current_position_id' })
+  currentPosition: Position;
 
   // Связь: много смен сотрудника — одно рабочее место
   @ManyToOne(() => WorkPlace, (workPlace) => workPlace.employeeShifts)

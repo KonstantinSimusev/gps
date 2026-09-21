@@ -9,6 +9,7 @@ import {
 
 import { Employee } from '../../employee/entities/employee.entity';
 // import { EmployeeTransfer } from '../../employee-transfer/entities/employee-transfer.entity';
+import { EmployeeShift } from '../../employee-shift/entities/employee-shift.entity';
 import { Grade } from '../../grade/entities/grade.entity';
 import { Profession } from '../../profession/entities/profession.entity';
 import { Schedule } from '../../schedule/entities/schedule.entity';
@@ -59,6 +60,17 @@ export class Position {
   // Связь: одна позиция — много сотрудников
   @OneToMany(() => Employee, (employee) => employee.position)
   employees: Employee[];
+
+  // Связь: одна позиция — много сотрудников (текущая позиция)
+  @OneToMany(() => Employee, (employee) => employee.currentPosition)
+  currentEmployees: Employee[];
+
+  // Связь: одна профессия — много смен работника
+  @OneToMany(
+    () => EmployeeShift,
+    (employeeShift) => employeeShift.currentPosition,
+  )
+  employeeShifts: EmployeeShift[];
 
   // // Связь: одна позиция — много переводов сотрудников
   // @OneToMany(

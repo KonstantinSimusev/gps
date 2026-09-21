@@ -23,6 +23,7 @@ import {
 } from '../../shared/interfaces/api.interface';
 
 import { AccountRepository } from '../account/account.repository';
+import { AccountService } from '../account/account.service';
 
 @Injectable()
 export class AuthService {
@@ -30,6 +31,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly accountRepository: AccountRepository,
+    private readonly accountService: AccountService,
   ) {}
 
   async login(
@@ -37,22 +39,11 @@ export class AuthService {
     password: string,
     res: Response,
   ): Promise<IProfile> {
-    // Находим аккаунт
-    const account = await this.accountRepository.findByLogin(login);
-
-    if (!account) {
-      throw new UnauthorizedException('Неверный логин или пароль');
-    }
-
-    // Проверяем пароль
-    const isPasswordValid = await bcrypt.compare(
+    // Проверяем аккаунт
+    const account = await this.accountService.validateAccountByLogin(
+      login,
       password,
-      account.hashedPassword,
     );
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Неверный логин или пароль');
-    }
 
     // Генерируем accessToken
     const accessToken = await this.generateToken({
@@ -92,6 +83,7 @@ export class AuthService {
       lastName: account.employee.lastName,
       firstName: account.employee.firstName,
       patronymic: account.employee.patronymic,
+      personalNumber: account.employee.personalNumber,
       profession: account.employee.position.profession.name,
       workshopCode:
         account.employee.currentPosition?.workshop?.workshopCode ??
@@ -103,7 +95,6 @@ export class AuthService {
         account.employee.currentPosition?.schedule?.scheduleCode ??
         account.employee.position.schedule.scheduleCode,
       role:
-        account.employee.employeeRole?.role?.name ??
         account.employee.currentPosition?.role?.name ??
         account.employee.position.role.name,
     };
@@ -210,11 +201,7 @@ export class AuthService {
     );
 
     // Находим аккаунт
-    const account = await this.accountRepository.findById(accountId);
-
-    if (!account) {
-      throw new NotFoundException('Аккаунт не найден');
-    }
+    const account = await this.accountService.getAccountById(accountId);
 
     // Console.log
     // console.log('До 10 сек');
@@ -224,6 +211,7 @@ export class AuthService {
       lastName: account.employee.lastName,
       firstName: account.employee.firstName,
       patronymic: account.employee.patronymic,
+      personalNumber: account.employee.personalNumber,
       profession: account.employee.position.profession.name,
       workshopCode:
         account.employee.currentPosition?.workshop?.workshopCode ??
@@ -235,7 +223,6 @@ export class AuthService {
         account.employee.currentPosition?.schedule?.scheduleCode ??
         account.employee.position.schedule.scheduleCode,
       role:
-        account.employee.employeeRole?.role?.name ??
         account.employee.currentPosition?.role?.name ??
         account.employee.position.role.name,
     };
@@ -281,7 +268,9 @@ export class AuthService {
       );
 
       // Находим аккаунт
-      const account = await this.accountRepository.findById(currentAccount.id);
+      const account = await this.accountService.getAccountById(
+        currentAccount.id,
+      );
 
       if (!account) {
         throw new NotFoundException('Аккаунт не найден');
@@ -295,6 +284,7 @@ export class AuthService {
         lastName: account.employee.lastName,
         firstName: account.employee.firstName,
         patronymic: account.employee.patronymic,
+        personalNumber: account.employee.personalNumber,
         profession: account.employee.position.profession.name,
         workshopCode:
           account.employee.currentPosition?.workshop?.workshopCode ??
@@ -306,7 +296,6 @@ export class AuthService {
           account.employee.currentPosition?.schedule?.scheduleCode ??
           account.employee.position.schedule.scheduleCode,
         role:
-          account.employee.employeeRole?.role?.name ??
           account.employee.currentPosition?.role?.name ??
           account.employee.position.role.name,
       };

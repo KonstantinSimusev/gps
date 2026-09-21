@@ -18,64 +18,134 @@ export class ShiftRepository {
   }
 
   // 2. CRUD: Read (общие методы поиска)
-  async findAll(workshopId: string, teamId: string): Promise<Shift[]> {
-    const currentDate = new Date();
-
-    const firstDayOfMonth = new Date(
-      currentDate.getUTCFullYear(),
-      currentDate.getUTCMonth(),
-      1,
-    );
-
-    const lastDayOfMonth = new Date(
-      currentDate.getUTCFullYear(),
-      currentDate.getUTCMonth() + 1,
-      0, // 0-й день следующего месяца — это последний день текущего
-    );
-
-    return this.shiftRepository.find({
+  async findOneByDate(
+    date: Date,
+    workshopId: string,
+    teamId: string,
+    scheduleId: string,
+  ): Promise<Shift | null> {
+    return this.shiftRepository.findOne({
       where: {
+        date,
         workshop: { id: workshopId },
         team: { id: teamId },
-        date: Between(firstDayOfMonth, lastDayOfMonth),
+        schedule: { id: scheduleId },
       },
       relations: [
         'workshop',
         'team',
+        'schedule',
         'shiftSchedule',
         'shiftSchedule.shiftType',
         'employeeShifts',
+        'employeeShifts.attendanceType',
+        'employeeShifts.workPlace',
       ],
     });
   }
 
-  async findCurrentShifts(
+  async findAllByDate(
     date: Date,
     workshopId: string,
     teamId: string,
+    scheduleId: string,
   ): Promise<Shift[]> {
     return this.shiftRepository.find({
       where: {
         date,
         workshop: { id: workshopId },
         team: { id: teamId },
+        schedule: { id: scheduleId },
       },
-      relations: ['workshop', 'team', 'shiftSchedule', 'employeeShifts'],
+      relations: [
+        'workshop',
+        'team',
+        'schedule',
+        'shiftSchedule',
+        'shiftSchedule.shiftType',
+        'employeeShifts',
+        'employeeShifts.attendanceType',
+        'employeeShifts.workPlace',
+      ],
+      order: {
+        date: 'DESC', // ← сортировка по дате: от новых к старым
+      },
     });
   }
 
-  // 5. Вспомогательные методы проверки существования (Exists)
-  async existsByWorkshopTeamDate(
+  async findOneById(shiftId: string): Promise<Shift | null> {
+    return this.shiftRepository.findOne({
+      where: { id: shiftId },
+      relations: [
+        'workshop',
+        'team',
+        'schedule',
+        'shiftSchedule',
+        'shiftSchedule.shiftType',
+        'employeeShifts',
+        'employeeShifts.attendanceType',
+        'employeeShifts.workPlace',
+      ],
+    });
+  }
+
+  async findAllInCurrentAndPreviousMonth(
     workshopId: string,
     teamId: string,
-    date: Date,
-  ): Promise<boolean> {
-    return this.shiftRepository.exists({
+    scheduleId: string,
+  ): Promise<Shift[]> {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth(); // 0–11
+
+    // 1-е число предыдущего месяца 00:00:00
+    const start = new Date(year, month - 1, 1);
+    start.setHours(0, 0, 0, 0);
+
+    // Последний день текущего месяца 23:59:59
+    const end = new Date(year, month + 1, 0, 23, 59, 59, 999);
+
+    return this.shiftRepository.find({
       where: {
+        date: Between(start, end),
         workshop: { id: workshopId },
         team: { id: teamId },
-        date,
+        schedule: { id: scheduleId },
+      },
+      relations: [
+        'workshop',
+        'team',
+        'schedule',
+        'shiftSchedule',
+        'shiftSchedule.shiftType',
+        'employeeShifts',
+        'employeeShifts.attendanceType',
+        'employeeShifts.workPlace',
+      ],
+      order: {
+        date: 'DESC',
       },
     });
+  }
+
+  async countShifts(
+    date: Date,
+    workshopId: string,
+    teamId: string,
+    scheduleId: string,
+  ): Promise<number> {
+    return this.shiftRepository.count({
+      where: {
+        date,
+        workshop: { id: workshopId },
+        team: { id: teamId },
+        schedule: { id: scheduleId },
+      },
+    });
+  }
+
+  // 3. CRUD: Update
+  async save(shift: Shift): Promise<Shift> {
+    return this.shiftRepository.save(shift);
   }
 }

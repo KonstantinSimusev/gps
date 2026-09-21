@@ -1,18 +1,21 @@
 import { useContext, useEffect, useState } from 'react';
 
+import { toDateString } from '../../../utils/utils';
+
 import {
   validateField,
   validateForm,
   validationRules,
 } from '../../../utils/validation';
 
-// import { useDispatch, useSelector } from '../../../services/store';
+import { useDispatch, useSelector } from '../../../services/store';
+import { getShiftsByDate } from '../../../services/slices/shift/actions';
 
-// import {
-//   clearSearchEmployeeError,
-//   selectIsSearchEmployeeLoading,
-//   selectSearchEmployeeError,
-// } from '../../../services/slices/employee/slice';
+import {
+  clearSearchShiftsError,
+  selectIsSearchShiftsLoading,
+  selectSearchShiftsError,
+} from '../../../services/slices/shift/slice';
 
 import { LayerContext } from '../../../contexts/layer/layerContext';
 
@@ -29,15 +32,16 @@ interface IFormData extends Record<string, string> {
 }
 
 export const ShiftSearchForm = () => {
-  // const dispatch = useDispatch();
-  // const isLoading = useSelector(selectIsSearchEmployeeLoading);
-  // const serverError = useSelector(selectSearchEmployeeError);
+  const dispatch = useDispatch();
+  const isLoading = useSelector(selectIsSearchShiftsLoading);
+  const serverError = useSelector(selectSearchShiftsError);
 
-  const isLoading = false;
-  const serverError = 'Hello, World!';
-
-  const { isShiftSearchOpen, setIsOverlayOpen, setIsShiftSearchOpen } =
-    useContext(LayerContext);
+  const {
+    isShiftSearchOpen,
+    setIsOverlayOpen,
+    setIsShiftSearchOpen,
+    setSelectedDate,
+  } = useContext(LayerContext);
 
   // Состояние для хранения значений полей формы
   const [formData, setFormData] = useState<IFormData>({
@@ -51,7 +55,7 @@ export const ShiftSearchForm = () => {
 
   useEffect(() => {
     if (isShiftSearchOpen) {
-      // dispatch(clearSearchEmployeeError());
+      dispatch(clearSearchShiftsError());
     }
   }, [isShiftSearchOpen]);
 
@@ -72,7 +76,7 @@ export const ShiftSearchForm = () => {
     });
 
     // Очищаем ошибки с сервера
-    // dispatch(clearSearchEmployeeError());
+    dispatch(clearSearchShiftsError());
   };
 
   // Обработчик потери фокуса для валидации
@@ -104,16 +108,20 @@ export const ShiftSearchForm = () => {
     }
 
     try {
-      // await dispatch(searchEmployee(formData.personalNumber)).unwrap();
+      await dispatch(
+        getShiftsByDate({ shiftDate: toDateString(formData.shiftDate) }),
+      ).unwrap();
+
+      setSelectedDate(toDateString(formData.shiftDate));
 
       setIsShiftSearchOpen(false);
       setIsOverlayOpen(false);
-
-      setFormData({ shiftDate: '' });
-      setErrors({ shiftDate: '' });
     } catch (error) {
-      throw new Error();
+      throw new Error('Что-то пошло не так');
     }
+
+    setFormData({ shiftDate: '' });
+    setErrors({ shiftDate: '' });
   };
 
   // Определяем, заблокирована ли кнопка

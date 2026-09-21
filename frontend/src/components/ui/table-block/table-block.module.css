@@ -15,3 +15,10 @@
   font-size: 12px;
   opacity: 0.6;
 }
+
+.text {
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

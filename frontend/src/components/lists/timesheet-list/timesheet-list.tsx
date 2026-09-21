@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { IEmployee } from '../../../utils/api.interface';
+import { IEmployeeShift } from '../../../utils/api.interface';
 import { LayerContext } from '../../../contexts/layer/layerContext';
 
 import { TimesheetCard } from '../../cards/timesheet-card/timesheet-card';
@@ -8,10 +8,10 @@ import { TimesheetCard } from '../../cards/timesheet-card/timesheet-card';
 import styles from './timesheet-list.module.css';
 
 interface IProps {
-  employees: IEmployee[];
+  employeeShifts: IEmployeeShift[];
 }
 
-export const TimesheetList = ({ employees }: IProps) => {
+export const TimesheetList = ({ employeeShifts }: IProps) => {
   const { setSelectedId, setIsOverlayOpen, setIsTimesheetEditOpen } =
     useContext(LayerContext);
 
@@ -21,17 +21,17 @@ export const TimesheetList = ({ employees }: IProps) => {
     setIsTimesheetEditOpen(true);
   };
 
-  if (!employees || employees.length === 0) {
-    return <p className={styles.empty}>Работники не найдены</p>;
+  if (!employeeShifts || employeeShifts.length === 0) {
+    return <p className={styles.empty}>Нет смен</p>;
   }
 
   return (
     <ul className={styles.list}>
-      {employees.map((employee) => (
-        <li key={employee.id} className={styles.item}>
+      {employeeShifts.map((employeeShift) => (
+        <li key={employeeShift.id} className={styles.item}>
           <TimesheetCard
-            employee={employee}
-            onClick={() => handleClick(employee.shift.id)}
+            employeeShift={employeeShift}
+            onClick={() => handleClick(employeeShift.id)}
           />
         </li>
       ))}

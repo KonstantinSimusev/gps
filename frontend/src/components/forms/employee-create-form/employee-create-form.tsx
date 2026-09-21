@@ -2,6 +2,12 @@ import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { formatDateForISO } from '../../../utils/utils';
+import {
+  GRADE_CODE_OPTIONS,
+  SCHEDULE_CODE_OPTIONS,
+  TEAM_CODE_OPTIONS,
+} from '../../../utils/types';
+import { ICreateEmployee } from '../../../utils/api.interface';
 
 import {
   validateField,
@@ -25,10 +31,10 @@ import { Button } from '../../ui/buttons/button/button';
 import { Form } from '../../ui/form/form';
 import { ServerError } from '../../ui/server-error/server-error';
 import { Spinner } from '../../ui/spinner/spinner';
+import { SelectInput } from '../../ui/inputs/select-input/select-input';
 import { TextInput } from '../../ui/inputs/text-input/text-input';
 
 import styles from './employee-create-form.module.css';
-import { ICreateEmployee } from '../../../utils/api.interface';
 
 interface IFormData extends Record<string, string> {
   lastName: string;
@@ -36,7 +42,9 @@ interface IFormData extends Record<string, string> {
   patronymic: string;
   personalNumber: string;
   teamNumber: string;
-  position: string;
+  positionCode: string;
+  gradeCode: string;
+  scheduleCode: string;
   birthDay: string;
   startDate: string;
 }
@@ -61,7 +69,9 @@ export const EmployeeCreateForm = () => {
     patronymic: '',
     personalNumber: '',
     teamNumber: '',
-    position: '',
+    positionCode: '',
+    gradeCode: '',
+    scheduleCode: '',
     birthDay: '',
     startDate: '',
   });
@@ -73,7 +83,9 @@ export const EmployeeCreateForm = () => {
     patronymic: '',
     personalNumber: '',
     teamNumber: '',
-    position: '',
+    positionCode: '',
+    gradeCode: '',
+    scheduleCode: '',
     birthDay: '',
     startDate: '',
   });
@@ -85,7 +97,9 @@ export const EmployeeCreateForm = () => {
   }, [isEmployeeCreateOpen]);
 
   // Обработчик изменения поля ввода
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
 
     // Обновляем данные формы
@@ -105,7 +119,9 @@ export const EmployeeCreateForm = () => {
   };
 
   // Обработчик потери фокуса для валидации
-  const handleBlur = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBlur = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
 
     // Получаем ошибку валидации для поля
@@ -139,7 +155,9 @@ export const EmployeeCreateForm = () => {
       patronymic: formData.patronymic,
       personalNumber: formData.personalNumber,
       teamNumber: formData.teamNumber,
-      positionCode: formData.position,
+      positionCode: formData.positionCode,
+      gradeCode: formData.gradeCode,
+      scheduleCode: formData.scheduleCode,
       birthDay: formatDateForISO(formData.birthDay),
       startDate: formatDateForISO(formData.startDate),
     };
@@ -147,7 +165,7 @@ export const EmployeeCreateForm = () => {
     try {
       await dispatch(createEmployee(dataForBackend)).unwrap();
 
-      navigate('/admin');
+      navigate('/employee');
 
       setIsEmployeeCreateOpen(false);
       setIsAccountInfoOpen(true);
@@ -158,7 +176,9 @@ export const EmployeeCreateForm = () => {
         patronymic: '',
         personalNumber: '',
         teamNumber: '',
-        position: '',
+        positionCode: '',
+        gradeCode: '',
+        scheduleCode: '',
         birthDay: '',
         startDate: '',
       });
@@ -169,7 +189,9 @@ export const EmployeeCreateForm = () => {
         patronymic: '',
         personalNumber: '',
         teamNumber: '',
-        position: '',
+        positionCode: '',
+        gradeCode: '',
+        scheduleCode: '',
         birthDay: '',
         startDate: '',
       });
@@ -187,7 +209,9 @@ export const EmployeeCreateForm = () => {
     !formData.patronymic ||
     !formData.personalNumber ||
     !formData.teamNumber ||
-    !formData.position ||
+    !formData.positionCode ||
+    !formData.gradeCode ||
+    !formData.scheduleCode ||
     !formData.birthDay ||
     !formData.startDate;
 
@@ -235,17 +259,18 @@ export const EmployeeCreateForm = () => {
         type='text'
         name='personalNumber'
         value={formData.personalNumber}
-        label='Личный номер'
+        label='Личный №'
         error={errors.personalNumber}
         onChange={handleChange}
         onBlur={handleBlur}
       />
 
-      <TextInput
-        type='text'
+      <SelectInput
         name='teamNumber'
         value={formData.teamNumber}
-        label='Бригада'
+        label='Бригада №'
+        isPlaceholder={formData.teamNumber === ''}
+        options={TEAM_CODE_OPTIONS}
         error={errors.teamNumber}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -253,10 +278,32 @@ export const EmployeeCreateForm = () => {
 
       <TextInput
         type='text'
-        name='position'
-        value={formData.position}
+        name='positionCode'
+        value={formData.positionCode}
         label='Штатная позиция'
-        error={errors.position}
+        error={errors.positionCode}
+        onChange={handleChange}
+        onBlur={handleBlur}
+      />
+
+      <SelectInput
+        name='gradeCode'
+        value={formData.gradeCode}
+        label='Разряд'
+        isPlaceholder={formData.gradeCode === ''}
+        options={GRADE_CODE_OPTIONS}
+        error={errors.gradeCode}
+        onChange={handleChange}
+        onBlur={handleBlur}
+      />
+
+      <SelectInput
+        name='scheduleCode'
+        value={formData.scheduleCode}
+        label='График работы'
+        isPlaceholder={formData.scheduleCode === ''}
+        options={SCHEDULE_CODE_OPTIONS}
+        error={errors.scheduleCode}
         onChange={handleChange}
         onBlur={handleBlur}
       />

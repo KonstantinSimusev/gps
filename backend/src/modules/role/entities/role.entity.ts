@@ -1,6 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { EmployeeRole } from '../../employee-role/entities/employee-role.entity';
 import { Position } from '../../position/entities/position.entity';
 
 @Entity({
@@ -23,8 +22,4 @@ export class Role {
   // Связь: одна роль — много позиций
   @OneToMany(() => Position, (position) => position.role)
   positions: Position[];
-
-  // Связь: одна роль — много ролей сотрудника
-  @OneToMany(() => EmployeeRole, (employeeRole) => employeeRole.role)
-  employeeRoles: EmployeeRole[];
 }

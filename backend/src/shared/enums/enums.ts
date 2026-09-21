@@ -1,19 +1,59 @@
 export enum ERole {
   USER = 'USER',
   ADMIN = 'ADMIN',
+  EXECUTIVE = 'EXECUTIVE', // Директор
+  HEAD_PRODUCTION = 'HEAD_PRODUCTION', // Начальник производства (в промышленности)
+  SENIOR_MANAGER = 'SENIOR_MANAGER', // Старший менеджер
   HEAD = 'HEAD',
   LEAD_MASTER = 'LEAD_MASTER',
   MASTER = 'MASTER',
   DETAIL_MASTER = 'DETAIL_MASTER',
+  PRODUCTION_FOREMAN = 'PRODUCTION_FOREMAN',
   PACKER = 'PACKER',
+}
+
+// ── categoryCode ──
+export enum ENoticeCategory {
+  DOCUMENT = 'document',
+  SHIFT = 'shift',
+}
+
+// ── actionCode ──
+export enum ENoticeAction {
+  CREATE = 'create',
+  FILL = 'fill',
+  SIGN = 'sign',
+}
+
+// ── titleText ──
+export enum ENoticeTitle {
+  TIMESHEET = 'Табель',
+  ORDER = 'Приказ',
+  INSTRUCTION = 'Распоряжение',
+  STATEMENT = 'Заявление',
+  ACT = 'Акт',
+}
+
+// ── actionLabel ──
+export enum ENoticeActionLabel {
+  CREATE_SHIFT = 'Создать смену',
+  FILL_SHIFT = 'Заполнить смену',
+  SIGN_DOCUMENT = 'Подписать документ',
+}
+
+// ── statusText (не в БД, генерируется динамически) ──
+export enum ENoticeStatus {
+  SHIFT_NOT_CREATED = 'Смена не создана',
+  SHIFT_NOT_FILLED = 'Смена не заполнена',
+  DOCUMENT_NOT_SIGNED = 'Документ не подписан',
 }
 
 export enum EWorkshop {
   W_Management = 'Управление',
   W_LPC4 = 'ЛПЦ-4',
   W_LPC5 = 'ЛПЦ-5',
-  W_LPC7 = 'ЛПЦ-7',
-  W_LPC8 = 'ЛПЦ-8',
+  W_LPC8_UGP = 'ЛПЦ-8 (участок гнутого профиля)',
+  W_LPC8_UL = 'ЛПЦ-8 (участок ленты)',
   W_LPC10 = 'ЛПЦ-10',
   W_LPC11 = 'ЛПЦ-11',
   W_PMP_North = 'ПМП (северный блок)',

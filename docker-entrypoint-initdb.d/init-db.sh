@@ -83,16 +83,53 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     shift_code INTEGER NOT NULL UNIQUE
   );
 
+  -- Создание таблицы notice_categories (категории уведомлений)
+  CREATE TABLE IF NOT EXISTS gps.notice_categories (
+    id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    category_code VARCHAR(50) NOT NULL UNIQUE
+  );
+
+  -- Создание таблицы notice_actions (действия уведомлений)
+  CREATE TABLE IF NOT EXISTS gps.notice_actions (
+    id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    action_code  VARCHAR(50) NOT NULL UNIQUE,
+    action_label VARCHAR(50) NOT NULL
+  );
+
+  -- Создание таблицы notice_statuses (статусы уведомлений)
+  CREATE TABLE IF NOT EXISTS gps.notice_statuses (
+    id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    status_label VARCHAR(50) NOT NULL UNIQUE
+  );
+
+  -- Создание таблицы notice_titles (заголовки уведомлений)
+  CREATE TABLE IF NOT EXISTS gps.notice_titles (
+    id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    title_text VARCHAR(50) NOT NULL,
+
+    category_id UUID NOT NULL,
+    action_id UUID NOT NULL,
+    status_id UUID NOT NULL,
+
+    CONSTRAINT uq_notice_title UNIQUE (category_id, action_id, status_id, title_text),
+
+    CONSTRAINT fk__title_category FOREIGN KEY (category_id) REFERENCES gps.notice_categories(id),
+    CONSTRAINT fk__title_action FOREIGN KEY (action_id) REFERENCES gps.notice_actions(id),
+    CONSTRAINT fk__title_status FOREIGN KEY (status_id) REFERENCES gps.notice_statuses(id)
+  );
+
   -- Создание таблицы positions (штатные позиции)
   CREATE TABLE IF NOT EXISTS gps.positions (
     id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
-    position_code INTEGER NOT NULL UNIQUE,
+    position_code INTEGER NOT NULL,
 
     workshop_id UUID NOT NULL,
     profession_id UUID NOT NULL,
     grade_id UUID NOT NULL,
     schedule_id UUID NOT NULL,
     role_id UUID NOT NULL,
+
+    CONSTRAINT uq_position_code_schedule_grade UNIQUE (position_code, schedule_id, grade_id),
 
     CONSTRAINT fk__position_workshop FOREIGN KEY (workshop_id) REFERENCES gps.workshops(id),
     CONSTRAINT fk__position_profession FOREIGN KEY (profession_id) REFERENCES gps.professions(id),
@@ -117,8 +154,8 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     account_id UUID UNIQUE NOT NULL,
     team_id UUID NOT NULL,
     position_id UUID NOT NULL,
-    current_team_id UUID NULL,
-    current_position_id UUID NULL,
+    current_team_id UUID,
+    current_position_id UUID,
 
     CONSTRAINT uq_person_full_name UNIQUE (last_name, first_name, patronymic),
 
@@ -127,19 +164,6 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     CONSTRAINT fk__employee_position FOREIGN KEY (position_id) REFERENCES gps.positions(id),
     CONSTRAINT fk__employee_current_team FOREIGN KEY (current_team_id) REFERENCES gps.teams(id),
     CONSTRAINT fk__employee_current_position FOREIGN KEY (current_position_id) REFERENCES gps.positions(id)
-  );
-
-  -- Создание таблицы employee_roles (роли сотрудников)
-  CREATE TABLE IF NOT EXISTS gps.employee_roles (
-    id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
-
-    role_id UUID NOT NULL,
-    employee_id UUID NOT NULL,
-
-    CONSTRAINT unique_employee_single_role UNIQUE (employee_id),
-
-    CONSTRAINT fk__employee_role_role FOREIGN KEY (role_id) REFERENCES gps.roles(id),
-    CONSTRAINT fk__employee_role_employee FOREIGN KEY (employee_id) REFERENCES gps.employees(id) ON DELETE CASCADE
   );
 
   -- Создание таблицы work_places (рабочие места)
@@ -157,9 +181,7 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
   -- Создание таблицы shift_schedules (расписания смен)
   CREATE TABLE IF NOT EXISTS gps.shift_schedules (
     id UUID DEFAULT gps.uuid_generate_v4() PRIMARY KEY,
-
     day_of_week INTEGER NOT NULL CHECK (day_of_week BETWEEN 0 AND 7),
-
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
     lunch_start TIME NULL,
@@ -180,28 +202,31 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
   CREATE TABLE IF NOT EXISTS gps.shifts (
     id UUID DEFAULT gps.uuid_generate_v4() PRIMARY KEY,
     date DATE NOT NULL,
+    is_checked BOOLEAN NOT NULL DEFAULT FALSE,
 
     workshop_id UUID NOT NULL,
     team_id UUID NOT NULL,
+    schedule_id UUID NOT NULL,
     shift_schedule_id UUID NULL,
 
-    CONSTRAINT uq_shift_workshop_date_team UNIQUE (workshop_id, date, team_id),
-    CONSTRAINT uq_shift_workshop_date_schedule UNIQUE (workshop_id, date, shift_schedule_id),
+    CONSTRAINT uq_shift_date_workshop_team_schedule UNIQUE (date, workshop_id, team_id, schedule_id),
 
     CONSTRAINT fk__shift_workshop FOREIGN KEY (workshop_id) REFERENCES gps.workshops(id),
     CONSTRAINT fk__shift_team FOREIGN KEY (team_id) REFERENCES gps.teams(id),
+    CONSTRAINT fk__shift_schedule FOREIGN KEY (schedule_id) REFERENCES gps.schedules(id),
     CONSTRAINT fk__shift_shift_schedule FOREIGN KEY (shift_schedule_id) REFERENCES gps.shift_schedules(id)
   );
 
   -- Создание таблицы employee_shifts (смены сотрудников)
   CREATE TABLE IF NOT EXISTS gps.employee_shifts (
     id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
-    hours DECIMAL(4, 1) NOT NULL,
+    minutes INTEGER NOT NULL DEFAULT 0,
+    is_present BOOLEAN NULL DEFAULT TRUE,
 
     employee_id UUID NOT NULL,
     shift_id UUID NOT NULL,
     attendance_type_id UUID NOT NULL,
-    current_profession_id UUID NOT NULL,
+    current_position_id UUID NOT NULL,
     work_place_id UUID NULL,
 
     CONSTRAINT uq__employee_shift UNIQUE (employee_id, shift_id),
@@ -209,9 +234,66 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     CONSTRAINT fk__employee_shift_employee FOREIGN KEY (employee_id) REFERENCES gps.employees(id),
     CONSTRAINT fk__employee_shift_shift FOREIGN KEY (shift_id) REFERENCES gps.shifts(id),
     CONSTRAINT fk__employee_shift_attendance_type FOREIGN KEY (attendance_type_id) REFERENCES gps.attendance_types(id),
-    CONSTRAINT fk__employee_shift_current_profession FOREIGN KEY (current_profession_id) REFERENCES gps.professions(id),
+    CONSTRAINT fk__employee_shift_current_position FOREIGN KEY (current_position_id) REFERENCES gps.positions(id),
     CONSTRAINT fk__employee_shift_work_place FOREIGN KEY (work_place_id) REFERENCES gps.work_places(id)
   );
+
+  -- Создание таблицы notices (уведомления)
+  CREATE TABLE IF NOT EXISTS gps.notices (
+    id UUID DEFAULT gps.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    is_unread BOOLEAN NOT NULL DEFAULT TRUE,
+    is_resolved BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+
+    notice_title_id UUID NOT NULL,
+
+    CONSTRAINT fk__notice_title FOREIGN KEY (notice_title_id) REFERENCES gps.notice_titles(id)
+  );
+
+  -- Вставляем категории уведомлений (shift — смены, document — документы)
+  INSERT INTO gps.notice_categories (category_code)
+  VALUES
+    ('shift'), -- Категория «Смены» (табель, графики и т.п.)
+    ('document'); -- Категория «Документы» (приказы, акты, распоряжения)
+
+  -- Вставляем действия уведомлений
+  INSERT INTO gps.notice_actions (action_code, action_label)
+  VALUES
+    ('create', 'Создать смену'),
+    ('fill', 'Заполнить смену'),
+    ('sign', 'Подписать документ');
+  
+  -- Вставляем статусы уведомлений
+  INSERT INTO gps.notice_statuses (status_label)
+  VALUES
+    ('Смена не создана'),
+    ('Смена не заполнена'),
+    ('Документ не подписан');
+
+  -- Вставляем заголовки уведомлений
+  INSERT INTO gps.notice_titles (title_text, category_id, action_id, status_id)
+  VALUES
+    ('Табель',
+      (SELECT id FROM gps.notice_categories WHERE category_code = 'shift'),
+      (SELECT id FROM gps.notice_actions WHERE action_code = 'create'),
+      (SELECT id FROM gps.notice_statuses WHERE status_label = 'Смена не создана')),
+    ('Табель',
+      (SELECT id FROM gps.notice_categories WHERE category_code = 'shift'),
+      (SELECT id FROM gps.notice_actions WHERE action_code = 'fill'),
+      (SELECT id FROM gps.notice_statuses WHERE status_label = 'Смена не заполнена')),
+    ('Приказ',
+      (SELECT id FROM gps.notice_categories WHERE category_code = 'document'),
+      (SELECT id FROM gps.notice_actions WHERE action_code = 'sign'),
+      (SELECT id FROM gps.notice_statuses WHERE status_label = 'Документ не подписан')),
+    ('Распоряжение',
+      (SELECT id FROM gps.notice_categories WHERE category_code = 'document'),
+      (SELECT id FROM gps.notice_actions WHERE action_code = 'sign'),
+      (SELECT id FROM gps.notice_statuses WHERE status_label = 'Документ не подписан')),
+    ('Акт',
+      (SELECT id FROM gps.notice_categories WHERE category_code = 'document'),
+      (SELECT id FROM gps.notice_actions WHERE action_code = 'sign'),
+      (SELECT id FROM gps.notice_statuses WHERE status_label = 'Документ не подписан'));
 
   -- Вставляем роли в таблицу
   INSERT INTO gps.roles (name)
@@ -289,6 +371,7 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     ('Бригадир на отделке, сортировке, приёмке, сдаче, пакетировке и упаковке металла и готовой продукции'),
     ('Укладчик-упаковщик'),
     ('Укладчик-упаковщик ЛУМ'),
+    ('Укладчик-упаковщик АПР-8'),
     ('Слесарь-ремонтник'),
     ('Штабелировщик металла'),
     ('Штамповщик'),
@@ -322,14 +405,12 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     ('Управление'),
     ('ЛПЦ-4'),
     ('ЛПЦ-5'),
-    ('ЛПЦ-7'),
-    ('ЛПЦ-8'),
+    ('ЛПЦ-8 (участок гнутого профиля)'),
+    ('ЛПЦ-8 (участок ленты)'),
     ('ЛПЦ-10'),
     ('ЛПЦ-11'),
     ('ПМП (южный блок)'),
-    ('ПМП (северный блок)'),
-    ('УВС ЛПЦ-4'),
-    ('Центральный склад');
+    ('ПМП (северный блок)');
 
   -- Вставляем разряды в таблицу
   INSERT INTO gps.grades (grade_code)
@@ -506,6 +587,136 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
       (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
       (SELECT id FROM gps.roles WHERE name = 'STACKER')),
 
+    -- ЛПЦ-8 (участок гнутого профиля)
+    ('643814',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок гнутого профиля)'),
+      (SELECT id FROM gps.professions WHERE name = 'Мастер участка'),
+      (SELECT id FROM gps.grades WHERE grade_code = '13'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.roles WHERE name = 'MASTER')),
+    ('643814',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок гнутого профиля)'),
+      (SELECT id FROM gps.professions WHERE name = 'Мастер участка'),
+      (SELECT id FROM gps.grades WHERE grade_code = '12'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.roles WHERE name = 'MASTER')),
+    ('643814',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок гнутого профиля)'),
+      (SELECT id FROM gps.professions WHERE name = 'Мастер участка'),
+      (SELECT id FROM gps.grades WHERE grade_code = '12'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.roles WHERE name = 'DETAIL_MASTER')),
+    ('643814',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок гнутого профиля)'),
+      (SELECT id FROM gps.professions WHERE name = 'Мастер участка'),
+      (SELECT id FROM gps.grades WHERE grade_code = '13'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.roles WHERE name = 'DETAIL_MASTER')),
+    ('643817',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок гнутого профиля)'),
+      (SELECT id FROM gps.professions WHERE name = 'Бригадир на участках основного производства'),
+      (SELECT id FROM gps.grades WHERE grade_code = '5'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.roles WHERE name = 'PRODUCTION_FOREMAN')),
+    ('643982',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок гнутого профиля)'),
+      (SELECT id FROM gps.professions WHERE name = 'Бригадир на отделке, сортировке, приёмке, сдаче, пакетировке и упаковке металла и готовой продукции'),
+      (SELECT id FROM gps.grades WHERE grade_code = '4'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '9'),
+      (SELECT id FROM gps.roles WHERE name = 'PACKING_FOREMAN')),
+    ('643827',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок гнутого профиля)'),
+      (SELECT id FROM gps.professions WHERE name = 'Штабелировщик металла'),
+      (SELECT id FROM gps.grades WHERE grade_code = '3'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.roles WHERE name = 'STACKER')),
+
+    -- ЛПЦ-8 (участок ленты)
+    ('643812',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.professions WHERE name = 'Начальник участка (в промышленности)'),
+      (SELECT id FROM gps.grades WHERE grade_code = '15'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.roles WHERE name = 'HEAD')),
+    ('643812',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.professions WHERE name = 'Начальник участка (в промышленности)'),
+      (SELECT id FROM gps.grades WHERE grade_code = '16'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.roles WHERE name = 'HEAD')),
+    ('643812',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.professions WHERE name = 'Начальник участка (в промышленности)'),
+      (SELECT id FROM gps.grades WHERE grade_code = '17'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.roles WHERE name = 'HEAD')),
+    ('643813',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.professions WHERE name = 'Мастер участка'),
+      (SELECT id FROM gps.grades WHERE grade_code = '13'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.roles WHERE name = 'MASTER')),
+    ('643813',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.professions WHERE name = 'Мастер участка'),
+      (SELECT id FROM gps.grades WHERE grade_code = '12'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.roles WHERE name = 'MASTER')),
+    ('643815',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.professions WHERE name = 'Слесарь-ремонтник'),
+      (SELECT id FROM gps.grades WHERE grade_code = '6'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '9'),
+      (SELECT id FROM gps.roles WHERE name = 'MECHANIC')),
+    ('643816',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.professions WHERE name = 'Бригадир на участках основного производства'),
+      (SELECT id FROM gps.grades WHERE grade_code = '5'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.roles WHERE name = 'PRODUCTION_FOREMAN')),
+    ('643980',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.professions WHERE name = 'Бригадир на отделке, сортировке, приёмке, сдаче, пакетировке и упаковке металла и готовой продукции'),
+      (SELECT id FROM gps.grades WHERE grade_code = '4'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.roles WHERE name = 'PACKING_FOREMAN')),
+    ('649930',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.professions WHERE name = 'Водитель погрузчика'),
+      (SELECT id FROM gps.grades WHERE grade_code = '4'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '9'),
+      (SELECT id FROM gps.roles WHERE name = 'DRIVER')),
+    ('643981',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.professions WHERE name = 'Бригадир на отделке, сортировке, приёмке, сдаче, пакетировке и упаковке металла и готовой продукции'),
+      (SELECT id FROM gps.grades WHERE grade_code = '4'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '9'),
+      (SELECT id FROM gps.roles WHERE name = 'PACKING_FOREMAN')),
+    ('647481',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.professions WHERE name = 'Укладчик-упаковщик АПР-8'),
+      (SELECT id FROM gps.grades WHERE grade_code = '3'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.roles WHERE name = 'PACKER')),
+    ('643825',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.professions WHERE name = 'Укладчик-упаковщик'),
+      (SELECT id FROM gps.grades WHERE grade_code = '3'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.roles WHERE name = 'PACKER')),
+    ('643826',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.professions WHERE name = 'Штабелировщик металла'),
+      (SELECT id FROM gps.grades WHERE grade_code = '3'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.roles WHERE name = 'STACKER')),
+    ('643983',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.professions WHERE name = 'Резчик холодного металла'),
+      (SELECT id FROM gps.grades WHERE grade_code = '3'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '9'),
+      (SELECT id FROM gps.roles WHERE name = 'CUTTER')),
+    
     -- ЛПЦ-10
     ('643834',
       (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-10'),
@@ -560,7 +771,19 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     ('643843',
       (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'),
       (SELECT id FROM gps.professions WHERE name = 'Мастер участка'),
+      (SELECT id FROM gps.grades WHERE grade_code = '13'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.roles WHERE name = 'MASTER')),
+    ('643843',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'),
+      (SELECT id FROM gps.professions WHERE name = 'Мастер участка'),
       (SELECT id FROM gps.grades WHERE grade_code = '12'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.roles WHERE name = 'MASTER')),
+    ('643843',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'),
+      (SELECT id FROM gps.professions WHERE name = 'Мастер участка'),
+      (SELECT id FROM gps.grades WHERE grade_code = '11'),
       (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
       (SELECT id FROM gps.roles WHERE name = 'MASTER')),
     ('643852',
@@ -573,6 +796,12 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
       (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'),
       (SELECT id FROM gps.professions WHERE name = 'Бригадир на участках основного производства'),
       (SELECT id FROM gps.grades WHERE grade_code = '5'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.roles WHERE name = 'PRODUCTION_FOREMAN')),
+    ('643853',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'),
+      (SELECT id FROM gps.professions WHERE name = 'Бригадир на участках основного производства'),
+      (SELECT id FROM gps.grades WHERE grade_code = '4'),
       (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
       (SELECT id FROM gps.roles WHERE name = 'PRODUCTION_FOREMAN')),
     ('643847',
@@ -688,6 +917,112 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
     -- Дневная: 02:00-14:00, обед 07:00-08:00, смена 2
     (0, '02:00', '14:00', '07:00', '08:00',
       (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-5'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '9'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+
+    -- ЛПЦ-8 (участок гнутого профиля)
+    -- График 5-Б-1
+    -- Пн-Чт (дни 1-4): 02:00-10:45, обед 06:00-06:30, смена 2
+    (1, '02:00', '10:45', '06:00', '06:30',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок гнутого профиля)'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+    (2, '02:00', '10:45', '06:00', '06:30',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок гнутого профиля)'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+    (3, '02:00', '10:45', '06:00', '06:30',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок гнутого профиля)'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+    (4, '02:00', '10:45', '06:00', '06:30',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок гнутого профиля)'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+
+    -- Пт (день 5): 02:00-09:30, обед 06:00-06:30, смена 2
+    (5, '02:00', '09:30', '06:00', '06:30',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок гнутого профиля)'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+
+    -- График 2-А (универсальный, день 0)
+    -- Дневная: 02:30-14:30, обед 07:30-08:00, смена 2
+    (0, '02:30', '14:30', '07:30', '08:00',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок гнутого профиля)'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+
+    -- Ночная: 14:30-02:30 (пересекает полночь), обед 19:30-20:00, смена 1
+    (0, '14:30', '02:30', '19:30', '20:00',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок гнутого профиля)'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 1)),
+
+    -- График 9-1 (универсальный, день 0)
+    -- Дневная: 02:00-14:00, обед 07:00-08:00, смена 1
+    (0, '02:00', '14:00', '07:00', '08:00',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок гнутого профиля)'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '9'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 1)),
+
+    -- График 9-2 (универсальный, день 0)
+    -- Дневная: 02:00-14:00, обед 07:00-08:00, смена 2
+    (0, '02:00', '14:00', '07:00', '08:00',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок гнутого профиля)'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '9'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+
+    -- ЛПЦ-8 (участок ленты)
+    -- График 5-Б-1
+    -- Пн-Чт (дни 1-4): 02:00-10:45, обед 06:00-06:30, смена 2
+    (1, '02:00', '10:45', '06:00', '06:30',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+    (2, '02:00', '10:45', '06:00', '06:30',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+    (3, '02:00', '10:45', '06:00', '06:30',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+    (4, '02:00', '10:45', '06:00', '06:30',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+
+    -- Пт (день 5): 02:00-09:30, обед 06:00-06:30, смена 2
+    (5, '02:00', '09:30', '06:00', '06:30',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '5-Б-1'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+
+    -- График 2-А (универсальный, день 0)
+    -- Дневная: 02:30-14:30, обед 07:30-08:00, смена 2
+    (0, '02:30', '14:30', '07:30', '08:00',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
+
+    -- Ночная: 14:30-02:30 (пересекает полночь), обед 19:30-20:00, смена 1
+    (0, '14:30', '02:30', '19:30', '20:00',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '2-А'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 1)),
+
+    -- График 9-1 (универсальный, день 0)
+    -- Дневная: 02:00-14:00, обед 07:00-08:00, смена 1
+    (0, '02:00', '14:00', '07:00', '08:00',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
+      (SELECT id FROM gps.schedules WHERE schedule_code = '9'),
+      (SELECT id FROM gps.shift_types WHERE shift_code = 1)),
+
+    -- График 9-2 (универсальный, день 0)
+    -- Дневная: 02:00-14:00, обед 07:00-08:00, смена 2
+    (0, '02:00', '14:00', '07:00', '08:00',
+      (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-8 (участок ленты)'),
       (SELECT id FROM gps.schedules WHERE schedule_code = '9'),
       (SELECT id FROM gps.shift_types WHERE shift_code = 2)),
 
@@ -837,5 +1172,5 @@ psql -v ON_ERROR_STOP=1 --username "$DB_USER" --dbname "$DB_NAME" <<-EOSQL
       (SELECT id FROM gps.professions WHERE name = 'Водитель погрузчика')),
     ('Производство реквизитов',
       (SELECT id FROM gps.workshops WHERE workshop_code = 'ЛПЦ-11'),
-      (SELECT id FROM gps.professions WHERE name = 'Резчик холодного металла'))
+      (SELECT id FROM gps.professions WHERE name = 'Резчик холодного металла'));
 EOSQL

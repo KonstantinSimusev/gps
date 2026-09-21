@@ -7,6 +7,7 @@ interface IInputProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   options: { value: string; label: string }[];
   value?: string;
+  isPlaceholder?: boolean;
   error?: string;
   className?: string;
 }
@@ -15,6 +16,7 @@ export const SelectInput = ({
   label,
   options,
   value,
+  isPlaceholder,
   error,
   className,
   ...props
@@ -23,7 +25,11 @@ export const SelectInput = ({
     <div className={clsx(styles.container, className)}>
       <label className={styles.label}>{label}</label>
       <div className={styles.wrapper}>
-        <select className={styles.select} {...props} value={value}>
+        <select
+          className={clsx(styles.select, isPlaceholder && styles.empty)}
+          {...props}
+          value={value}
+        >
           {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}

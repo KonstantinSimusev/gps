@@ -1,11 +1,25 @@
 import { useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { LayerContext } from '../../../contexts/layer/layerContext';
 
-import { Border } from '../../../components/ui/border/border';
+import { useDispatch, useSelector } from '../../../services/store';
+
+import { getEmployeeShiftsByShiftId } from '../../../services/slices/employee-shift/actions';
+import { getShiftById } from '../../../services/slices/shift/actions';
+
+import {
+  selectEmployeeShifts,
+  selectIsAssignmentComplete,
+  selectIsEmployeeShiftsLoading,
+} from '../../../services/slices/employee-shift/slice';
+
+import { selectShift } from '../../../services/slices/shift/slice';
+
 import { IconButton } from '../../../components/ui/buttons/icon-button/icon-button';
+import { Loader } from '../../../components/ui/loader/loader';
 import { MainLayout } from '../../../components/ui/layouts/main/main-layout';
+import { ShiftCard } from '../../../components/cards/shift-card/shift-card';
 import { TimesheetList } from '../../../components/lists/timesheet-list/timesheet-list';
 
 import { AddIcon } from '../../../components/ui/icons/add/add';
@@ -14,13 +28,18 @@ import { SuccessIcon } from '../../../components/ui/icons/success/success';
 
 import styles from './timesheet-page.module.css';
 
-import { employeesData } from '../../../utils/memory';
-
 export const TimesheetPage = () => {
-  const navigate = useNavigate();
-  const { setIsOverlayOpen, setIsEmployeeAddOpen } = useContext(LayerContext);
+  const { setIsOverlayOpen, setIsEmployeeAddOpen, setSelectedDate } =
+    useContext(LayerContext);
 
-  const isActive = true;
+  const { shiftId } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const shift = useSelector(selectShift);
+  const employeeShifts = useSelector(selectEmployeeShifts);
+  const isAssignmentComplete = useSelector(selectIsAssignmentComplete);
+  const isLoading = useSelector(selectIsEmployeeShiftsLoading);
 
   useEffect(() => {
     window.scrollTo({
@@ -28,10 +47,36 @@ export const TimesheetPage = () => {
       left: 0,
       behavior: 'smooth',
     });
+
+    if (shiftId) {
+      dispatch(getEmployeeShiftsByShiftId(shiftId));
+      dispatch(getShiftById({ id: shiftId }));
+    }
   }, []);
 
+  // Если идёт загрузка — показываем лоадер
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <Loader text='Загрузка' />
+      </MainLayout>
+    );
+  }
+
+  if (!shiftId || !employeeShifts || employeeShifts.length === 0) {
+    return (
+      <MainLayout>
+        <div className={styles.error}>Смен нет</div>
+      </MainLayout>
+    );
+  }
+
   const handleBackClick = () => {
-    navigate('/timesheet');
+    if (shift) {
+      setSelectedDate(shift.date);
+    }
+
+    navigate(-1);
   };
 
   const handleAddClick = () => {
@@ -59,23 +104,24 @@ export const TimesheetPage = () => {
         </IconButton>
       </div>
 
+      {shift !== null && <ShiftCard shift={shift} />}
+
       <div className={styles.wrapper}>
         <div className={styles.info}>
           <div className={styles.success}>
             <span className={styles.text}>Отмечено работников</span>
-            {isActive && (
-              <div className={styles.position}>
-                <SuccessIcon />
-              </div>
-            )}
+            {isAssignmentComplete && <SuccessIcon />}
           </div>
 
-          <span className={styles.total}>{'24'}</span>
+          <span className={styles.total}>
+            <span className={styles.total__count}>{3}</span>
+            <span className={styles.total__text}>из</span>
+            <span className={styles.total__count}>{employeeShifts.length}</span>
+          </span>
         </div>
-        <Border />
       </div>
 
-      <TimesheetList employees={employeesData.employees} />
+      <TimesheetList employeeShifts={employeeShifts} />
     </MainLayout>
   );
 };

@@ -24,6 +24,10 @@ export class Team {
   @OneToMany(() => Employee, (employee) => employee.team)
   employees: Employee[];
 
+  // Связь: одна бригада — много сотрудников (текущая бригада)
+  @OneToMany(() => Employee, (employee) => employee.currentTeam)
+  currentEmployees: Employee[];
+
   // Связь: одна бригада — много смен
   @OneToMany(() => Shift, (shift) => shift.team)
   shifts: Shift[];

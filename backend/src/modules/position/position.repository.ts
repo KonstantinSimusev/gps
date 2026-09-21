@@ -12,10 +12,18 @@ export class PositionRepository {
   ) {}
 
   // 2. CRUD: Read (общие методы поиска)
-  async findByPositionCode(positionCode: number): Promise<Position | null> {
+  async findByCodeScheduleAndGrade(
+    positionCode: number,
+    gradeId: string,
+    scheduleId: string,
+  ): Promise<Position | null> {
     return this.positionRepository.findOne({
-      where: { positionCode },
-      relations: ['workshop', 'schedule', 'role'],
+      where: {
+        positionCode,
+        grade: { id: gradeId },
+        schedule: { id: scheduleId },
+      },
+      relations: ['workshop', 'grade', 'schedule', 'role'],
     });
   }
 }
