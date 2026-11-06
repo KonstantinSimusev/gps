@@ -1,8 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { IAccountInfo } from '../../../utils/api.interface';
-import { delay } from '../../../utils/utils';
+import { IAccountInfo } from '../../../utils/api.interfaces';
 import { updateLoginAndPasswordApi } from '../../../utils/api/account.api';
+import { delay } from '../../../utils/utils';
 
 export const updateLoginAndPassword = createAsyncThunk(
   'account/update',
@@ -10,16 +10,11 @@ export const updateLoginAndPassword = createAsyncThunk(
     try {
       // Вызываем API функцию
       const response = await updateLoginAndPasswordApi(id);
-
-      // Добавляем задержку кода
-      await delay();
-
+await delay(1000);
       return response;
     } catch (error) {
-      // Добавляем задержку кода
-      await delay();
-
       if (error instanceof Error) {
+await delay(1000);
         throw error; // передаём точное сообщение от бэкенда
       }
 
@@ -27,3 +22,6 @@ export const updateLoginAndPassword = createAsyncThunk(
     }
   },
 );
+
+// Добавляем задержку кода
+// await delay(1000);

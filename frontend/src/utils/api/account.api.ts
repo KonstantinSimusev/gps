@@ -1,13 +1,13 @@
-import type { IAccountInfo } from '../api.interface';
-
-// Используем переменную окружения
-export const URL = import.meta.env.VITE_API_URL ?? '/api/gps';
+import { BASE_PATH } from '../api.config';
+import { IAccountInfo } from '../api.interfaces';
 
 export const updateLoginAndPasswordApi = async (
   id: string,
 ): Promise<IAccountInfo> => {
   try {
-    const response = await fetch(`${URL}/employee-account/${id}`, {
+    const url = `${BASE_PATH}/employee-account/${id}`;
+
+    const response = await fetch(url, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',

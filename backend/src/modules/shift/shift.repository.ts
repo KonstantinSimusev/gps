@@ -18,6 +18,14 @@ export class ShiftRepository {
   }
 
   // 2. CRUD: Read (общие методы поиска)
+  async findOneById(id: string): Promise<Shift | null> {
+    return this.shiftRepository.findOne({
+      where: { id },
+      relations: this.SHIFT_RELATIONS,
+      order: this.EMPLOYEE_SHIFTS_ORDER,
+    });
+  }
+
   async findOneByDate(
     date: Date,
     workshopId: string,
@@ -31,16 +39,8 @@ export class ShiftRepository {
         team: { id: teamId },
         schedule: { id: scheduleId },
       },
-      relations: [
-        'workshop',
-        'team',
-        'schedule',
-        'shiftSchedule',
-        'shiftSchedule.shiftType',
-        'employeeShifts',
-        'employeeShifts.attendanceType',
-        'employeeShifts.workPlace',
-      ],
+      relations: this.SHIFT_RELATIONS,
+      order: this.EMPLOYEE_SHIFTS_ORDER,
     });
   }
 
@@ -57,53 +57,27 @@ export class ShiftRepository {
         team: { id: teamId },
         schedule: { id: scheduleId },
       },
-      relations: [
-        'workshop',
-        'team',
-        'schedule',
-        'shiftSchedule',
-        'shiftSchedule.shiftType',
-        'employeeShifts',
-        'employeeShifts.attendanceType',
-        'employeeShifts.workPlace',
-      ],
+      relations: this.SHIFT_RELATIONS,
       order: {
-        date: 'DESC', // ← сортировка по дате: от новых к старым
+        date: 'DESC',
+        ...this.EMPLOYEE_SHIFTS_ORDER,
       },
     });
   }
 
-  async findOneById(shiftId: string): Promise<Shift | null> {
-    return this.shiftRepository.findOne({
-      where: { id: shiftId },
-      relations: [
-        'workshop',
-        'team',
-        'schedule',
-        'shiftSchedule',
-        'shiftSchedule.shiftType',
-        'employeeShifts',
-        'employeeShifts.attendanceType',
-        'employeeShifts.workPlace',
-      ],
-    });
-  }
-
-  async findAllInCurrentAndPreviousMonth(
+  async findAllInRange(
     workshopId: string,
     teamId: string,
     scheduleId: string,
+    startDate: Date,
+    endDate: Date,
   ): Promise<Shift[]> {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth(); // 0–11
+    // Нормализуем границы диапазона в UTC
+    const start = new Date(startDate);
+    start.setUTCHours(0, 0, 0, 0);
 
-    // 1-е число предыдущего месяца 00:00:00
-    const start = new Date(year, month - 1, 1);
-    start.setHours(0, 0, 0, 0);
-
-    // Последний день текущего месяца 23:59:59
-    const end = new Date(year, month + 1, 0, 23, 59, 59, 999);
+    const end = new Date(endDate);
+    end.setUTCHours(0, 0, 0, 0);
 
     return this.shiftRepository.find({
       where: {
@@ -120,7 +94,7 @@ export class ShiftRepository {
         'shiftSchedule.shiftType',
         'employeeShifts',
         'employeeShifts.attendanceType',
-        'employeeShifts.workPlace',
+        'employeeShifts.workplace',
       ],
       order: {
         date: 'DESC',
@@ -148,4 +122,49 @@ export class ShiftRepository {
   async save(shift: Shift): Promise<Shift> {
     return this.shiftRepository.save(shift);
   }
+
+  private SHIFT_RELATIONS = [
+    'workshop',
+    'team',
+    'schedule',
+    'shiftSchedule',
+    'shiftSchedule.shiftType',
+    'employeeShifts',
+    'employeeShifts.employee',
+    'employeeShifts.employee.team',
+    'employeeShifts.employee.position',
+    'employeeShifts.employee.position.workshop',
+    'employeeShifts.employee.position.profession',
+    'employeeShifts.employee.position.grade',
+    'employeeShifts.employee.position.schedule',
+    'employeeShifts.employee.position.paymentSystem',
+    'employeeShifts.employee.position.role',
+    'employeeShifts.currentPosition',
+    'employeeShifts.currentPosition.workshop',
+    'employeeShifts.currentPosition.profession',
+    'employeeShifts.currentPosition.grade',
+    'employeeShifts.currentPosition.schedule',
+    'employeeShifts.currentPosition.paymentSystem',
+    'employeeShifts.currentPosition.role',
+    'employeeShifts.attendanceType',
+    'employeeShifts.workplace',
+  ];
+
+  private EMPLOYEE_SHIFTS_ORDER = {
+    employeeShifts: {
+      employee: {
+        position: {
+          grade: {
+            gradeCode: 'DESC', // 1. Разряд: сверху большой, внизу маленький
+          },
+          profession: {
+            name: 'ASC', // 2. Профессия: по алфавиту
+          },
+        },
+        lastName: 'ASC', // 3. Фамилия: по алфавиту
+        firstName: 'ASC', // 4. Имя: по алфавиту (если фамилии совпали)
+        patronymic: 'ASC', // 5. Отчество: по алфавиту (если фамилии совпали)
+      },
+    },
+  } as const;
 }

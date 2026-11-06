@@ -1,8 +1,13 @@
 .container {
   width: 18px;
   cursor: pointer;
+  transition: opacity 0.2s ease;
 }
 
 .container:focus {
   outline: none;
+}
+
+.container:hover {
+  opacity: 0.8;
 }

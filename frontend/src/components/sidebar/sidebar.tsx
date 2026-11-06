@@ -3,275 +3,16 @@ import { Link, useLocation } from 'react-router-dom';
 
 import clsx from 'clsx';
 
-import { ROLE, WORKSHOP } from '../../utils/types';
+import { DYNAMIC_PATHS, MENU_ITEMS } from '../../utils/constants';
+import { LayerContext } from '../../contexts/layer/layerContext';
 
 import { useSelector } from '../../services/store';
 import { selectProfile } from '../../services/slices/auth/slice';
-
-import { LayerContext } from '../../contexts/layer/layerContext';
+import { selectNotices } from '../../services/slices/notice/slice';
 
 import { CloseButton } from '../ui/buttons/close-button/close-button';
 
 import styles from './sidebar.module.css';
-import { mockMessages } from '../../utils/mocks';
-
-// Динамичсекие пути
-const dynamicPaths = ['/shift', '/shift-search', 'documents'];
-
-// Конфигурация меню: путь, текст, роли и цеха, которым доступен пункт
-const menuItems = [
-  {
-    path: '/home',
-    label: 'Главная',
-    accessRules: [
-      {
-        roles: [
-          ROLE.EXECUTIVE,
-          ROLE.HEAD_PRODUCTION,
-          ROLE.SENIOR_MANAGER,
-          ROLE.HEAD,
-          ROLE.LEAD_MASTER,
-          ROLE.MASTER,
-          ROLE.DETAIL_MASTER,
-          ROLE.PRODUCTION_FOREMAN,
-          ROLE.PACKER,
-        ],
-        workshops: [
-          WORKSHOP.W_MANAGEMENT,
-          WORKSHOP.W_LPC4,
-          WORKSHOP.W_LPC5,
-          WORKSHOP.W_LPC8_UGP,
-          WORKSHOP.W_LPC8_UL,
-          WORKSHOP.W_PMP_SOUTH,
-          WORKSHOP.W_PMP_NORTH,
-          WORKSHOP.W_LPC10,
-          WORKSHOP.W_LPC11,
-        ],
-      },
-    ],
-  },
-  {
-    path: '/shift',
-    label: 'Табель',
-    accessRules: [
-      {
-        roles: [ROLE.HEAD, ROLE.LEAD_MASTER, ROLE.MASTER, ROLE.DETAIL_MASTER],
-        workshops: [
-          WORKSHOP.W_LPC4,
-          WORKSHOP.W_LPC5,
-          WORKSHOP.W_LPC8_UGP,
-          WORKSHOP.W_LPC8_UL,
-          WORKSHOP.W_PMP_SOUTH,
-          WORKSHOP.W_PMP_NORTH,
-          WORKSHOP.W_LPC10,
-        ],
-      },
-      {
-        roles: [ROLE.MASTER, ROLE.DETAIL_MASTER],
-        workshops: [WORKSHOP.W_LPC11],
-      },
-    ],
-  },
-  {
-    path: '/production',
-    label: 'Производство',
-    accessRules: [
-      {
-        roles: [ROLE.MASTER],
-        workshops: [
-          WORKSHOP.W_LPC4,
-          WORKSHOP.W_LPC5,
-          WORKSHOP.W_LPC8_UGP,
-          WORKSHOP.W_LPC8_UL,
-          WORKSHOP.W_PMP_SOUTH,
-          WORKSHOP.W_PMP_NORTH,
-          WORKSHOP.W_LPC10,
-          WORKSHOP.W_LPC11,
-        ],
-      },
-    ],
-  },
-  {
-    path: '/shipment',
-    label: 'Отгрузка',
-    accessRules: [
-      {
-        roles: [ROLE.MASTER],
-        workshops: [
-          WORKSHOP.W_LPC4,
-          WORKSHOP.W_LPC5,
-          WORKSHOP.W_LPC8_UGP,
-          WORKSHOP.W_LPC8_UL,
-          WORKSHOP.W_PMP_SOUTH,
-          WORKSHOP.W_PMP_NORTH,
-          WORKSHOP.W_LPC10,
-          WORKSHOP.W_LPC11,
-        ],
-      },
-    ],
-  },
-  {
-    path: '/pack',
-    label: 'Упаковка',
-    accessRules: [
-      {
-        roles: [ROLE.MASTER],
-        workshops: [
-          WORKSHOP.W_LPC4,
-          WORKSHOP.W_LPC5,
-          WORKSHOP.W_LPC8_UGP,
-          WORKSHOP.W_LPC8_UL,
-          WORKSHOP.W_PMP_SOUTH,
-          WORKSHOP.W_PMP_NORTH,
-          WORKSHOP.W_LPC10,
-          WORKSHOP.W_LPC11,
-        ],
-      },
-    ],
-  },
-  {
-    path: '/fix',
-    label: 'Раскрепление',
-    accessRules: [
-      {
-        roles: [ROLE.MASTER],
-        workshops: [
-          WORKSHOP.W_LPC4,
-          WORKSHOP.W_LPC5,
-          WORKSHOP.W_LPC8_UGP,
-          WORKSHOP.W_LPC8_UL,
-          WORKSHOP.W_PMP_SOUTH,
-          WORKSHOP.W_PMP_NORTH,
-          WORKSHOP.W_LPC10,
-          WORKSHOP.W_LPC11,
-        ],
-      },
-    ],
-  },
-  {
-    path: '/residue',
-    label: 'Остаток',
-    accessRules: [
-      {
-        roles: [ROLE.MASTER],
-        workshops: [
-          WORKSHOP.W_LPC4,
-          WORKSHOP.W_LPC5,
-          WORKSHOP.W_LPC8_UGP,
-          WORKSHOP.W_LPC8_UL,
-          WORKSHOP.W_PMP_SOUTH,
-          WORKSHOP.W_PMP_NORTH,
-          WORKSHOP.W_LPC10,
-          WORKSHOP.W_LPC11,
-        ],
-      },
-    ],
-  },
-  {
-    path: '/scan',
-    label: 'Сканирование',
-    accessRules: [
-      {
-        roles: [ROLE.PACKER],
-        workshops: [
-          WORKSHOP.W_LPC4,
-          WORKSHOP.W_LPC5,
-          WORKSHOP.W_LPC8_UGP,
-          WORKSHOP.W_LPC8_UL,
-          WORKSHOP.W_PMP_SOUTH,
-          WORKSHOP.W_PMP_NORTH,
-          WORKSHOP.W_LPC10,
-          WORKSHOP.W_LPC11,
-        ],
-      },
-    ],
-  },
-  {
-    path: '/documents',
-    label: 'Документы',
-    accessRules: [
-      {
-        roles: [ROLE.HEAD, ROLE.LEAD_MASTER, ROLE.MASTER, ROLE.DETAIL_MASTER],
-        workshops: [
-          WORKSHOP.W_LPC4,
-          WORKSHOP.W_LPC5,
-          WORKSHOP.W_LPC8_UGP,
-          WORKSHOP.W_LPC8_UL,
-          WORKSHOP.W_PMP_SOUTH,
-          WORKSHOP.W_PMP_NORTH,
-          WORKSHOP.W_LPC10,
-          WORKSHOP.W_LPC11,
-        ],
-      },
-    ],
-  },
-  {
-    path: '/shift-search',
-    label: 'Найти смену',
-    accessRules: [
-      {
-        roles: [ROLE.HEAD, ROLE.LEAD_MASTER, ROLE.MASTER, ROLE.DETAIL_MASTER],
-        workshops: [
-          WORKSHOP.W_LPC4,
-          WORKSHOP.W_LPC5,
-          WORKSHOP.W_LPC8_UGP,
-          WORKSHOP.W_LPC8_UL,
-          WORKSHOP.W_PMP_SOUTH,
-          WORKSHOP.W_PMP_NORTH,
-          WORKSHOP.W_LPC10,
-        ],
-      },
-      {
-        roles: [ROLE.MASTER, ROLE.DETAIL_MASTER],
-        workshops: [WORKSHOP.W_LPC11],
-      },
-    ],
-  },
-  {
-    path: '/employee',
-    label: 'Персонал',
-    accessRules: [
-      {
-        roles: [ROLE.LEAD_MASTER, ROLE.PRODUCTION_FOREMAN],
-        workshops: [WORKSHOP.W_LPC10],
-      },
-      {
-        roles: [ROLE.HEAD, ROLE.PRODUCTION_FOREMAN],
-        workshops: [WORKSHOP.W_LPC8_UGP, WORKSHOP.W_LPC8_UL, WORKSHOP.W_LPC11],
-      },
-    ],
-  },
-  {
-    path: '/notices',
-    label: 'Уведомления',
-    accessRules: [
-      {
-        roles: [
-          ROLE.EXECUTIVE,
-          ROLE.HEAD_PRODUCTION,
-          ROLE.SENIOR_MANAGER,
-          ROLE.HEAD,
-          ROLE.LEAD_MASTER,
-          ROLE.MASTER,
-          ROLE.DETAIL_MASTER,
-          ROLE.PRODUCTION_FOREMAN,
-          ROLE.PACKER,
-        ],
-        workshops: [
-          WORKSHOP.W_MANAGEMENT,
-          WORKSHOP.W_LPC4,
-          WORKSHOP.W_LPC5,
-          WORKSHOP.W_LPC8_UGP,
-          WORKSHOP.W_LPC8_UL,
-          WORKSHOP.W_PMP_SOUTH,
-          WORKSHOP.W_PMP_NORTH,
-          WORKSHOP.W_LPC10,
-          WORKSHOP.W_LPC11,
-        ],
-      },
-    ],
-  },
-];
 
 export const Sidebar = () => {
   const {
@@ -282,13 +23,9 @@ export const Sidebar = () => {
     setSelectedDate,
   } = useContext(LayerContext);
 
-  const profile = useSelector(selectProfile);
+  const employee = useSelector(selectProfile);
   const location = useLocation(); // Получаем текущий путь
-
-  const unresolvedCount = mockMessages.reduce(
-    (acc, m) => acc + (m.isResolved ? 0 : 1),
-    0,
-  );
+  const notices = useSelector(selectNotices) ?? [];
 
   const handleMenuItemClick = () => {
     setSelectedDate(null); // Сбрасываем дату при переходе
@@ -315,7 +52,7 @@ export const Sidebar = () => {
     }
 
     // Для динамических страниц — только точное совпадение
-    if (dynamicPaths.includes(path)) {
+    if (DYNAMIC_PATHS.includes(path)) {
       return (
         location.pathname === path || location.pathname.startsWith(`${path}/`)
       );
@@ -330,68 +67,65 @@ export const Sidebar = () => {
     accessRules: { roles: string[]; workshops: string[] }[],
   ): boolean => {
     // Если у пользователя нет роли или цеха — доступ запрещён
-    if (!profile?.role || !profile?.workshopCode) {
+    if (!employee?.profileRoleName || !employee?.profileWorkshopCode) {
       return false;
     }
 
     return accessRules.some((rule) => {
       // Проверяем, есть ли текущая роль пользователя в списке разрешённых ролей для этого правила
-      const hasRoleAccess = rule.roles.includes(profile.role);
+      const hasRoleAccess = rule.roles.includes(employee.profileRoleName);
 
       if (!hasRoleAccess) {
         return false;
       }
 
       // Иначе проверяем, есть ли текущий цех пользователя в списке разрешённых цехов
-      return rule.workshops.includes(profile.workshopCode);
+      return rule.workshops.includes(employee.profileWorkshopCode);
     });
   };
 
   return (
     <div
-      className={clsx(styles.container, isMenuOpen && styles.menu__open)}
+      className={clsx(styles.container, isMenuOpen && styles.open)}
       onClick={handleMenuClick}
     >
-      <CloseButton />
+      <CloseButton className={styles.button} />
 
-      <nav className={styles.navigation}>
-        <ul className={styles.navigation__list}>
-          {menuItems.map(({ path, label, accessRules }) => {
-            // Проверяем, есть ли у пользователя доступ к пункту меню
-            const hasAccess = hasAccessToMenuItem(accessRules);
+      <ul className={styles.list}>
+        {MENU_ITEMS.map(({ path, label, accessRules }) => {
+          // Проверяем, есть ли у пользователя доступ к пункту меню
+          const hasAccess = hasAccessToMenuItem(accessRules);
 
-            if (!hasAccess) {
-              return null;
-            }
+          if (!hasAccess) {
+            return null;
+          }
 
-            // Сюда потом подставишь реальный счётчик из Redux, пока заглушка
-            const noticeCount = path === '/notices' ? unresolvedCount : 0;
+          // Сюда потом подставишь реальный счётчик из Redux, пока заглушка
+          const noticeCount = path === '/notices' ? notices.length : 0;
 
-            return (
-              <li
-                key={path}
-                className={clsx(
-                  styles.link,
-                  isActive(path) && styles.link__active,
-                )}
+          return (
+            <li key={path}>
+              <Link
+                to={path}
+                className={clsx(styles.link, isActive(path) && styles.active)}
                 onClick={handleMenuItemClick}
               >
-                <Link to={path}>
-                  <span className={styles.label}>{label}</span>
+                <span className={styles.label}>{label}</span>
 
-                  {noticeCount > 0 && (
-                    <span className={styles.badge}>{noticeCount}</span>
-                  )}
-                </Link>
-              </li>
-            );
-          })}
+                {noticeCount > 0 && (
+                  <span className={styles.badge}>{noticeCount}</span>
+                )}
+              </Link>
+            </li>
+          );
+        })}
 
-          <li className={clsx(styles.link)} onClick={handleClickLogout}>
+        <li>
+          <button className={styles.logoutButton} onClick={handleClickLogout}>
             Выйти
-          </li>
-        </ul>
-      </nav>
+          </button>
+        </li>
+      </ul>
     </div>
   );
 };

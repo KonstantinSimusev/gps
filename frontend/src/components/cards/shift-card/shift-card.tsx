@@ -1,10 +1,7 @@
-import clsx from 'clsx';
-
-import { IShift } from '../../../utils/api.interface';
-import { SCHEDULE } from '../../../utils/types';
+import { IShift } from '../../../utils/api.interfaces';
+import { SCHEDULE } from '../../../utils/constants';
 import { formatDateForDayUI, getDayName } from '../../../utils/utils';
 
-import { CardContainer } from '../../../components/ui/card-container/card-container';
 import { SuccessIcon } from '../../ui/icons/success/success';
 
 import styles from './shift-card.module.css';
@@ -15,50 +12,52 @@ interface IProps {
   onClick?: () => void;
 }
 
-export const ShiftCard = ({ shift, className, onClick }: IProps) => {
+export const ShiftCard = ({ shift, onClick }: IProps) => {
+  const isShiftFilled =
+    shift.shiftCode === null ||
+    shift.employeeShifts.every((es) => es.workplaceName !== null);
+
   return (
-    <CardContainer
+    <div
       onClick={onClick}
-      className={clsx(styles.container, className)}
+      className={styles.card}
     >
-      <div className={styles.date__info}>
+      <div className={styles.leftContainer}>
         <div className={styles.wrapper}>
           <span className={styles.date}>{formatDateForDayUI(shift.date)}</span>
-          {shift.isChecked && shift.isAssignmentComplete && (
-            <SuccessIcon width={16} height={16} />
-          )}
+          {isShiftFilled && <SuccessIcon width={16} height={16} />}
         </div>
 
-        {shift.schedule.scheduleCode === SCHEDULE.S_5B1 && (
+        {shift.scheduleCode === SCHEDULE.S_5B1 && (
           <span className={styles.shift}>
-            {shift.shiftSchedule === null
+            {shift.shiftCode === null
               ? 'Выходной'
-              : getDayName(shift.shiftSchedule.dayOfWeek)}
+              : getDayName(shift.dayOfWeek)}
           </span>
         )}
 
-        {shift.schedule.scheduleCode !== SCHEDULE.S_5B1 && (
+        {shift.scheduleCode !== SCHEDULE.S_5B1 && (
           <span className={styles.shift}>
-            {shift.shiftSchedule === null
+            {shift.shiftCode === null
               ? 'Выходной'
-              : `Смена ${shift.shiftSchedule.shiftType.shiftCode}`}
+              : `Смена ${shift.shiftCode}`}
           </span>
         )}
       </div>
 
-      <div className={styles.shift__info}>
-        <div className={styles.shift__raw}>
+      <div className={styles.rightContainer}>
+        <div className={styles.raw}>
           <span className={styles.shift}>График</span>
-          <span className={styles.shift}>{shift.schedule.scheduleCode}</span>
+          <span className={styles.shift}>{shift.scheduleCode}</span>
         </div>
 
-        {shift.schedule.scheduleCode === SCHEDULE.S_9 && (
-          <div className={styles.shift__raw}>
+        {shift.scheduleCode === SCHEDULE.S_9 && (
+          <div className={styles.raw}>
             <span className={styles.shift}>Бригада</span>
-            <span className={styles.shift}>{shift.team.teamNumber}</span>
+            <span className={styles.shift}>{shift.teamNumber}</span>
           </div>
         )}
       </div>
-    </CardContainer>
+    </div>
   );
 };

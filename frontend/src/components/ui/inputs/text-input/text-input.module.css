@@ -19,11 +19,35 @@
   left: 2px;
 }
 
+.wrapper {
+  position: relative;
+}
+
 .input {
-  padding: 18px 20px;
+  width: 100%;
+  padding: 18px 50px 18px 20px; 
   border: 1px solid var(--color-border);
   border-radius: 24px;
   outline: none;
+  overflow: hidden; /* Скрываем всё, что не влезло */
+  white-space: nowrap; /* Запрещаем перенос строки */
+  text-overflow: ellipsis; /* Показываем «…» вместо обрезанного текста */
+}
+
+/* Крестик — просто справа, по центру высоты */
+.clear__button {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transform: translateY(-50%); /* Центрирует по вертикали */
+  border: none;
+  opacity: 0.4;
+  background: none;
+  cursor: pointer;
 }
 
 .input:focus {
@@ -32,6 +56,7 @@
 
 .input::placeholder {
   font-size: 14px;
+  opacity: 0.6;
 }
 
 .error {

@@ -1,0 +1,112 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: clamp(6.25rem, 5.9052rem + 1.7241vw, 6.875rem);
+}
+
+.label {
+  font-size: 14px;
+  position: relative;
+  padding: 0 10px;
+  opacity: 0.6;
+}
+
+.label::after {
+  content: '*';
+  position: absolute;
+  top: 0;
+  left: 2px;
+}
+
+.wrapper {
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  padding: 18px 50px 18px 20px;
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  outline: none;
+  overflow: hidden; /* Скрываем всё, что не влезло */
+  white-space: nowrap; /* Запрещаем перенос строки */
+  text-overflow: ellipsis; /* Показываем «…» вместо обрезанного текста */
+}
+
+.arrow {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-50%);
+  pointer-events: none; /* чтобы клик по стрелке не мешал открытию селекта */
+  opacity: 0.4;
+}
+
+/* Поворот стрелки вверх при открытом списке */
+.arrow__up {
+  transform: translateY(-50%) rotate(-180deg);
+}
+
+/* Твой блок dropdown — адаптированный */
+.dropdown {
+  position: absolute;
+  z-index: 10;
+  left: 0;
+  top: calc(100% + 8px);
+  width: 100%;
+  max-height: 320px;
+  overflow-y: auto;
+  background-color: rgba(66 66 66 / 0.95);
+  border: 1px solid rgba(255 255 255 / 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(8px); /* Лёгкое размытие фона — выглядит дорого */
+}
+
+.optionsList {
+  margin: 0;
+  padding: 8px 0;
+  list-style: none;
+}
+
+.optionItem {
+  padding: 14px 20px;
+  cursor: pointer;
+  color: #e0e0e0; /* Светлый текст на тёмном фоне */
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.optionItem:hover {
+  color: #fff;
+  background: rgba(255 255 255 / 0.1);
+}
+
+.optionItemActive {
+  color: white;
+  background: var(--color-primary); /* Или свой акцентный цвет */
+  font-weight: 600;
+  border-radius: 12px;
+}
+
+.error {
+  padding: 0 6px;
+  color: var(--color-error);
+  font-size: 12px;
+}
+
+.input:focus {
+  outline: none;
+}
+
+.input::placeholder {
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+.input::-webkit-password-picker-indicator {
+  filter: invert(100%);
+}

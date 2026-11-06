@@ -15,7 +15,7 @@ import { Workshop } from '../../workshop/entities/workshop.entity';
   schema: 'gps',
   name: 'work_places',
 })
-export class WorkPlace {
+export class Workplace {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -28,16 +28,16 @@ export class WorkPlace {
   name: string;
 
   // Связь: много рабочих мест — один цех
-  @ManyToOne(() => Workshop, (workshop) => workshop.workPlaces)
+  @ManyToOne(() => Workshop, (workshop) => workshop.workplaces)
   @JoinColumn({ name: 'workshop_id' })
   workshop: Workshop;
 
   // Связь: много рабочих мест — одна профессия
-  @ManyToOne(() => Profession, (profession) => profession.workPlaces)
+  @ManyToOne(() => Profession, (profession) => profession.workplaces)
   @JoinColumn({ name: 'profession_id' })
   profession: Profession;
 
   // Связь: одно рабочее место — много смен сотрудника
-  @OneToMany(() => EmployeeShift, (employeeShift) => employeeShift.workPlace)
+  @OneToMany(() => EmployeeShift, (employeeShift) => employeeShift.workplace)
   employeeShifts: EmployeeShift[];
 }

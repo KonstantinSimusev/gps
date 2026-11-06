@@ -34,10 +34,10 @@ export class ShiftManagementController {
   async getShifts(
     @Req() req: Request & { profile: IProfile },
   ): Promise<IShift[]> {
-    return this.shiftManagementService.getShifts(req.profile);
+    return this.shiftManagementService.getShiftsWithAutoCreate(req.profile);
   }
 
-  @Get('shifts/:shiftDate')
+  @Get('shifts/date/:shiftDate')
   @UseGuards(AuthGuard)
   async getShiftsByDate(
     @Param() dto: ShiftDateDto,
@@ -46,41 +46,9 @@ export class ShiftManagementController {
     return this.shiftManagementService.getShiftsByDay(dto, req.profile);
   }
 
-  @Get('shift/:id')
+  @Get('shifts/:id')
   @UseGuards(AuthGuard)
   async getShiftById(@Param() dto: ShiftIdDto): Promise<IShift> {
-    return this.shiftManagementService.getShiftById(dto);
+    return this.shiftManagementService.getShiftById(dto.id);
   }
-
-  // @Post('check-missing-shifts')
-  // @UseGuards(AuthGuard)
-  // async checkMissingShifts(
-  //   @Req() req: Request & { profile: IProfile },
-  // ): Promise<ISuccess> {
-  //   return this.shiftManagementService.checkMissingShifts(req.profile);
-  // }
-
-  // @Post('check-pending-shifts')
-  // @UseGuards(AuthGuard)
-  // async checkPendingShifts(
-  //   @Req() req: Request & { profile: IProfile },
-  // ): Promise<ISuccess> {
-  //   return this.shiftManagementService.checkPendingShifts(req.profile);
-  // }
-
-  // @Get('unchecked-shifts')
-  // @UseGuards(AuthGuard)
-  // async getUncheckedShifts(
-  //   @Req() req: Request & { profile: IProfile },
-  // ): Promise<IShift[]> {
-  //   return this.shiftManagementService.getUncheckedShifts(req.profile);
-  // }
-
-  // @Post('missing-shifts')
-  // @UseGuards(AuthGuard)
-  // async createMissingShifts(
-  //   @Req() req: Request & { profile: IProfile },
-  // ): Promise<ISuccess> {
-  //   return this.shiftManagementService.createMissingShifts(req.profile);
-  // }
 }

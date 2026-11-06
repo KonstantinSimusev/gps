@@ -1,4 +1,4 @@
-import { PROFILE_ROLE_OPTIONS } from './types';
+import { PROFILE_ROLE_OPTIONS } from './constants';
 
 export const delay = (ms: number = 500): Promise<void> =>
   new Promise((resolve) => {
@@ -88,9 +88,9 @@ export const formatDateForDayUI = (date: Date | string | null): string => {
   return `${day} ${monthNames[monthIndex]}`;
 };
 
-export const formatDateForUI = (date: Date | string | null): string => {
+export const formatDateUI = (date: Date | string | null): string => {
   if (date === null) {
-    return '-';
+    return '';
   }
 
   const parsedDate = date instanceof Date ? date : new Date(date);
@@ -124,13 +124,13 @@ export const formatDateForUI = (date: Date | string | null): string => {
   return `${day} ${monthNames[monthIndex]} ${year} г.`;
 };
 
-export const formatDateFormUI = (date: string | null): string => {
+export const formatDateFormUI = (date: Date | string | null): string => {
   if (date === null) {
-    return '-';
+    return '';
   }
 
   // Преобразуем вход в Date — работает и для строки, и для объекта Date
-  const parsedDate = new Date(date);
+  const parsedDate = date instanceof Date ? date : new Date(date);
 
   // Проверка валидности даты
   if (Number.isNaN(parsedDate.getTime())) {
@@ -171,6 +171,24 @@ export const getDayName = (dayOfWeek: number): string => {
   const weekdayName = WEEKDAY_NAMES[utcDayOfWeek];
 
   return weekdayName;
+};
+
+export const parseHoursMinutesToMinutes = (
+  hours: number | undefined | null = 0,
+  minutes: number | undefined | null = 0,
+): number => {
+  const h = Number(hours ?? 0);
+  const m = Number(minutes ?? 0);
+
+  // Если хоть одно значение невалидно (NaN, Infinity и т.п.) — возвращаем 0
+  if (!Number.isFinite(h) || !Number.isFinite(m) || h < 0 || m < 0) {
+    return 0;
+  }
+
+  // Нормализуем: если минут больше 59, переносим в часы (на случай, если кто-то передаст 2 часа 70 минут)
+  const totalMinutes = h * 60 + m;
+
+  return totalMinutes;
 };
 
 export interface HoursMinutes {

@@ -1,0 +1,10 @@
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--color-default);
+  font-family: var(--font-family-default);
+  background-color: var(--bg-color-default);
+}

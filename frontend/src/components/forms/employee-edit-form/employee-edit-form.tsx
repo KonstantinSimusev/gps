@@ -2,13 +2,14 @@ import { useContext, useEffect, useState } from 'react';
 
 import { formatDateFormUI, formatDateForISO } from '../../../utils/utils';
 
-import { IUpdateEmployee } from '../../../utils/api.interface';
+import { IUpdateEmployee } from '../../../utils/api.interfaces';
 
 import {
   GRADE_CODE_OPTIONS,
+  PAYMENT_CODE_OPTIONS,
   SCHEDULE_CODE_OPTIONS,
   TEAM_CODE_OPTIONS,
-} from '../../../utils/types';
+} from '../../../utils/constants';
 
 import {
   validateField,
@@ -22,7 +23,6 @@ import { updateEmployee } from '../../../services/slices/employee/actions';
 
 import {
   clearUpdateEmployeeError,
-  selectIsUpdateEmployeeLoading,
   selectSearсhEmployee,
   selectUpdateEmployeeError,
 } from '../../../services/slices/employee/slice';
@@ -32,7 +32,6 @@ import { LayerContext } from '../../../contexts/layer/layerContext';
 import { Button } from '../../ui/buttons/button/button';
 import { Form } from '../../ui/form/form';
 import { ServerError } from '../../ui/server-error/server-error';
-import { Spinner } from '../../ui/spinner/spinner';
 import { Switch } from '../../ui/switch/switch';
 
 import { CheckboxInput } from '../../ui/inputs/checkbox-input/checkbox-input';
@@ -42,10 +41,11 @@ import { TextInput } from '../../ui/inputs/text-input/text-input';
 import styles from './employee-edit-form.module.css';
 
 interface IFormData extends Record<string, string> {
-  currentTeamNumber: string;
-  currentPositionCode: string;
-  currentGradeCode: string;
-  currentScheduleCode: string;
+  profileTeamNumber: string;
+  profilePositionCode: string;
+  profileGradeCode: string;
+  profileScheduleCode: string;
+  profilePaymentCode: string;
 
   lastName: string;
   firstName: string;
@@ -55,6 +55,7 @@ interface IFormData extends Record<string, string> {
   positionCode: string;
   gradeCode: string;
   scheduleCode: string;
+  paymentCode: string;
 
   birthDay: string;
   startDate: string;
@@ -67,7 +68,6 @@ export const EmployeeEditForm = () => {
 
   const dispatch = useDispatch();
   const employee = useSelector(selectSearсhEmployee);
-  const isLoading = useSelector(selectIsUpdateEmployeeLoading);
   const serverError = useSelector(selectUpdateEmployeeError);
 
   if (!employee) {
@@ -79,31 +79,33 @@ export const EmployeeEditForm = () => {
 
   // Состояние для хранения значений полей формы
   const [formData, setFormData] = useState<IFormData>({
-    currentTeamNumber: employee.currentTeamNumber || '',
-    currentPositionCode: employee.currentPositionCode || '',
-    currentGradeCode: employee.currentGradeCode || '',
-    currentScheduleCode: employee.currentScheduleCode || '',
+    profileTeamNumber: String(employee.profileTeamNumber),
+    profilePositionCode: String(employee.profilePositionCode),
+    profileGradeCode: String(employee.profileGradeCode),
+    profileScheduleCode: employee.profileScheduleCode,
+    profilePaymentCode: employee.profilePaymentCode,
 
     lastName: employee.lastName,
     firstName: employee.firstName,
     patronymic: employee.patronymic,
-    personalNumber: employee.personalNumber,
-    teamNumber: employee.teamNumber,
-    positionCode: employee.positionCode,
-    gradeCode: employee.gradeCode,
+    personalNumber: String(employee.personalNumber),
+    teamNumber: String(employee.teamNumber),
+    positionCode: String(employee.positionCode),
+    gradeCode: String(employee.gradeCode),
     scheduleCode: employee.scheduleCode,
-
+    paymentCode: employee.paymentCode,
     birthDay: formatDateFormUI(employee.birthDay),
     startDate: formatDateFormUI(employee.startDate),
-    endDate: formatDateFormUI(employee.endDate || ''),
+    endDate: formatDateFormUI(employee.endDate),
   });
 
   // Состояние для хранения ошибок валидации
   const [errors, setErrors] = useState<{ [key: string]: string }>({
-    currentTeamNumber: '',
-    currentPositionCode: '',
-    currentGradeCode: '',
-    currentScheduleCode: '',
+    profileTeamNumber: '',
+    profilePositionCode: '',
+    profileGradeCode: '',
+    profileScheduleCode: '',
+    profilePaymentCode: '',
 
     hasAccess: '',
 
@@ -115,6 +117,7 @@ export const EmployeeEditForm = () => {
     positionCode: '',
     gradeCode: '',
     scheduleCode: '',
+    paymentCode: '',
     birthDay: '',
     startDate: '',
     endDate: '',
@@ -150,7 +153,7 @@ export const EmployeeEditForm = () => {
 
   // Обработчик потери фокуса для валидации
   const handleBlur = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
 
@@ -177,7 +180,7 @@ export const EmployeeEditForm = () => {
     dispatch(clearUpdateEmployeeError());
   };
 
-  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Валидируем всю форму
@@ -195,32 +198,23 @@ export const EmployeeEditForm = () => {
     const dataForBackend: IUpdateEmployee = {
       id: employee.id,
 
-      currentTeamNumber:
-        formData.currentTeamNumber === '' ? null : formData.currentTeamNumber,
-
-      currentPositionCode:
-        formData.currentPositionCode === ''
-          ? null
-          : formData.currentPositionCode,
-
-      currentGradeCode:
-        formData.currentGradeCode === '' ? null : formData.currentGradeCode,
-
-      currentScheduleCode:
-        formData.currentScheduleCode === ''
-          ? null
-          : formData.currentScheduleCode,
+      profileTeamNumber: Number(formData.profileTeamNumber),
+      profilePositionCode: Number(formData.profilePositionCode),
+      profileGradeCode: Number(formData.profileGradeCode),
+      profileScheduleCode: formData.profileScheduleCode,
+      profilePaymentCode: formData.profilePaymentCode,
 
       hasAccess: hasAccess,
 
       lastName: formData.lastName,
       firstName: formData.firstName,
       patronymic: formData.patronymic,
-      personalNumber: formData.personalNumber,
-      teamNumber: formData.teamNumber,
-      positionCode: formData.positionCode,
-      gradeCode: formData.gradeCode,
+      personalNumber: Number(formData.personalNumber),
+      teamNumber: Number(formData.teamNumber),
+      positionCode: Number(formData.positionCode),
+      gradeCode: Number(formData.gradeCode),
       scheduleCode: formData.scheduleCode,
+      paymentCode: formData.paymentCode,
 
       // Преобразование строк в Date
       birthDay: formatDateForISO(formData.birthDay),
@@ -238,10 +232,11 @@ export const EmployeeEditForm = () => {
       setIsOverlayOpen(false);
 
       setFormData({
-        currentTeamNumber: '',
-        currentPositionCode: '',
-        currentGradeCode: '',
-        currentScheduleCode: '',
+        profileTeamNumber: '',
+        profilePositionCode: '',
+        profileGradeCode: '',
+        profileScheduleCode: '',
+        profilePaymentCode: '',
 
         lastName: '',
         firstName: '',
@@ -251,16 +246,18 @@ export const EmployeeEditForm = () => {
         positionCode: '',
         gradeCode: '',
         scheduleCode: '',
+        paymentCode: '',
         birthDay: '',
         startDate: '',
         endDate: '',
       });
 
       setErrors({
-        currentTeamNumber: '',
-        currentPositionCode: '',
-        currentGradeCode: '',
-        currentScheduleCode: '',
+        profileTeamNumber: '',
+        profilePositionCode: '',
+        profileGradeCode: '',
+        profileScheduleCode: '',
+        profilePaymentCode: '',
 
         lastName: '',
         firstName: '',
@@ -270,6 +267,7 @@ export const EmployeeEditForm = () => {
         positionCode: '',
         gradeCode: '',
         scheduleCode: '',
+        paymentCode: '',
         birthDay: '',
         startDate: '',
         endDate: '',
@@ -281,8 +279,12 @@ export const EmployeeEditForm = () => {
 
   // Определяем, заблокирована ли кнопка
   const isButtonDisabled =
-    isLoading ||
     Object.values(errors).some(Boolean) ||
+    !formData.profileTeamNumber ||
+    !formData.profilePositionCode ||
+    !formData.profileGradeCode ||
+    !formData.profileScheduleCode ||
+    !formData.profilePaymentCode ||
     !formData.lastName ||
     !formData.firstName ||
     !formData.patronymic ||
@@ -291,51 +293,64 @@ export const EmployeeEditForm = () => {
     !formData.positionCode ||
     !formData.gradeCode ||
     !formData.scheduleCode ||
+    !formData.paymentCode ||
     !formData.birthDay ||
     !formData.startDate;
 
   return (
-    <Form title='Профиль' onSubmit={handleSubmit} className={styles.container}>
+    <Form
+      title='Личный кабинет'
+      onSubmit={handleSubmit}
+      className={styles.container}
+    >
       <SelectInput
-        name='currentTeamNumber'
-        value={formData.currentTeamNumber}
-        label='Фактическая бригада №'
-        isPlaceholder={formData.currentTeamNumber === ''}
+        name='profileTeamNumber'
+        value={formData.profileTeamNumber}
+        label='Бригада №'
         options={TEAM_CODE_OPTIONS}
         className={styles.input}
-        error={errors.currentTeamNumber}
+        error={errors.profileTeamNumber}
         onChange={handleChange}
         onBlur={handleBlur}
       />
 
       <TextInput
         type='text'
-        name='currentPositionCode'
-        label='Фактическая штатная позиция'
-        value={formData.currentPositionCode}
-        error={errors.currentPositionCode}
+        name='profilePositionCode'
+        label='Штатная позиция'
+        placeholder='123456'
+        value={formData.profilePositionCode}
+        error={errors.profilePositionCode}
         onChange={handleChange}
         onBlur={handleBlur}
       />
 
       <SelectInput
-        name='currentGradeCode'
-        value={formData.currentGradeCode}
-        label='Фактический разряд'
-        isPlaceholder={formData.currentGradeCode === ''}
+        name='profileGradeCode'
+        label='Разряд'
+        value={formData.profileGradeCode}
         options={GRADE_CODE_OPTIONS}
-        error={errors.currentGradeCode}
+        error={errors.profileGradeCode}
         onChange={handleChange}
         onBlur={handleBlur}
       />
 
       <SelectInput
-        name='currentScheduleCode'
-        value={formData.currentScheduleCode}
-        label='Фактический график работы'
-        isPlaceholder={formData.currentScheduleCode === ''}
+        name='profileScheduleCode'
+        label='График работы'
+        value={formData.profileScheduleCode}
         options={SCHEDULE_CODE_OPTIONS}
-        error={errors.currentScheduleCode}
+        error={errors.profileScheduleCode}
+        onChange={handleChange}
+        onBlur={handleBlur}
+      />
+
+      <SelectInput
+        name='profilePaymentCode'
+        label='Система оплаты'
+        value={formData.profilePaymentCode}
+        options={PAYMENT_CODE_OPTIONS}
+        error={errors.profilePaymentCode}
         onChange={handleChange}
         onBlur={handleBlur}
       />
@@ -360,6 +375,7 @@ export const EmployeeEditForm = () => {
             type='text'
             name='lastName'
             label='Фамилия'
+            placeholder='Иванов'
             value={formData.lastName}
             error={errors.lastName}
             onChange={handleChange}
@@ -371,6 +387,7 @@ export const EmployeeEditForm = () => {
             type='text'
             name='firstName'
             label='Имя'
+            placeholder='Иван'
             value={formData.firstName}
             error={errors.firstName}
             onChange={handleChange}
@@ -381,6 +398,7 @@ export const EmployeeEditForm = () => {
             type='text'
             name='patronymic'
             label='Отчество'
+            placeholder='Иванович'
             value={formData.patronymic}
             error={errors.patronymic}
             onChange={handleChange}
@@ -391,6 +409,7 @@ export const EmployeeEditForm = () => {
             type='text'
             name='personalNumber'
             label='Личный №'
+            placeholder='12345'
             value={formData.personalNumber}
             error={errors.personalNumber}
             onChange={handleChange}
@@ -399,9 +418,8 @@ export const EmployeeEditForm = () => {
 
           <SelectInput
             name='teamNumber'
-            value={formData.teamNumber}
             label='Бригада №'
-            isPlaceholder={formData.teamNumber === ''}
+            value={formData.teamNumber}
             options={TEAM_CODE_OPTIONS}
             error={errors.teamNumber}
             onChange={handleChange}
@@ -412,6 +430,7 @@ export const EmployeeEditForm = () => {
             type='text'
             name='positionCode'
             label='Штатная позиция'
+            placeholder='123456'
             value={formData.positionCode}
             error={errors.positionCode}
             onChange={handleChange}
@@ -420,9 +439,8 @@ export const EmployeeEditForm = () => {
 
           <SelectInput
             name='gradeCode'
-            value={formData.gradeCode}
             label='Разряд'
-            isPlaceholder={formData.gradeCode === ''}
+            value={formData.gradeCode}
             options={GRADE_CODE_OPTIONS}
             error={errors.gradeCode}
             onChange={handleChange}
@@ -431,11 +449,20 @@ export const EmployeeEditForm = () => {
 
           <SelectInput
             name='scheduleCode'
-            value={formData.scheduleCode}
             label='График работы'
-            isPlaceholder={formData.scheduleCode === ''}
+            value={formData.scheduleCode}
             options={SCHEDULE_CODE_OPTIONS}
             error={errors.scheduleCode}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+
+          <SelectInput
+            name='paymentCode'
+            label='Система оплаты'
+            value={formData.paymentCode}
+            options={PAYMENT_CODE_OPTIONS}
+            error={errors.paymentCode}
             onChange={handleChange}
             onBlur={handleBlur}
           />
@@ -476,7 +503,7 @@ export const EmployeeEditForm = () => {
       )}
 
       <div className={styles.message}>
-        {isLoading ? <Spinner /> : <ServerError text={serverError} />}
+        <ServerError text={serverError} />
       </div>
 
       <Button

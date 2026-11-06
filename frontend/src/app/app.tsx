@@ -1,44 +1,50 @@
-import { useContext, useEffect } from 'react';
-import {
-  Route,
-  Routes,
-  // useLocation, useNavigate
-} from 'react-router-dom';
+import { useContext, useEffect, useRef } from 'react';
+import { Route, Routes } from 'react-router-dom';
 
 import clsx from 'clsx';
 
-// import { ROLE_TO_PAGE } from '../utils/types';
+import { LayerContext } from '../contexts/layer/layerContext';
+import { ProtectedRoute } from '../components/protected-route/protected-route';
+import { useLoaderWithDelay } from '../hooks/use-loader-with-delay';
 
-import {
-  useDispatch,
-  // useSelector
-} from '../components/../services/store';
-// import { selectProfile } from '../services/slices/auth/slice';
+import { useDispatch, useSelector } from '../components/../services/store';
 
 import { checkAccessToken } from '../components/../services/slices/auth/actions';
 
-import { LayerContext } from '../contexts/layer/layerContext';
+import { selectIsAuthLoading } from '../services/slices/auth/slice';
+import { selectIsUpdateAccountLoading } from '../services/slices/account/slice';
 
-import { ProtectedRoute } from '../components/protected-route/protected-route';
+import {
+  selectIsCreateEmployeeLoading,
+  selectIsSearchEmployeeLoading,
+  selectIsUpdateEmployeeLoading,
+} from '../services/slices/employee/slice';
 
-import { DefaultPage } from '../pages/default-page/default-page';
-import { DocumentItemPage } from '../pages/master/document-item-page/document-item-page';
-import { DocumentListPage } from '../pages/master/document-list-page/document-list-page';
+import {
+  selectIsGetShiftsLoading,
+  selectIsSearchShiftsLoading,
+  selectIsShiftLoading,
+} from '../services/slices/shift/slice';
 
-// import { Fix } from '../pages/master/fix/fix';
-import { HomePage } from '../pages/home-page/home-page';
-import { EmployeePage } from '../pages/employee-page/employee-page';
-import { NotFoundPage } from '../pages/not-found-page/not-found-page';
-import { NoticePage } from '../pages/notice-page/notice-page';
-// import { Pack } from '../pages/master/pack/pack';
-// import { Packer } from '../pages/packer/packer';
-// import { Production } from '../pages/master/production/production';
-// import { Residue } from '../pages/master/residue/residue';
-import { ShiftPage } from '../pages/master/shift-page/shift-page';
-import { ShiftSearchPage } from '../pages/master/shift-search-page/shift-search-page';
-// import { Shipment } from '../pages/master/shipment/shipment';
-import { TimesheetPage } from '../pages/master/timesheet-page/timesheet-page';
+import {
+  selectIsCreateEmployeeShiftLoading,
+  selectIsDeleteEmployeeShiftLoading,
+  selectIsUpdateEmployeeShiftLoading,
+} from '../services/slices/employee-shift/slice';
 
+import { DefaultPage } from '../pages/default/default-page';
+import { DocumentItemPage } from '../pages/master/documents/document-item/document-item-page';
+import { DocumentListPage } from '../pages/master/documents/document-list-page/document-list-page';
+import { HomePage } from '../pages/home/home-page';
+import { EmployeePage } from '../pages/employee/employee-page';
+import { NotFoundPage } from '../pages/not-found/not-found-page';
+import { NoticeItemPage } from '../pages/notice/notice-item/notice-item-page';
+import { NoticeListPage } from '../pages/notice/notice-list/notice-list-page';
+import { ShiftPage } from '../pages/master/shift/shift-page';
+import { ShiftSearchPage } from '../pages/master/shift-search/shift-search-page';
+import { TimesheetPage } from '../pages/master/timesheet/timesheet-page';
+
+import { BlockingLoader } from '../components/ui/blocking-loader/blocking-loader';
 import { Footer } from '../components/footer/footer';
 import { Header } from '../components/header/header';
 import { Modal } from '../components/ui/modal/modal';
@@ -46,7 +52,6 @@ import { Overlay } from '../components/ui/overlay/overlay';
 
 import { AccountInfoForm } from '../components/forms/account-info-form/account-info-form';
 import { EmployeeCreateForm } from '../components/forms/employee-create-form/employee-create-form';
-// import { EmployeeDeleteForm } from '../components/forms/employee-delete-form/employee-delete-form';
 import { EmployeeEditForm } from '../components/forms/employee-edit-form/employee-edit-form';
 import { EmployeeSearchForm } from '../components/forms/employee-search-form/employee-search-form';
 import { LoginForm } from '../components/forms/login-form/login-form';
@@ -54,7 +59,8 @@ import { LogoutForm } from '../components/forms/loguot-form/logout-form';
 import { PasswordUpdateForm } from '../components/forms/password-update-form/password-update-form';
 import { EmployeeAddForm } from '../components/forms/employee-add-form/employee-add-form';
 import { ShiftSearchForm } from '../components/forms/shift-search-form/shift-search-form';
-import { TimesheetEditForm } from '../components/forms/timesheet-edit-form/timesheet-edit-form';
+import { EmployeeShiftEditForm } from '../components/forms/employee-shift-edit-form/employee-shift-edit-form';
+import { EmployeeShiftDeleteForm } from '../components/forms/employee-shift-delete-form/employee-shift-delete-form';
 
 import styles from './app.module.css';
 
@@ -70,73 +76,94 @@ const App = () => {
     isPasswordUpdateOpen,
     isShiftSearchOpen,
     isEmployeeAddOpen,
-    isTimesheetEditOpen,
-    selectedScrollPosition,
-    setSelectedScrollPosition,
+    isEmployeeShiftEditOpen,
+    isEmployeeShiftDeleteOpen,
   } = useContext(LayerContext);
 
-  // const location = useLocation();
   const dispatch = useDispatch();
-  // const navigate = useNavigate();
-  // const profile = useSelector(selectProfile);
 
-  // Текущая позициция на странице
-  const scrollPosition = window.scrollY;
+  const isAuthLoading = useSelector(selectIsAuthLoading);
+  const isUpdateAccountLoading = useSelector(selectIsUpdateAccountLoading);
+  const isCreateEmployeeLoading = useSelector(selectIsCreateEmployeeLoading);
+  const isUpdateEmployeeLoading = useSelector(selectIsUpdateEmployeeLoading);
+  const isSearchEmployeeLoading = useSelector(selectIsSearchEmployeeLoading);
+  const isShiftLoading = useSelector(selectIsShiftLoading);
+  const isGetShiftsLoading = useSelector(selectIsGetShiftsLoading);
+  const isSearchShiftsLoading = useSelector(selectIsSearchShiftsLoading);
+
+  const isCreateEmployeeShiftLoading = useSelector(
+    selectIsCreateEmployeeShiftLoading,
+  );
+
+  const isUpdateEmployeeShiftLoading = useSelector(
+    selectIsUpdateEmployeeShiftLoading,
+  );
+
+  const isDeleteEmployeeShiftLoading = useSelector(
+    selectIsDeleteEmployeeShiftLoading,
+  );
+
+  const isLoading =
+    isAuthLoading ||
+    isUpdateAccountLoading ||
+    isCreateEmployeeLoading ||
+    isUpdateEmployeeLoading ||
+    isSearchEmployeeLoading ||
+    isShiftLoading ||
+    isGetShiftsLoading ||
+    isSearchShiftsLoading ||
+    isCreateEmployeeShiftLoading ||
+    isUpdateEmployeeShiftLoading ||
+    isDeleteEmployeeShiftLoading;
+
+  // Применяем задержку ТОЛЬКО к показу блокирующего слоя
+  const showBlocker = useLoaderWithDelay(isLoading, 0, 1000);
+
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
     if (isOverlayOpen) {
-      // Устанвливаем в контекст значение
-      setSelectedScrollPosition(scrollPosition);
-      // Фиксируем контент
-      document.body.style.position = 'fixed';
-      // Смещаем от верха страницы на это расстояние
-      document.body.style.top = `-${scrollPosition}px`;
-      // Запрещаем прокрутку
+      lastScrollY.current = window.scrollY;
       document.body.style.overflow = 'hidden';
     } else {
-      // Снимаем фиксацию
-      document.body.style.position = '';
-      // Разрешаем прокрутку
       document.body.style.overflow = '';
-      // Скролим до этой точки где находились
-      window.scrollTo(0, selectedScrollPosition);
+      window.scrollTo(0, lastScrollY.current);
     }
   }, [isOverlayOpen]);
 
+  // Проверка токена — запускается всегда при монтировании
   useEffect(() => {
     dispatch(checkAccessToken());
   }, []);
 
   return (
-    <div
-      className={clsx(
-        styles.container,
-        isOverlayOpen && styles.container__fixed,
-      )}
-    >
-      <Header />
-      <Routes>
-        <Route path='/' element={<DefaultPage />} />
-        <Route element={<ProtectedRoute />}>
-          <Route path='/home' element={<HomePage />} />
-          <Route path='/employee' element={<EmployeePage />} />
-          <Route path='/shift' element={<ShiftPage />} />
-          <Route path='/shift/:shiftId' element={<TimesheetPage />} />
-          <Route path='/shift-search' element={<ShiftSearchPage />} />
-          <Route path='/documents' element={<DocumentListPage />} />
-          <Route path='/documents/:documentId' element={<DocumentItemPage />} />
-          <Route path='/notices' element={<NoticePage />} />
-          {/* <Route path='/production' element={<ProductionPage />} />
-          <Route path='/shipment' element={<ShipmentPage />} />
-          <Route path='/pack' element={<PackPage />} />
-          <Route path='/fix' element={<FixPage />} />
-          <Route path='/residue' element={<ResiduePage />} />
-          <Route path='/scan' element={<Packer />} /> */}
-          <Route path='*' element={<NotFoundPage />} />
-        </Route>
-      </Routes>
-      <Footer />
+    <div className={clsx(styles.container)}>
+      <div className={styles.wrapper}>
+        <Header />
+        <main className={styles.content}>
+          <Routes>
+            <Route path='/' element={<DefaultPage />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path='/home' element={<HomePage />} />
+              <Route path='/employee' element={<EmployeePage />} />
+              <Route path='/timesheet' element={<TimesheetPage />} />
+              <Route path='/timesheet/:shiftId' element={<ShiftPage />} />
+              <Route path='/shift-search' element={<ShiftSearchPage />} />
+              <Route path='/documents' element={<DocumentListPage />} />
+              <Route
+                path='/documents/:documentId'
+                element={<DocumentItemPage />}
+              />
+              <Route path='/notices' element={<NoticeListPage />} />
+              <Route path='/notices/:noticeId' element={<NoticeItemPage />} />
+              <Route path='*' element={<NotFoundPage />} />
+            </Route>
+          </Routes>
+        </main>
+        <Footer />
+      </div>
 
+      {showBlocker && <BlockingLoader />}
       {isOverlayOpen && <Overlay />}
 
       {isLoginOpen && (
@@ -187,9 +214,15 @@ const App = () => {
         </Modal>
       )}
 
-      {isTimesheetEditOpen && (
+      {isEmployeeShiftEditOpen && (
         <Modal>
-          <TimesheetEditForm />
+          <EmployeeShiftEditForm />
+        </Modal>
+      )}
+
+      {isEmployeeShiftDeleteOpen && (
+        <Modal>
+          <EmployeeShiftDeleteForm />
         </Modal>
       )}
 

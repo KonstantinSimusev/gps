@@ -8,10 +8,11 @@ import {
 } from 'typeorm';
 
 import { Employee } from '../../employee/entities/employee.entity';
-// import { EmployeeTransfer } from '../../employee-transfer/entities/employee-transfer.entity';
 import { EmployeeShift } from '../../employee-shift/entities/employee-shift.entity';
 import { Grade } from '../../grade/entities/grade.entity';
+import { PaymentSystem } from '../../payment-system/entities/payment-system.entity';
 import { Profession } from '../../profession/entities/profession.entity';
+import { RateSystem } from '../../rate-system/entities/rate-system.entity';
 import { Schedule } from '../../schedule/entities/schedule.entity';
 import { Workshop } from '../../workshop/entities/workshop.entity';
 import { Role } from '../../role/entities/role.entity';
@@ -52,6 +53,16 @@ export class Position {
   @JoinColumn({ name: 'schedule_id' })
   schedule: Schedule;
 
+  // Связь: много позиций — одна система оплаты
+  @ManyToOne(() => PaymentSystem, (paymentSystem) => paymentSystem.positions)
+  @JoinColumn({ name: 'payment_system_id' })
+  paymentSystem: PaymentSystem;
+
+  // Связь: много позиций — одна ИСО
+  @ManyToOne(() => RateSystem, (rateSystem) => rateSystem.positions)
+  @JoinColumn({ name: 'rate_system_id' })
+  rateSystem: RateSystem | null;
+
   // Связь: много позиций — одна роль
   @ManyToOne(() => Role, (role) => role.positions)
   @JoinColumn({ name: 'role_id' })
@@ -61,16 +72,16 @@ export class Position {
   @OneToMany(() => Employee, (employee) => employee.position)
   employees: Employee[];
 
-  // Связь: одна позиция — много сотрудников (текущая позиция)
-  @OneToMany(() => Employee, (employee) => employee.currentPosition)
-  currentEmployees: Employee[];
+  // Связь: одна позиция — много сотрудников (profile позиция)
+  @OneToMany(() => Employee, (employee) => employee.profilePosition)
+  profileEmployees: Employee[];
 
-  // Связь: одна профессия — много смен работника
+  // Связь: одна позиция — много смен сотрудников (profile позиция)
   @OneToMany(
     () => EmployeeShift,
     (employeeShift) => employeeShift.currentPosition,
   )
-  employeeShifts: EmployeeShift[];
+  employeeShifts: Employee[];
 
   // // Связь: одна позиция — много переводов сотрудников
   // @OneToMany(

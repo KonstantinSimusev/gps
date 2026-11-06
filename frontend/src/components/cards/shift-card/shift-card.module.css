@@ -1,53 +1,44 @@
-.container {
+.card {
   display: flex;
   justify-content: space-between;
-  width: clamp(19.6875rem, -3.75rem + 100vw, 23.125rem);
+  width: 330px;
   margin: 0 auto;
   padding: 20px 30px;
+  background-color: rgba(180 180 180 / 0.1);
+  border: 1px solid rgba(255 255 255 / 0.1);
   border-radius: 30px;
   cursor: pointer;
   transition: opacity 0.3s ease;
 }
 
-.border {
-  width: 1px;
-  height: 40px;
-  background-color: #ccc;
-  opacity: 0.2;
-}
-
-.date__info {
+.leftContainer {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.shift__info {
+.wrapper {
+  display: flex;
+  align-items: start;
+  gap: 10px;
+}
+
+.shift {
+  opacity: 0.6;
+  font-size: 14px;
+}
+
+.rightContainer {
   display: flex;
   flex-direction: column;
   width: 110px;
   gap: 6px;
 }
 
-.wrapper {
-  display: flex;
-  gap: 14px;
-}
-
-.shift__raw {
+.raw {
   display: flex;
   gap: 10px;
-  /* justify-content: space-between; */
   justify-content: end;
-}
-
-/* .schedule,
-.team {
-} */
-
-.shift {
-  opacity: 0.6;
-  font-size: 14px;
 }
 
 .container:hover {

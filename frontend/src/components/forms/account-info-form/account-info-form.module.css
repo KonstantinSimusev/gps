@@ -16,7 +16,7 @@
 }
 
 .text {
-  margin-top: clamp(1.875rem, 1.1853rem + 3.4483vw, 3.125rem);
+  margin: clamp(1.875rem, 1.1853rem + 3.4483vw, 3.125rem) 0;
   text-align: center;
   line-height: 1.3;
 }

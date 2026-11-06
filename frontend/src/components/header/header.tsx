@@ -1,12 +1,11 @@
 import { useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { mockMessages } from '../../utils/mocks';
+import { LayerContext } from '../../contexts/layer/layerContext';
 
 import { useSelector } from '../../services/store';
 import { selectIsAuthenticated } from '../../services/slices/auth/slice';
-
-import { LayerContext } from '../../contexts/layer/layerContext';
+import { selectNotices } from '../../services/slices/notice/slice';
 
 import { IconButton } from '../ui/buttons/icon-button/icon-button';
 import { Sidebar } from '../sidebar/sidebar';
@@ -20,12 +19,6 @@ import { SearchIcon } from '../ui/icons/search/search';
 import styles from './header.module.css';
 
 export const Header = () => {
-  const isAuthenticated = useSelector(selectIsAuthenticated);
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const isUnread: boolean = mockMessages.some((msg) => msg.isUnread);
-
   const {
     isAgreed,
     setIsOverlayOpen,
@@ -34,6 +27,14 @@ export const Header = () => {
     setIsEmployeeSearchOpen,
     setIsShiftSearchOpen,
   } = useContext(LayerContext);
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+
+  const notices = useSelector(selectNotices) ?? [];
+  const isUnread = notices.some((n) => n.isUnread);
 
   const handleBurgerClick = () => {
     setIsMenuOpen(true);
@@ -44,7 +45,7 @@ export const Header = () => {
     navigate('/notices');
   };
 
-  const openСreateModal = () => {
+  const openCreateModal = () => {
     setIsOverlayOpen(true);
 
     if (location.pathname === '/employee') {
@@ -74,13 +75,15 @@ export const Header = () => {
   return (
     <>
       {isAuthenticated && isAgreed && (
-        <header className={styles.container}>
-          <a className={styles.logo} href='/home'>
-            <LogoIcon />
-          </a>
-          <h1 className={styles.title}>Steel Pack Studio</h1>
+        <header className={styles.header}>
+          <div className={styles.logoContainer}>
+            <a className={styles.logo} href='/home'>
+              <LogoIcon />
+            </a>
+            <h1 className={styles.title}>Steel Pack Studio</h1>
+          </div>
 
-          <div className={styles.buttons}>
+          <div className={styles.actions}>
             {isSearchButtonVisible && (
               <IconButton type='button' onClick={openSearchModal}>
                 <SearchIcon width={24} height={24} />
@@ -88,12 +91,8 @@ export const Header = () => {
             )}
 
             {isCreateButtonVisible && (
-              <IconButton type='button' onClick={openСreateModal}>
-                <AddIcon
-                  width={26}
-                  height={26}
-                  className={styles.icon__white}
-                />
+              <IconButton type='button' onClick={openCreateModal}>
+                <AddIcon width={26} height={26} />
               </IconButton>
             )}
 

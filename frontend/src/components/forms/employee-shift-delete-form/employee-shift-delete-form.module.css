@@ -1,0 +1,35 @@
+.title {
+  margin-top: clamp(1.25rem, 0.5603rem + 3.4483vw, 2.5rem);
+}
+
+.info {
+  margin-top: 40px;
+  font-size: 14px;
+  line-height: 1.4;
+  opacity: 0.8;
+  text-align: center;
+}
+
+.message {
+  position: relative; /* Создаём контекст для абсолютного позиционирования */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 26px;
+  margin: clamp(1.25rem, 0.5603rem + 3.4483vw, 2.5rem) 0;
+}
+
+.buttons__wrapper {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.button__ok {
+  color: var(--color-button);
+  background-color: var(--bg-color-button);
+}
+
+.button__return {
+  background-color: var(--bg-button-return);
+}

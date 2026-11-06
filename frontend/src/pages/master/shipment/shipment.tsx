@@ -1,7 +1,4 @@
 import { useEffect } from 'react';
-
-import { MainLayout } from '../../../components/ui/layouts/main/main-layout';
-
 // import styles from './shipment.module.css';
 
 export const Shipment = () => {
@@ -13,9 +10,5 @@ export const Shipment = () => {
     });
   }, []);
 
-  return (
-    <MainLayout>
-      Hello
-    </MainLayout>
-  );
+  return <div>Hello</div>;
 };

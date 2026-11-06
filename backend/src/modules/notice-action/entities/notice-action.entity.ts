@@ -16,7 +16,7 @@ export class NoticeAction {
     length: 50,
     nullable: false,
   })
-  actionCode: string; // 'create', 'fill', 'sign'
+  actionCode: string; // 'create', 'fill', 'sign' ('Создать смену', 'Заполнить смену', 'Подписать документ')
 
   @Column({
     name: 'action_label',

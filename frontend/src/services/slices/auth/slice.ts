@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { IProfile } from '../../../utils/api.interface';
+import { IProfile } from '../../../utils/api.interfaces';
 
 import { checkAccessToken, loginEmployee, logoutEmployee } from './actions';
 
@@ -26,6 +26,21 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    clearProfile: (state) => {
+      state.profile = null;
+    },
+    clearIsAuthenticated: (state) => {
+      state.isAuthenticated = false;
+    },
+    clearIsRole: (state) => {
+      state.isRole = false;
+    },
+    clearIsAuthLoading: (state) => {
+      state.isAuthLoading = false;
+    },
+    clearChecking: (state) => {
+      state.checking = false;
+    },
     clearAuthError: (state) => {
       state.authError = null;
     },
@@ -100,7 +115,14 @@ export const authSlice = createSlice({
   },
 });
 
-export const { clearAuthError } = authSlice.actions;
+export const {
+  clearProfile,
+  clearIsAuthenticated,
+  clearIsRole,
+  clearIsAuthLoading,
+  clearChecking,
+  clearAuthError,
+} = authSlice.actions;
 
 export const {
   selectProfile,

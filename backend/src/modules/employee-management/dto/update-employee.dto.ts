@@ -20,6 +20,38 @@ export class UpdateEmployeeDto {
   @IsUUID('4', { message: 'ID должен быть корректным UUID v4' })
   id: string;
 
+  @Transform(({ value }) => toNumber(value))
+  @IsInt({ message: 'Номер бригады должен быть целым числом' })
+  @Min(1, { message: 'Номер бригады должен быть не менее 1' })
+  @Max(5, { message: 'Номер бригады должен быть не более 5' })
+  profileTeamNumber: number;
+
+  @Transform(({ value }) => toNumber(value))
+  @IsInt({ message: 'Штатная позиция должна быть целым числом' })
+  @Min(1, { message: 'Штатная позиция должна быть не менее 1' })
+  @Max(999999999, { message: 'Штатная позиция должна быть не более 999999999' })
+  profilePositionCode: number;
+
+  @Transform(({ value }) => toNumber(value))
+  @IsInt({ message: 'Код разряда должен быть целым числом' })
+  @Min(1, { message: 'Код разряда должен быть не менее 1' })
+  @Max(99, { message: 'Код разряда не должен превышать 99' })
+  profileGradeCode: number;
+
+  @Transform(({ value }) => toString(value))
+  @MinLength(1, { message: 'Код графика не может быть пустым' })
+  @MaxLength(20, { message: 'Код графика не должен превышать 20 символов' })
+  profileScheduleCode: string;
+
+  @Transform(({ value }) => toString(value))
+  @MinLength(1, { message: 'Код оплаты не может быть пустым' })
+  @MaxLength(10, { message: 'Код оплаты не должен превышать 10 символов' })
+  profilePaymentCode: string;
+
+  @Transform(({ value }) => toBoolean(value))
+  @IsBoolean({ message: 'Доступ должен быть true или false' })
+  hasAccess: boolean;
+
   @Transform(({ value }) => toString(value))
   @MinLength(2, { message: 'Фамилия должна быть от 2 символов' })
   @MaxLength(50, { message: 'Фамилия не может превышать 50 символов' })
@@ -64,32 +96,10 @@ export class UpdateEmployeeDto {
   @MaxLength(20, { message: 'Код графика не должен превышать 20 символов' })
   scheduleCode: string;
 
-  @Transform(({ value }) => toNumber(value))
-  @IsOptional()
-  @IsInt({ message: 'Номер бригады должен быть целым числом' })
-  @Min(1, { message: 'Номер бригады должен быть не менее 1' })
-  @Max(5, { message: 'Номер бригады должен быть не более 5' })
-  currentTeamNumber: number | null;
-
-  @Transform(({ value }) => toNumber(value))
-  @IsOptional()
-  @IsInt({ message: 'Штатная позиция должна быть целым числом' })
-  @Min(1, { message: 'Штатная позиция должна быть не менее 1' })
-  @Max(999999999, { message: 'Штатная позиция должна быть не более 999999999' })
-  currentPositionCode: number | null;
-
-  @Transform(({ value }) => toNumber(value))
-  @IsOptional()
-  @IsInt({ message: 'Код разряда должен быть целым числом' })
-  @Min(1, { message: 'Код разряда должен быть не менее 1' })
-  @Max(99, { message: 'Код разряда не должен превышать 99' })
-  currentGradeCode: number | null;
-
   @Transform(({ value }) => toString(value))
-  @IsOptional()
-  @MinLength(1, { message: 'Код графика не может быть пустым' })
-  @MaxLength(20, { message: 'Код графика не должен превышать 20 символов' })
-  currentScheduleCode: string | null;
+  @MinLength(1, { message: 'Код системы оплаты не может быть пустым' })
+  @MaxLength(10, { message: 'Код оплаты не должен превышать 10 символов' })
+  paymentCode: string;
 
   @Type(() => Date)
   @IsDate({ message: 'Дата рождения должна быть валидной датой' })
@@ -103,8 +113,4 @@ export class UpdateEmployeeDto {
   @IsOptional()
   @IsDate({ message: 'Дата увольнения должна быть валидной датой' })
   endDate: Date | null;
-
-  @Transform(({ value }) => toBoolean(value))
-  @IsBoolean({ message: 'Доступ должен быть true или false' })
-  hasAccess: boolean;
 }

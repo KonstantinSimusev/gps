@@ -2,50 +2,45 @@
   position: fixed;
   top: 0;
   right: 0;
-  z-index: 2;
-  display: grid;
-  grid-template-rows: 18px auto auto;
-  gap: 20px;
-  align-self: start;
-  min-width: 320px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  min-width: 290px;
   height: 100vh;
   border-top-left-radius: 20px;
   border-bottom-left-radius: 20px;
   border-left: 1px solid rgba(234 234 234 / 0.4);
   padding: 30px;
-  overflow-y: auto;
-  background-color: var(--bg-color-default);
+  background-color: #1c1c1c;
   transition: transform 0.2s ease;
   transform: translateX(100%);
-  font-size: 16px;
 }
 
-.menu__open {
-  transition: transform 0.2s ease-in-out;
+.open {
   transform: translateX(0);
 }
 
-.container > :nth-child(1) {
-  margin-left: auto;
+.button {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 10;
 }
 
-.navigation__list {
+.list {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  color: var(--color-sidebar);
+  padding: 30px 0;
+  overflow-y: auto;
 }
 
 .link {
   position: relative;
   width: fit-content;
-}
-
-.link a {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: opacity 0.4s ease;
+  color: rgba(255 255 255 / 0.5);
+  transition: opacity 0.2s ease;
+  cursor: pointer;
 }
 
 .label {
@@ -69,26 +64,19 @@
   font-weight: 400;
 }
 
-.link__active {
+.active {
   color: rgba(255 255 255 / 0.8);
   font-weight: 800;
   letter-spacing: 1px;
 }
 
-.link:hover {
+.logoutButton {
+  color: rgba(255 255 255 / 0.5);
+  transition: opacity 0.2s ease;
   cursor: pointer;
 }
 
-.link:active {
+.link:hover,
+.logoutButton:hover {
   opacity: 0.8;
-  transition: opacity 0.4s ease;
-}
-
-.link:not(.link__active):hover a {
-  opacity: 0.8;
-  cursor: pointer;
-}
-
-.top {
-  margin-top: 20px;
 }

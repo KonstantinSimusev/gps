@@ -1,4 +1,4 @@
-import { In, IsNull, Not, Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -44,22 +44,7 @@ export class EmployeeRepository {
   async findEmployeeById(id: string): Promise<Employee | null> {
     return this.employeeRepository.findOne({
       where: { id },
-      relations: [
-        'team',
-        'position',
-        'position.workshop',
-        'position.profession',
-        'position.grade',
-        'position.schedule',
-        'position.role',
-        'currentTeam',
-        'currentPosition',
-        'currentPosition.workshop',
-        'currentPosition.profession',
-        'currentPosition.grade',
-        'currentPosition.schedule',
-        'currentPosition.role',
-      ],
+      relations: this.EMPLOYEE_RELATIONS,
     });
   }
 
@@ -73,22 +58,7 @@ export class EmployeeRepository {
   async findByPersonalNumber(personalNumber: number): Promise<Employee | null> {
     return this.employeeRepository.findOne({
       where: { personalNumber },
-      relations: [
-        'team',
-        'position',
-        'position.workshop',
-        'position.profession',
-        'position.grade',
-        'position.schedule',
-        'position.role',
-        'currentTeam',
-        'currentPosition',
-        'currentPosition.workshop',
-        'currentPosition.profession',
-        'currentPosition.grade',
-        'currentPosition.schedule',
-        'currentPosition.role',
-      ],
+      relations: this.EMPLOYEE_RELATIONS,
     });
   }
 
@@ -175,8 +145,16 @@ export class EmployeeRepository {
           role: { id: roleId },
         },
       },
-
-      relations: ['team', 'position', 'position.workshop', 'position.role'],
+      relations: [
+        'team',
+        'position',
+        'position.workshop',
+        'position.profession',
+        'position.grade',
+        'position.schedule',
+        'position.paymentSystem',
+        'position.role',
+      ],
     });
   }
 
@@ -188,70 +166,56 @@ export class EmployeeRepository {
     roleId: string,
   ): Promise<number> {
     return this.employeeRepository.count({
-      where: [
-        // Сценарий 1: currentTeam заполнен, currentPosition заполнен
-        {
-          id: Not(employeeId),
-          hasAccess: true,
-          isActive: true,
-          currentTeam: { id: teamId },
-          currentPosition: {
-            workshop: { id: workshopId },
-            schedule: { id: scheduleId },
-            role: { id: roleId },
-          },
+      where: {
+        id: Not(employeeId),
+        hasAccess: true,
+        isActive: true,
+        profileTeam: { id: teamId },
+        profilePosition: {
+          workshop: { id: workshopId },
+          schedule: { id: scheduleId },
+          role: { id: roleId },
         },
-        // Сценарий 2: currentTeam NULL, currentPosition заполнен
-        {
-          id: Not(employeeId),
-          hasAccess: true,
-          isActive: true,
-          currentTeam: IsNull(),
-          team: { id: teamId },
-          currentPosition: {
-            workshop: { id: workshopId },
-            schedule: { id: scheduleId },
-            role: { id: roleId },
-          },
-        },
-        // Сценарий 3: currentTeam заполнен, currentPosition NULL
-        {
-          id: Not(employeeId),
-          hasAccess: true,
-          isActive: true,
-          currentTeam: { id: teamId },
-          currentPosition: IsNull(),
-          position: {
-            workshop: { id: workshopId },
-            schedule: { id: scheduleId },
-            role: { id: roleId },
-          },
-        },
-        // Сценарий 4: currentTeam NULL, currentPosition NULL
-        {
-          id: Not(employeeId),
-          hasAccess: true,
-          isActive: true,
-          currentTeam: IsNull(),
-          team: { id: teamId },
-          currentPosition: IsNull(),
-          position: {
-            workshop: { id: workshopId },
-            schedule: { id: scheduleId },
-            role: { id: roleId },
-          },
-        },
-      ],
+      },
       relations: [
         'team',
         'position',
         'position.workshop',
+        'position.profession',
+        'position.grade',
+        'position.schedule',
+        'position.paymentSystem',
         'position.role',
-        'currentTeam',
-        'currentPosition',
-        'currentPosition.workshop',
-        'currentPosition.role',
+        'profileTeam',
+        'profilePosition',
+        'profilePosition.workshop',
+        'profilePosition.profession',
+        'profilePosition.grade',
+        'profilePosition.schedule',
+        'profilePosition.paymentSystem',
+        'profilePosition.role',
       ],
     });
   }
+
+  private EMPLOYEE_RELATIONS = [
+    'account',
+    'team',
+    'position',
+    'position.workshop',
+    'position.profession',
+    'position.grade',
+    'position.schedule',
+    'position.paymentSystem',
+    'position.role',
+    'profileTeam',
+    'profilePosition',
+    'profilePosition.workshop',
+    'profilePosition.profession',
+    'profilePosition.grade',
+    'profilePosition.schedule',
+    'profilePosition.paymentSystem',
+    'profilePosition.role',
+    'employeeShifts',
+  ];
 }

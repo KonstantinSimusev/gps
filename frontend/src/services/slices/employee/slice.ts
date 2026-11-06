@@ -1,13 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { IAccountInfo, IEmployeeInfo } from '../../../utils/api.interface';
+import { IAccountInfo, IEmployeeInfo } from '../../../utils/api.interfaces';
 
-import {
-  createEmployee,
-  // deleteEmployee,
-  searchEmployee,
-  updateEmployee,
-} from './actions';
+import { createEmployee, searchEmployee, updateEmployee } from './actions';
 
 interface IEmployeeState {
   employeeInfo: IEmployeeInfo | null;
@@ -21,9 +16,6 @@ interface IEmployeeState {
 
   isUpdateEmployeeLoading: boolean;
   updateEmployeeError: string | null;
-
-  // isDeleteEmployeeLoading: boolean;
-  // deleteEmployeeError: string | null;
 }
 
 const initialState: IEmployeeState = {
@@ -38,15 +30,18 @@ const initialState: IEmployeeState = {
 
   isUpdateEmployeeLoading: false,
   updateEmployeeError: null,
-
-  // isDeleteEmployeeLoading: false,
-  // deleteEmployeeError: null,
 };
 
 export const employeeSlice = createSlice({
   name: 'employee',
   initialState,
   reducers: {
+    clearEmployeeInfo: (state) => {
+      state.employeeInfo = null;
+    },
+    clearEmployeeAccountInfo: (state) => {
+      state.accountInfo = null;
+    },
     clearSearchEmployeeError: (state) => {
       state.searchEmployeeError = null;
     },
@@ -56,9 +51,6 @@ export const employeeSlice = createSlice({
     clearUpdateEmployeeError: (state) => {
       state.updateEmployeeError = null;
     },
-    // clearDeleteEmployeeError: (state) => {
-    //   state.deleteEmployeeError = null;
-    // },
   },
   selectors: {
     selectSearсhEmployee: (state: IEmployeeState) => state.employeeInfo,
@@ -77,15 +69,10 @@ export const employeeSlice = createSlice({
       state.isUpdateEmployeeLoading,
     selectUpdateEmployeeError: (state: IEmployeeState) =>
       state.updateEmployeeError,
-
-    // selectIsDeleteEmployeeLoading: (state: IEmployeeState) =>
-    //   state.isDeleteEmployeeLoading,
-    // selectDeleteEmployeeError: (state: IEmployeeState) =>
-    //   state.deleteEmployeeError,
   },
   extraReducers: (builder) => {
-    // Обработчик для searchEmployee
     builder
+      // Обработчики для searchEmployee
       .addCase(searchEmployee.pending, (state) => {
         state.isSearchEmployeeLoading = true;
         state.searchEmployeeError = null;
@@ -102,10 +89,8 @@ export const employeeSlice = createSlice({
         state.isSearchEmployeeLoading = false;
         state.searchEmployeeError =
           action.error.message ?? 'Ошибка получения данных';
-      });
-
-    // Обработчик для createEmployee
-    builder
+      })
+      // Обработчик для createEmployee
       .addCase(createEmployee.pending, (state) => {
         state.isCreateEmployeeLoading = true;
         state.createEmployeeError = null;
@@ -122,10 +107,8 @@ export const employeeSlice = createSlice({
         state.isCreateEmployeeLoading = false;
         state.createEmployeeError =
           action.error.message ?? 'Ошибка получения данных';
-      });
-
-    // Обработчик для updateEmployee
-    builder
+      })
+      // Обработчик для updateEmployee
       .addCase(updateEmployee.pending, (state) => {
         state.isUpdateEmployeeLoading = true;
         state.updateEmployeeError = null;
@@ -143,31 +126,15 @@ export const employeeSlice = createSlice({
         state.updateEmployeeError =
           action.error.message ?? 'Ошибка обновления данных сотрудника';
       });
-
-    // Обработчик для deleteEmployee
-    // builder
-    //   .addCase(deleteEmployee.pending, (state) => {
-    //     state.isDeleteEmployeeLoading = true;
-    //     state.deleteEmployeeError = null;
-    //   })
-    //   .addCase(deleteEmployee.fulfilled, (state) => {
-    //     state.employeeInfo = null;
-    //     state.isDeleteEmployeeLoading = false;
-    //     state.deleteEmployeeError = null;
-    //   })
-    //   .addCase(deleteEmployee.rejected, (state, action) => {
-    //     state.isDeleteEmployeeLoading = false;
-    //     state.deleteEmployeeError =
-    //       action.error.message ?? 'Ошибка обновления данных сотрудника';
-    //   });
   },
 });
 
 export const {
+  clearEmployeeInfo,
+  clearEmployeeAccountInfo,
   clearSearchEmployeeError,
   clearCreateEmployeeError,
   clearUpdateEmployeeError,
-  // clearDeleteEmployeeError,
 } = employeeSlice.actions;
 
 export const {
@@ -181,7 +148,4 @@ export const {
 
   selectIsUpdateEmployeeLoading,
   selectUpdateEmployeeError,
-
-  // selectIsDeleteEmployeeLoading,
-  // selectDeleteEmployeeError,
 } = employeeSlice.selectors;

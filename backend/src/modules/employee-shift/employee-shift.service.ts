@@ -1,8 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
-import { EAttendanceCode } from '../../shared/enums/enums';
-import { IEmployeeShiftList } from '../../shared/interfaces/api.interface';
+import { ISuccess } from '../../shared/interfaces/api.interface';
 import { EmployeeShiftRepository } from './employee-shift.repository';
+import { EmployeeShift } from './entities/employee-shift.entity';
 
 @Injectable()
 export class EmployeeShiftService {
@@ -10,34 +14,25 @@ export class EmployeeShiftService {
     private readonly employeeShiftRepository: EmployeeShiftRepository,
   ) {}
 
-  async getEmployeeShiftsByShiftId(
-    shiftId: string,
-  ): Promise<IEmployeeShiftList> {
-    const employeeShifts =
-      await this.employeeShiftRepository.findAllByShiftId(shiftId);
+  async getEmployeeShift(id: string): Promise<EmployeeShift> {
+    const employeeShift = await this.employeeShiftRepository.findById(id);
 
-    if (employeeShifts.length === 0) {
-      throw new NotFoundException('Смены сотрудников не найдены');
+    if (!employeeShift) {
+      throw new NotFoundException(`Смена сотрудника с ID ${id} не найдена`);
     }
 
-    const isAssignmentComplete = employeeShifts.every((shift) => {
-      // Если есть рабочее место — ок
-      if (shift.workPlace !== null) {
-        return true;
-      }
+    return employeeShift;
+  }
 
-      // Иначе проверяем, что attendanceType вообще загружен и код допустимый
-      if (!shift.attendanceType) {
-        return false;
-      }
+  async deleteEmployeeShift(id: string): Promise<ISuccess> {
+    const result = await this.employeeShiftRepository.deleteById(id);
 
-      return shift.attendanceType.attendanceCode === EAttendanceCode.V;
-    });
+    if (result.affected === 0) {
+      throw new NotFoundException(
+        `Смена сотрудника с ID ${id} не найдена (уже удалена)`,
+      );
+    }
 
-    return {
-      total: employeeShifts.length,
-      items: employeeShifts,
-      isAssignmentComplete,
-    };
+    return { message: 'Смена сотрудника успешно удалена' };
   }
 }

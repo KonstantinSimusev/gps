@@ -1,8 +1,9 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
+import { Notice } from '../../notice/entities/notice.entity';
+import { Document } from '../../document/entities/document.entity';
 import { Employee } from '../../employee/entities/employee.entity';
 import { Shift } from '../../shift/entities/shift.entity';
-// import { EmployeeTransfer } from 'src/modules/employee-transfer/entities/employee-transfer.entity';
 
 @Entity({
   schema: 'gps',
@@ -24,18 +25,19 @@ export class Team {
   @OneToMany(() => Employee, (employee) => employee.team)
   employees: Employee[];
 
-  // Связь: одна бригада — много сотрудников (текущая бригада)
-  @OneToMany(() => Employee, (employee) => employee.currentTeam)
-  currentEmployees: Employee[];
+  // Связь: одна бригада — много сотрудников (profile бригада)
+  @OneToMany(() => Employee, (employee) => employee.profileTeam)
+  profileEmployees: Employee[];
 
   // Связь: одна бригада — много смен
   @OneToMany(() => Shift, (shift) => shift.team)
   shifts: Shift[];
 
-  // // Связь: одна бригада — много переводов сотрудников
-  // @OneToMany(
-  //   () => EmployeeTransfer,
-  //   (employeeTransfer) => employeeTransfer.currentTeam,
-  // )
-  // employeeTransfers: EmployeeTransfer[];
+  // Связь: одна бригада — много уведомлений
+  @OneToMany(() => Notice, (notice) => notice.team)
+  notices: Notice[];
+
+  // Связь: одна бригада — много документов
+  @OneToMany(() => Document, (document) => document.team)
+  documents: Document[];
 }

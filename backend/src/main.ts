@@ -17,7 +17,7 @@ async function bootstrap() {
     }),
   );
 
-  app.setGlobalPrefix('api/gps');
+  app.setGlobalPrefix('api');
 
   app.enableCors({
     origin: [
@@ -32,6 +32,5 @@ async function bootstrap() {
   });
 
   await app.listen(3000);
-  console.log('🚀 Приложение запущено на порту 3000');
 }
 bootstrap();

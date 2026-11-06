@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { useEscapeHandler } from '../../../hooks/useEscapeHandler';
+import { useEscapeHandler } from '../../../hooks/use-escape-handler';
 
 import { LayerContext } from '../../../contexts/layer/layerContext';
 
@@ -19,7 +19,8 @@ export const Overlay = () => {
     isPasswordUpdateOpen,
     isShiftSearchOpen,
     isEmployeeAddOpen,
-    isTimesheetEditOpen,
+    isEmployeeShiftEditOpen,
+    isEmployeeShiftDeleteOpen,
 
     setIsOverlayOpen,
     setIsMenuOpen,
@@ -31,7 +32,8 @@ export const Overlay = () => {
     setIsPasswordUpdateOpen,
     setIsShiftSearchOpen,
     setIsEmployeeAddOpen,
-    setIsTimesheetEditOpen,
+    setIsEmployeeShiftEditOpen,
+    setIsEmployeeShiftDeleteOpen,
   } = useContext(LayerContext);
 
   useEscapeHandler(() => {
@@ -79,8 +81,12 @@ export const Overlay = () => {
       setIsEmployeeAddOpen(false);
     }
 
-    if (isTimesheetEditOpen) {
-      setIsTimesheetEditOpen(false);
+    if (isEmployeeShiftEditOpen) {
+      setIsEmployeeShiftEditOpen(false);
+    }
+
+    if (isEmployeeShiftDeleteOpen) {
+      setIsEmployeeShiftDeleteOpen(false);
     }
   });
 
@@ -101,7 +107,8 @@ export const Overlay = () => {
       setIsPasswordUpdateOpen(false);
       setIsShiftSearchOpen(false);
       setIsEmployeeAddOpen(false);
-      setIsTimesheetEditOpen(false);
+      setIsEmployeeShiftEditOpen(false);
+      setIsEmployeeShiftDeleteOpen(false);
     }
   };
 

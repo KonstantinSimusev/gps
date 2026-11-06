@@ -1,6 +1,5 @@
 import { Transform } from 'class-transformer';
 import { IsInt, Max, Min } from 'class-validator';
-
 import { toNumber } from '../../../shared/utils/utils';
 
 export class SearchEmployeeDto {

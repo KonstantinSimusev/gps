@@ -16,14 +16,16 @@ export class PositionRepository {
     positionCode: number,
     gradeId: string,
     scheduleId: string,
+    paymentId: string,
   ): Promise<Position | null> {
     return this.positionRepository.findOne({
       where: {
         positionCode,
         grade: { id: gradeId },
         schedule: { id: scheduleId },
+        paymentSystem: { id: paymentId },
       },
-      relations: ['workshop', 'grade', 'schedule', 'role'],
+      relations: ['workshop', 'grade', 'schedule', 'paymentSystem', 'role'],
     });
   }
 }

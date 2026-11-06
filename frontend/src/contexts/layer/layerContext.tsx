@@ -13,10 +13,10 @@ interface ILayerContextValue {
   isPasswordUpdateOpen: boolean;
   isShiftSearchOpen: boolean;
   isEmployeeAddOpen: boolean;
-  isTimesheetEditOpen: boolean;
+  isEmployeeShiftEditOpen: boolean;
+  isEmployeeShiftDeleteOpen: boolean;
 
   selectedId: string;
-  selectedScrollPosition: number;
   selectedDate: string | null;
 
   setIsAgreed: (value: boolean) => void;
@@ -31,10 +31,10 @@ interface ILayerContextValue {
   setIsPasswordUpdateOpen: (value: boolean) => void;
   setIsShiftSearchOpen: (value: boolean) => void;
   setIsEmployeeAddOpen: (value: boolean) => void;
-  setIsTimesheetEditOpen: (value: boolean) => void;
+  setIsEmployeeShiftEditOpen: (value: boolean) => void;
+  setIsEmployeeShiftDeleteOpen: (value: boolean) => void;
 
   setSelectedId: (value: string) => void;
-  setSelectedScrollPosition: (value: number) => void;
   setSelectedDate: (value: string | null) => void;
 }
 
@@ -51,10 +51,10 @@ export const LayerContext = createContext<ILayerContextValue>({
   isPasswordUpdateOpen: false,
   isShiftSearchOpen: false,
   isEmployeeAddOpen: false,
-  isTimesheetEditOpen: false,
+  isEmployeeShiftEditOpen: false,
+  isEmployeeShiftDeleteOpen: false,
 
   selectedId: '',
-  selectedScrollPosition: 0,
   selectedDate: null,
 
   setIsAgreed: () => {},
@@ -69,9 +69,9 @@ export const LayerContext = createContext<ILayerContextValue>({
   setIsPasswordUpdateOpen: () => {},
   setIsShiftSearchOpen: () => {},
   setIsEmployeeAddOpen: () => {},
-  setIsTimesheetEditOpen: () => {},
+  setIsEmployeeShiftEditOpen: () => {},
+  setIsEmployeeShiftDeleteOpen: () => {},
 
   setSelectedId: () => {},
-  setSelectedScrollPosition: () => {},
   setSelectedDate: () => {},
 });

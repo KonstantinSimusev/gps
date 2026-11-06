@@ -32,4 +32,19 @@ export default defineConfig({
       },
     ],
   },
+  server: {
+    // Прокси для локальной разработки: запросы на /api уходят на бэкенд
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/content': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 });

@@ -1,60 +1,13 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { delay } from '../../../utils/utils';
-
-import { IShift } from '../../../utils/api.interface';
+import { IShift } from '../../../utils/api.interfaces';
 
 import {
-  // createMissingShiftsApi,
-  createShiftsApi,
   getShiftByIdApi,
   getShiftsApi,
   getShiftsByDateApi,
-  // getUncheckedShiftsApi,
-  setCheckedByShiftIdApi,
 } from '../../../utils/api/shift.api';
-
-export const createShifts = createAsyncThunk<IShift[], void>(
-  'shifts/create',
-  async (): Promise<IShift[]> => {
-    try {
-      // Вызываем API функцию
-      const response = await createShiftsApi();
-
-      // Добавляем задержку кода
-      await delay();
-
-      return response;
-    } catch (error) {
-      // Добавляем задержку кода
-      await delay();
-
-      if (error instanceof Error) {
-        throw error; // передаём точное сообщение от бэкенда
-      }
-
-      throw new Error('Что-то пошло не так');
-    }
-  },
-);
-
-// export const createMissingShifts = createAsyncThunk<ISuccess, void>(
-//   'shifts/createMissingShifts',
-//   async (): Promise<ISuccess> => {
-//     try {
-//       // Вызываем API функцию
-//       const response = await createMissingShiftsApi();
-
-//       return response;
-//     } catch (error) {
-//       if (error instanceof Error) {
-//         throw error;
-//       }
-
-//       throw new Error('Что-то пошло не так');
-//     }
-//   },
-// );
+import { delay } from '../../../utils/utils';
 
 export const getShifts = createAsyncThunk<IShift[], void>(
   'shifts/get',
@@ -62,12 +15,10 @@ export const getShifts = createAsyncThunk<IShift[], void>(
     try {
       // Вызываем API функцию
       const response = await getShiftsApi();
-
-      // Добавляем задержку кода
-      // await delay();
-
+await delay(1000);
       return response;
     } catch (error) {
+await delay(1000);
       if (error instanceof Error) {
         throw error; // передаём точное сообщение от бэкенда
       }
@@ -77,42 +28,15 @@ export const getShifts = createAsyncThunk<IShift[], void>(
   },
 );
 
-// export const getUncheckedShifts = createAsyncThunk<IShift[], void>(
-//   'shifts/getUncheckedShifts',
-//   async (): Promise<IShift[]> => {
-//     try {
-//       // Вызываем API функцию
-//       const response = await getUncheckedShiftsApi();
-
-//       // Добавляем задержку кода
-//       // await delay();
-
-//       return response;
-//     } catch (error) {
-//       // Добавляем задержку кода
-//       // await delay();
-
-//       if (error instanceof Error) {
-//         throw error;
-//       }
-
-//       throw new Error('Что-то пошло не так');
-//     }
-//   },
-// );
-
-export const getShiftById = createAsyncThunk<IShift, { id: string }>(
+export const getShiftById = createAsyncThunk<IShift, string>(
   'shifts/getById',
-  async ({ id }) => {
+  async (id: string) => {
     try {
       const response = await getShiftByIdApi(id);
-
-      // await delay();
-
+await delay(1000);
       return response;
     } catch (error) {
-      // await delay();
-
+await delay(1000);
       if (error instanceof Error) {
         throw error; // передаём точное сообщение от бэкенда
       }
@@ -128,32 +52,17 @@ export const getShiftsByDate = createAsyncThunk<
 >('shifts/getByDate', async ({ shiftDate }): Promise<IShift[]> => {
   try {
     const response = await getShiftsByDateApi(shiftDate);
-
-    // Добавляем задержку кода
-    await delay();
-
+await delay(1000);
     return response;
   } catch (error) {
-    // Добавляем задержку кода
-    await delay();
-
+await delay(1000);
     if (error instanceof Error) {
       throw error; // передаём точное сообщение от бэкенда
     }
 
-    throw new Error('Что-то пошло не так при получении смен по дате');
+    throw new Error('Что-то пошло не так');
   }
 });
 
-export const setCheckedByShiftId = createAsyncThunk(
-  'shifts/check',
-  async (shiftId: string, { rejectWithValue }) => {
-    const res = await setCheckedByShiftIdApi(shiftId);
-
-    if (typeof res === 'string') {
-      return rejectWithValue(res); // Сюда попадёт errorData.message
-    }
-
-    return res; // Сюда попадёт ISuccess
-  },
-);
+// Добавляем задержку кода
+// await delay(1000);

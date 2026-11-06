@@ -1,11 +1,16 @@
 import { useContext } from 'react';
+import clsx from 'clsx';
 
 import { LayerContext } from '../../../../contexts/layer/layerContext';
 import { CloseIcon } from '../../icons/close/close';
 
 import styles from './close-button.module.css';
 
-export const CloseButton = () => {
+interface IProps {
+  className?: string;
+}
+
+export const CloseButton = ({ className }: IProps) => {
   const {
     isAccountInfoOpen,
 
@@ -19,7 +24,8 @@ export const CloseButton = () => {
     setIsPasswordUpdateOpen,
     setIsShiftSearchOpen,
     setIsEmployeeAddOpen,
-    setIsTimesheetEditOpen,
+    setIsEmployeeShiftEditOpen,
+    setIsEmployeeShiftDeleteOpen,
   } = useContext(LayerContext);
 
   const handleClick = () => {
@@ -37,11 +43,16 @@ export const CloseButton = () => {
     setIsPasswordUpdateOpen(false);
     setIsShiftSearchOpen(false);
     setIsEmployeeAddOpen(false);
-    setIsTimesheetEditOpen(false);
+    setIsEmployeeShiftEditOpen(false);
+    setIsEmployeeShiftDeleteOpen(false);
   };
 
   return (
-    <button className={styles.container} type='button' onClick={handleClick}>
+    <button
+      type='button'
+      className={clsx(styles.container, className)}
+      onClick={handleClick}
+    >
       <CloseIcon />
     </button>
   );

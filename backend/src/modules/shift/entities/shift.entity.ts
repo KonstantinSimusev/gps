@@ -28,14 +28,6 @@ export class Shift {
   })
   date: Date;
 
-  @Column({
-    name: 'is_checked',
-    type: 'boolean',
-    nullable: false,
-    default: false,
-  })
-  isChecked: boolean;
-
   // Связь: много смен — один цех
   @ManyToOne(() => Workshop, (workshop) => workshop.shifts)
   @JoinColumn({ name: 'workshop_id' })
@@ -47,7 +39,7 @@ export class Shift {
   team: Team;
 
   // Связь: много расписаний смен - один график
-  @ManyToOne(() => Schedule, (schedule) => schedule.shiftSchedules)
+  @ManyToOne(() => Schedule, (schedule) => schedule.shifts)
   @JoinColumn({ name: 'schedule_id' })
   schedule: Schedule;
 

@@ -1,0 +1,71 @@
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 30px 30px;
+}
+
+.button {
+  display: flex;
+  padding: 6px;
+  border-radius: 50%;
+  border: 1px solid rgba(255 255 255 / 0.1);
+  background-color: rgba(129 129 129 / 0.1);
+}
+
+.icon {
+  fill: #007dff;
+  stroke: #007dff;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  font-size: 12px;
+  gap: 10px;
+  opacity: 0.6;
+}
+
+.label {
+  display: flex;
+  gap: 4px;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 34px;
+  border-bottom: 1px solid rgba(255 255 255 / 0.1);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  padding-bottom: 4px;
+}
+
+.status {
+  position: relative;
+  display: flex;
+  align-items: end;
+  gap: 12px;
+}
+
+.text {
+  font-size: 14px;
+}
+
+.count {
+  display: flex;
+  gap: 6px;
+  align-items: end;
+  line-height: 1;
+  font-size: 18px;
+}
+
+.shiftListWrapper {
+  position: relative;
+  width: 100%;
+}

@@ -1,20 +1,17 @@
-import type {
+import { BASE_PATH } from '../api.config';
+import {
   IAccountInfo,
   ICreateEmployee,
   IEmployeeInfo,
-  // ISuccess,
   IUpdateEmployee,
-} from '../api.interface';
-
-// Используем переменную окружения
-export const URL = import.meta.env.VITE_API_URL ?? '/api/gps';
+} from '../api.interfaces';
 
 export const createEmployeeApi = async (
   data: ICreateEmployee,
 ): Promise<IAccountInfo> => {
   try {
     // Здесь происходит запрос к серверу
-    const response = await fetch(`${URL}/employee-management`, {
+    const response = await fetch(`${BASE_PATH}/employee-management`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
@@ -44,7 +41,7 @@ export const searchEmployeeApi = async (
 ): Promise<IEmployeeInfo> => {
   try {
     const response = await fetch(
-      `${URL}/employee-management/employees/${personalNumber}`,
+      `${BASE_PATH}/employee-management/employees/${personalNumber}`,
       {
         method: 'GET',
         credentials: 'include', // Важно добавить эту строку
@@ -72,14 +69,17 @@ export const updateEmployeeApi = async (
 ): Promise<IEmployeeInfo> => {
   const { id } = data;
   try {
-    const response = await fetch(`${URL}/employee-management/employee/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
+    const response = await fetch(
+      `${BASE_PATH}/employee-management/employee/${id}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8',
+        },
+        credentials: 'include', // Важно добавить эту строку
+        body: JSON.stringify(data),
       },
-      credentials: 'include', // Важно добавить эту строку
-      body: JSON.stringify(data),
-    });
+    );
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -99,7 +99,7 @@ export const updateEmployeeApi = async (
 
 // export const deleteEmployeeApi = async (id: string): Promise<ISuccess> => {
 //   try {
-//     const response = await fetch(`${URL}/employee-management/${id}`, {
+//     const response = await fetch(`${BASE_PATH}/employee-management/${id}`, {
 //       method: 'DELETE',
 //       headers: {
 //         'Content-Type': 'application/json;charset=utf-8',

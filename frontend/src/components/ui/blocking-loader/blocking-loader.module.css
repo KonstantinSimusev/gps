@@ -1,0 +1,76 @@
+.overlay {
+  position: fixed;
+  z-index: 9999; /* выше всех меню, тулбаров и модалок */
+  display: flex;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0 0 0 / 0.6);
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto; /* сам оверлей ловит события */
+  /* backdrop-filter: blur(2px); */
+}
+
+/* Лоадер в стиле Сбера: кольцо с зелёным хвостом */
+.loader {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 60deg,
+    rgba(33 160 56 / 0.3) 120deg,
+    rgba(33 160 56 / 0.7) 240deg,
+    #21a038 360deg
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 3px),
+    #000 calc(100% - 3px)
+  );
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* .container {
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255 255 255 / 0.8);
+  white-space: nowrap;
+} */
+
+/* Твои бегающие точки */
+/* .container::after {
+  content: '';
+  display: inline-block;
+  width: 2rem;
+  margin-left: 4px;
+  font-family: monospace;
+  animation: dots 1s linear infinite;
+} */
+/* 
+@keyframes dots {
+  0% {
+    content: '.';
+  }
+
+  33% {
+    content: '..';
+  }
+
+  66% {
+    content: '...';
+  }
+
+  100% {
+    content: '.';
+  }
+} */

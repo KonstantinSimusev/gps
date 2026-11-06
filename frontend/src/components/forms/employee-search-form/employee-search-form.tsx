@@ -13,7 +13,6 @@ import { searchEmployee } from '../../../services/slices/employee/actions';
 
 import {
   clearSearchEmployeeError,
-  selectIsSearchEmployeeLoading,
   selectSearchEmployeeError,
 } from '../../../services/slices/employee/slice';
 
@@ -23,7 +22,6 @@ import { Button } from '../../ui/buttons/button/button';
 import { Form } from '../../ui/form/form';
 import { TextInput } from '../../ui/inputs/text-input/text-input';
 import { ServerError } from '../../ui/server-error/server-error';
-import { Spinner } from '../../ui/spinner/spinner';
 
 import styles from './employee-seach-form.module.css';
 
@@ -35,7 +33,6 @@ export const EmployeeSearchForm = () => {
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
-  const isLoading = useSelector(selectIsSearchEmployeeLoading);
   const serverError = useSelector(selectSearchEmployeeError);
 
   const { isEmployeeSearchOpen, setIsOverlayOpen, setIsEmployeeSearchOpen } =
@@ -78,7 +75,7 @@ export const EmployeeSearchForm = () => {
   };
 
   // Обработчик потери фокуса для валидации
-  const handleBlur = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
     // Получаем ошибку валидации для поля
@@ -91,7 +88,7 @@ export const EmployeeSearchForm = () => {
     });
   };
 
-  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Валидируем всю форму
@@ -122,9 +119,7 @@ export const EmployeeSearchForm = () => {
 
   // Определяем, заблокирована ли кнопка
   const isButtonDisabled =
-    isLoading ||
-    Object.values(errors).some(Boolean) ||
-    !formData.personalNumber;
+    Object.values(errors).some(Boolean) || !formData.personalNumber;
 
   return (
     <Form
@@ -136,15 +131,17 @@ export const EmployeeSearchForm = () => {
         type='text'
         name='personalNumber'
         label='Личный №'
+        placeholder='12345'
         value={formData.personalNumber}
         error={errors.personalNumber}
-        onChange={handleChange}
-        onBlur={handleBlur}
         className={styles.input}
+        onBlur={handleBlur}
+        onChange={handleChange}
+        autoFocus
       />
 
       <div className={styles.message}>
-        {isLoading ? <Spinner /> : <ServerError text={serverError} />}
+        <ServerError text={serverError} />
       </div>
 
       <Button

@@ -1,9 +1,12 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
+import { AccessPoint } from '../../access-point/entities/access-point.entity';
+import { Document } from '../../document/entities/document.entity';
+import { Notice } from '../../notice/entities/notice.entity';
 import { Position } from '../../position/entities/position.entity';
 import { Shift } from '../../shift/entities/shift.entity';
 import { ShiftSchedule } from '../../shift-schedule/entities/shift-schedule.entity';
-import { WorkPlace } from '../../work-place/entities/work-place.entity';
+import { Workplace } from '../../work-place/entities/work-place.entity';
 
 @Entity({
   schema: 'gps',
@@ -35,6 +38,18 @@ export class Workshop {
   shiftSchedules: ShiftSchedule[];
 
   // Связь: один цех — много рабочих мест
-  @OneToMany(() => WorkPlace, (workPlace) => workPlace.workshop)
-  workPlaces: WorkPlace[];
+  @OneToMany(() => Workplace, (workplace) => workplace.workshop)
+  workplaces: Workplace[];
+
+  // Связь: один цех — много уведомлений
+  @OneToMany(() => Notice, (notice) => notice.workshop)
+  notices: Notice[];
+
+  // Связь: один цех — много КПП
+  @OneToMany(() => AccessPoint, (accessPoint) => accessPoint.workshop)
+  accessPoints: AccessPoint[];
+
+  // Связь: один цех — много документов
+  @OneToMany(() => Document, (document) => document.workshop)
+  documents: Document[];
 }

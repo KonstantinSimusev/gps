@@ -6,21 +6,22 @@ import {
   validationRules,
 } from '../../../utils/validation';
 
-// import { useDispatch, useSelector } from '../../../services/store';
-
-// import {
-//   clearSearchEmployeeError,
-//   selectIsSearchEmployeeLoading,
-//   selectSearchEmployeeError,
-// } from '../../../services/slices/employee/slice';
-
 import { LayerContext } from '../../../contexts/layer/layerContext';
+
+import { useDispatch, useSelector } from '../../../services/store';
+
+import { createEmployeeShift } from '../../../services/slices/employee-shift/actions';
+import { getShiftById } from '../../../services/slices/shift/actions';
+
+import {
+  clearCreateEmployeeShift,
+  selectCreateEmployeeShiftError,
+} from '../../../services/slices/employee-shift/slice';
 
 import { Button } from '../../ui/buttons/button/button';
 import { Form } from '../../ui/form/form';
 import { TextInput } from '../../ui/inputs/text-input/text-input';
 import { ServerError } from '../../ui/server-error/server-error';
-import { Spinner } from '../../ui/spinner/spinner';
 
 import styles from './employee-add-form.module.css';
 
@@ -29,15 +30,17 @@ interface IFormData extends Record<string, string> {
 }
 
 export const EmployeeAddForm = () => {
-  // const dispatch = useDispatch();
-  // const isLoading = useSelector(selectIsSearchEmployeeLoading);
-  // const serverError = useSelector(selectSearchEmployeeError);
+  const {
+    isEmployeeAddOpen,
+    selectedId,
+    setIsOverlayOpen,
+    setIsEmployeeAddOpen,
+  } = useContext(LayerContext);
 
-  const isLoading = false;
-  const serverError = 'Hello, World!';
+  const dispatch = useDispatch();
 
-  const { isEmployeeAddOpen, setIsOverlayOpen, setIsTimesheetEditOpen } =
-    useContext(LayerContext);
+  // Лоадер и ошибка именно для создания смены
+  const serverError = useSelector(selectCreateEmployeeShiftError);
 
   // Состояние для хранения значений полей формы
   const [formData, setFormData] = useState<IFormData>({
@@ -51,7 +54,7 @@ export const EmployeeAddForm = () => {
 
   useEffect(() => {
     if (isEmployeeAddOpen) {
-      // dispatch(clearSearchEmployeeError());
+      dispatch(clearCreateEmployeeShift());
     }
   }, [isEmployeeAddOpen]);
 
@@ -72,11 +75,11 @@ export const EmployeeAddForm = () => {
     });
 
     // Очищаем ошибки с сервера
-    // dispatch(clearSearchEmployeeError());
+    dispatch(clearCreateEmployeeShift());
   };
 
   // Обработчик потери фокуса для валидации
-  const handleBlur = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
     // Получаем ошибку валидации для поля
@@ -89,7 +92,7 @@ export const EmployeeAddForm = () => {
     });
   };
 
-  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Валидируем всю форму
@@ -104,9 +107,16 @@ export const EmployeeAddForm = () => {
     }
 
     try {
-      // await dispatch(searchEmployee(formData.personalNumber)).unwrap();
+      await dispatch(
+        createEmployeeShift({
+          shiftId: selectedId,
+          personalNumber: Number(formData.personalNumber),
+        }),
+      ).unwrap();
 
-      setIsTimesheetEditOpen(false);
+      dispatch(getShiftById(selectedId));
+
+      setIsEmployeeAddOpen(false);
       setIsOverlayOpen(false);
 
       setFormData({ personalNumber: '' });
@@ -118,9 +128,7 @@ export const EmployeeAddForm = () => {
 
   // Определяем, заблокирована ли кнопка
   const isButtonDisabled =
-    isLoading ||
-    Object.values(errors).some(Boolean) ||
-    !formData.personalNumber;
+    Object.values(errors).some(Boolean) || !formData.personalNumber;
 
   return (
     <Form
@@ -132,15 +140,17 @@ export const EmployeeAddForm = () => {
         type='text'
         name='personalNumber'
         label='Личный номер'
+        placeholder='12345'
         value={formData.personalNumber}
         error={errors.personalNumber}
-        onChange={handleChange}
-        onBlur={handleBlur}
         className={styles.input}
+        onBlur={handleBlur}
+        onChange={handleChange}
+        autoFocus
       />
 
       <div className={styles.message}>
-        {isLoading ? <Spinner /> : <ServerError text={serverError} />}
+        <ServerError text={serverError} />
       </div>
 
       <Button

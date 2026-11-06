@@ -1,14 +1,13 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { IProfile, ILoginData, ISuccess } from '../../../utils/api.interface';
-
-import { delay } from '../../../utils/utils';
+import { IProfile, ILoginData, ISuccess } from '../../../utils/api.interfaces';
 
 import {
   checkAccessTokenApi,
   loginEmployeeApi,
   logoutEmployeeApi,
 } from '../../../utils/api/auth.api';
+import { delay } from '../../../utils/utils';
 
 export const loginEmployee = createAsyncThunk(
   'auth/login',
@@ -16,15 +15,10 @@ export const loginEmployee = createAsyncThunk(
     try {
       // Вызываем API функцию
       const response = await loginEmployeeApi(data);
-
-      // Добавляем задержку кода
-      await delay();
-
+await delay(1000);
       return response;
     } catch (error) {
-      // Добавляем задержку кода
-      await delay();
-
+await delay(1000);
       if (error instanceof Error) {
         throw error; // передаём точное сообщение от бэкенда
       }
@@ -40,13 +34,13 @@ export const checkAccessToken = createAsyncThunk(
     try {
       const response = await checkAccessTokenApi();
 
-      if (!response) {
-        throw new Error();
-      }
-
       return response;
     } catch (error) {
-      throw error;
+      if (error instanceof Error) {
+        throw error; // передаём точное сообщение от бэкенда
+      }
+
+      throw new Error('Что-то пошло не так');
     }
   },
 );
@@ -56,20 +50,18 @@ export const logoutEmployee = createAsyncThunk(
   async (): Promise<ISuccess> => {
     try {
       const response = await logoutEmployeeApi();
-
-      // Добавляем задержку кода
-      await delay();
-
-      if (!response) {
-        throw new Error();
-      }
-
+await delay(1000);
       return response;
     } catch (error) {
-      // Добавляем задержку кода
-      await delay();
+      if (error instanceof Error) {
+await delay(1000);
+        throw error; // передаём точное сообщение от бэкенда
+      }
 
-      throw error;
+      throw new Error('Что-то пошло не так');
     }
   },
 );
+
+// Добавляем задержку кода
+// await delay(1000);

@@ -10,8 +10,6 @@ import {
 
 import { LayerContext } from '../../contexts/layer/layerContext';
 
-import { MainLayout } from '../ui/layouts/main/main-layout';
-
 import styles from './protected-route.module.css';
 
 export const ProtectedRoute = memo(() => {
@@ -28,11 +26,7 @@ export const ProtectedRoute = memo(() => {
 
   // Пока идёт проверка — показываем пустой блок (безопасность)
   if (checking) {
-    return (
-      <MainLayout>
-        {checking && <div className={styles.container}></div>}
-      </MainLayout>
-    );
+    return <>{checking && <div className={styles.container}></div>}</>;
   }
 
   // Если не авторизован и проверка завершена — редирект

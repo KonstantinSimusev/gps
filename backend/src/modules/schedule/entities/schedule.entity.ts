@@ -1,5 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
+import { Document } from '../../document/entities/document.entity';
+import { Notice } from '../../notice/entities/notice.entity';
 import { Position } from '../../position/entities/position.entity';
 import { Shift } from '../../shift/entities/shift.entity';
 import { ShiftSchedule } from '../../shift-schedule/entities/shift-schedule.entity';
@@ -32,4 +34,12 @@ export class Schedule {
   // Связь: один график — много смен
   @OneToMany(() => Shift, (shift) => shift.schedule)
   shifts: Shift[];
+
+  // Связь: один график — много уведомлений
+  @OneToMany(() => Notice, (notice) => notice.schedule)
+  notices: Notice[];
+
+  // Связь: один график — много документов
+  @OneToMany(() => Document, (document) => document.schedule)
+  documents: Document[];
 }

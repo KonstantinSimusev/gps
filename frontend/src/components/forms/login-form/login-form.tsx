@@ -1,8 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// import { ROLE_TO_PAGE } from '../../../utils/types';
-
 import {
   validateField,
   validateForm,
@@ -16,7 +14,6 @@ import { loginEmployee } from '../../../services/slices/auth/actions';
 import {
   clearAuthError,
   selectAuthError,
-  selectIsAuthLoading,
 } from '../../../services/slices/auth/slice';
 
 import { LayerContext } from '../../../contexts/layer/layerContext';
@@ -25,7 +22,6 @@ import { Button } from '../../ui/buttons/button/button';
 import { Form } from '../../ui/form/form';
 import { TextInput } from '../../ui/inputs/text-input/text-input';
 import { ServerError } from '../../ui/server-error/server-error';
-import { Spinner } from '../../ui/spinner/spinner';
 
 import styles from './login-form.module.css';
 
@@ -35,14 +31,13 @@ interface IFormData extends Record<string, string> {
 }
 
 export const LoginForm = () => {
+  const { isLoginOpen, setIsOverlayOpen, setIsLoginOpen } =
+    useContext(LayerContext);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const isLoading = useSelector(selectIsAuthLoading);
   const serverError = useSelector(selectAuthError);
-
-  const { isLoginOpen, setIsOverlayOpen, setIsLoginOpen } =
-    useContext(LayerContext);
 
   // Состояние для хранения значений полей формы
   const [formData, setFormData] = useState<IFormData>({
@@ -83,7 +78,7 @@ export const LoginForm = () => {
   };
 
   // Обработчик потери фокуса для валидации
-  const handleBlur = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
     // Получаем ошибку валидации для поля
@@ -96,7 +91,7 @@ export const LoginForm = () => {
     });
   };
 
-  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Валидируем всю форму
@@ -111,11 +106,8 @@ export const LoginForm = () => {
     }
 
     try {
-      // const employee = await dispatch(loginEmployee(formData)).unwrap();
-      // const targetPage = ROLE_TO_PAGE[employee.role || '/'];
-      // navigate(targetPage);
-
       await dispatch(loginEmployee(formData)).unwrap();
+
       navigate('/home');
 
       setIsLoginOpen(false);
@@ -130,7 +122,6 @@ export const LoginForm = () => {
 
   // Определяем, заблокирована ли кнопка
   const isButtonDisabled =
-    isLoading ||
     Object.values(errors).some(Boolean) ||
     !formData.login ||
     !formData.password;
@@ -146,6 +137,7 @@ export const LoginForm = () => {
         onChange={handleChange}
         onBlur={handleBlur}
         className={styles.input}
+        autoFocus
       />
 
       <TextInput
@@ -159,7 +151,7 @@ export const LoginForm = () => {
       />
 
       <div className={styles.message}>
-        {isLoading ? <Spinner /> : <ServerError text={serverError} />}
+        <ServerError text={serverError} />
       </div>
 
       <Button

@@ -11,11 +11,13 @@ export class PositionService {
     positionCode: number,
     gradeId: string,
     scheduleId: string,
+    paymentCode: string,
   ): Promise<Position> {
     const position = await this.positionRepository.findByCodeScheduleAndGrade(
       positionCode,
       gradeId,
       scheduleId,
+      paymentCode,
     );
 
     if (position === null) {

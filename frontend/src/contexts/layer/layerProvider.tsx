@@ -19,10 +19,11 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
   const [isPasswordUpdateOpen, setIsPasswordUpdateOpen] = useState(false);
   const [isShiftSearchOpen, setIsShiftSearchOpen] = useState(false);
   const [isEmployeeAddOpen, setIsEmployeeAddOpen] = useState(false);
-  const [isTimesheetEditOpen, setIsTimesheetEditOpen] = useState(false);
+  const [isEmployeeShiftEditOpen, setIsEmployeeShiftEditOpen] = useState(false);
+  const [isEmployeeShiftDeleteOpen, setIsEmployeeShiftDeleteOpen] =
+    useState(false);
 
   const [selectedId, setSelectedId] = useState('');
-  const [selectedScrollPosition, setSelectedScrollPosition] = useState(0);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   // Мемоизируем значение контекста
@@ -40,10 +41,10 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
       isPasswordUpdateOpen,
       isShiftSearchOpen,
       isEmployeeAddOpen,
-      isTimesheetEditOpen,
+      isEmployeeShiftEditOpen,
+      isEmployeeShiftDeleteOpen,
 
       selectedId,
-      selectedScrollPosition,
       selectedDate,
 
       setIsAgreed,
@@ -58,10 +59,10 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
       setIsPasswordUpdateOpen,
       setIsShiftSearchOpen,
       setIsEmployeeAddOpen,
-      setIsTimesheetEditOpen,
+      setIsEmployeeShiftEditOpen,
+      setIsEmployeeShiftDeleteOpen,
 
       setSelectedId,
-      setSelectedScrollPosition,
       setSelectedDate,
     }),
     [
@@ -77,10 +78,10 @@ export const LayerProvider = ({ children }: TLayerProviderProps) => {
       isPasswordUpdateOpen,
       isShiftSearchOpen,
       isEmployeeAddOpen,
-      isTimesheetEditOpen,
+      isEmployeeShiftEditOpen,
+      isEmployeeShiftDeleteOpen,
 
       selectedId,
-      selectedScrollPosition,
       selectedDate,
     ],
   );

@@ -196,26 +196,6 @@ export const validationRules: IValidationRules = {
       },
     ],
   },
-  replacedPersonalNumber: {
-    required: true,
-    validators: [
-      {
-        type: 'required',
-        pattern: /^.+$/,
-        message: 'Это поле обязательно',
-      },
-      {
-        type: 'number',
-        pattern: /^\d+$/,
-        message: 'Введите только цифры',
-      },
-      {
-        type: 'length',
-        pattern: /^.{3,10}$/,
-        message: 'Введите 3-10 символов',
-      },
-    ],
-  },
   teamNumber: {
     required: true,
     validators: [
@@ -227,16 +207,6 @@ export const validationRules: IValidationRules = {
       {
         type: 'length',
         pattern: /^(1|2|3|4|5)$/,
-        message: 'Введите чило от 1 до 5',
-      },
-    ],
-  },
-  currentTeamNumber: {
-    required: false,
-    validators: [
-      {
-        type: 'length',
-        pattern: /^$|^(1|2|3|4|5)$/,
         message: 'Введите чило от 1 до 5',
       },
     ],
@@ -261,18 +231,13 @@ export const validationRules: IValidationRules = {
       },
     ],
   },
-  currentPositionCode: {
-    required: false,
+  gradeCode: {
+    required: true,
     validators: [
       {
-        type: 'number',
-        pattern: /^$|^\d+$/,
-        message: 'Введите только цифры',
-      },
-      {
-        type: 'length',
-        pattern: /^$|^.{3,10}$/,
-        message: 'Введите 3-10 символов',
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
       },
     ],
   },
@@ -286,7 +251,82 @@ export const validationRules: IValidationRules = {
       },
     ],
   },
-  gradeCode: {
+  paymentCode: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
+      },
+    ],
+  },
+  attendanceCode: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
+      },
+    ],
+  },
+  profileTeamNumber: {
+    required: false,
+    validators: [
+      {
+        type: 'length',
+        pattern: /^$|^(1|2|3|4|5)$/,
+        message: 'Введите чило от 1 до 5',
+      },
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
+      },
+    ],
+  },
+  profilePositionCode: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
+      },
+      {
+        type: 'number',
+        pattern: /^\d+$/,
+        message: 'Введите только цифры',
+      },
+      {
+        type: 'length',
+        pattern: /^.{3,10}$/,
+        message: 'Введите 3-10 символов',
+      },
+    ],
+  },
+  profileGradeCode: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
+      },
+    ],
+  },
+  profileScheduleCode: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
+      },
+    ],
+  },
+  profilePaymentCode: {
     required: true,
     validators: [
       {
@@ -302,7 +342,7 @@ export const validationRules: IValidationRules = {
       {
         type: 'required',
         pattern: /^.+$/,
-        message: 'Выберите дату',
+        message: 'Это поле обязательно',
       },
       {
         type: 'dateFormat',
@@ -318,7 +358,7 @@ export const validationRules: IValidationRules = {
       {
         type: 'required',
         pattern: /^.+$/,
-        message: 'Выберите дату',
+        message: 'Это поле обязательно',
       },
       {
         type: 'dateFormat',
@@ -336,6 +376,26 @@ export const validationRules: IValidationRules = {
         pattern:
           /^$|((0[1-9]|[12][0-9]|3[01])\.(0[13578]|1[02])\.|(0[1-9]|[12][0-9]|30)\.(0[469]|11)\.|(0[1-9]|1[0-9]|2[0-9])\.02\.)(19|20)\d{2}$/,
         message: 'Введите дату в формате ДД.ММ.ГГГГ',
+      },
+    ],
+  },
+  currentProfessionCode: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
+      },
+    ],
+  },
+  currentPaymentCode: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
       },
     ],
   },
@@ -383,30 +443,13 @@ export const validationRules: IValidationRules = {
       },
     ],
   },
-  role: {
-    required: false,
-    validators: [
-      {
-        type: 'in',
-        // options: [
-        //   '',
-        //   'ADMIN',
-        //   'HEAD',
-        //   'LEAD_MASTER',
-        //   'DETAIL_MASTER',
-        //   'MASTER',
-        // ],
-        message: 'Выберите роль из списка',
-      },
-    ],
-  },
   shiftDate: {
     required: true,
     validators: [
       {
         type: 'required',
         pattern: /^.+$/,
-        message: 'Введите дату в формате ДД.ММ.ГГГГ',
+        message: 'Это поле обязательно',
       },
       {
         type: 'dateFormat',
@@ -451,7 +494,7 @@ export const validationRules: IValidationRules = {
       },
     ],
   },
-  workPlace: {
+  workplace: {
     required: true,
     validators: [
       {
@@ -459,28 +502,38 @@ export const validationRules: IValidationRules = {
         pattern: /^.+$/,
         message: 'Выберите место',
       },
-      {
-        type: 'notDefault',
-        pattern: /^(?!Не выбрано$).+/,
-        message: 'Выберите место',
-      },
     ],
   },
-  workHours: {
+  hours: {
     required: true,
     validators: [
       {
-        type: 'decimal',
-        // 1–2 цифры до точки, 0–1 цифра после; допускает , и .
-        pattern: /^\d{1,2}(?:[,.]\d)?$/,
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
+      },
+      {
+        type: 'pattern',
+        // Разрешает: 0,1,2,...,9,10,11,12. Не пропускает минусы, дроби, пробелы, буквы
+        pattern: /^(?:[0-9]|1[0-2])$/,
         message: 'Введите число от 0 до 12',
       },
-      // {
-      //   type: 'range',
-      //   min: 0,
-      //   max: 11.5,
-      //   message: 'Значение должно быть от 0 до 11,5',
-      // },
+    ],
+  },
+  minutes: {
+    required: true,
+    validators: [
+      {
+        type: 'required',
+        pattern: /^.+$/,
+        message: 'Это поле обязательно',
+      },
+      {
+        type: 'pattern',
+        // 0–9 или 10–59. Не пропускает 60+, минусы, дроби, буквы, пробелы
+        pattern: /^(?:[0-9]|[1-5][0-9])$/,
+        message: 'Введите число от 0 до 59',
+      },
     ],
   },
   count: {
@@ -497,6 +550,43 @@ export const validationRules: IValidationRules = {
         min: 0,
         max: 1000,
         message: 'Только целое число от 0 до 1000',
+      },
+    ],
+  },
+  documentStartDate: {
+    required: false,
+    validators: [
+      {
+        type: 'dateFormat',
+        pattern:
+          /^(?:$|((0[1-9]|[12][0-9]|3[01])\.(0[13578]|1[02])\.|(0[1-9]|[12][0-9]|30)\.(0[469]|11)\.|(0[1-9]|1[0-9]|2[0-9])\.02\.)(19|20)\d{2})$/,
+        message: 'Введите дату в формате ДД.ММ.ГГГГ',
+      },
+    ],
+  },
+  documentEndDate: {
+    required: false,
+    validators: [
+      {
+        type: 'dateFormat',
+        pattern:
+          /^(?:$|((0[1-9]|[12][0-9]|3[01])\.(0[13578]|1[02])\.|(0[1-9]|[12][0-9]|30)\.(0[469]|11)\.|(0[1-9]|1[0-9]|2[0-9])\.02\.)(19|20)\d{2})$/,
+        message: 'Введите дату в формате ДД.ММ.ГГГГ',
+      },
+    ],
+  },
+  documentAbsentEmpNumber: {
+    required: false,
+    validators: [
+      {
+        type: 'number',
+        pattern: /^(?:$|^\d+$)$/,
+        message: 'Введите только цифры',
+      },
+      {
+        type: 'length',
+        pattern: /^(?:$|^.{3,10}$)$/,
+        message: 'Введите 3-10 символов',
       },
     ],
   },

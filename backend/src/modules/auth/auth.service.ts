@@ -78,26 +78,7 @@ export class AuthService {
     // Console.log
     // console.log('Успешный вход');
 
-    return {
-      employeeId: account.employee.id,
-      lastName: account.employee.lastName,
-      firstName: account.employee.firstName,
-      patronymic: account.employee.patronymic,
-      personalNumber: account.employee.personalNumber,
-      profession: account.employee.position.profession.name,
-      workshopCode:
-        account.employee.currentPosition?.workshop?.workshopCode ??
-        account.employee.position.workshop.workshopCode,
-      teamNumber:
-        account.employee.currentTeam?.teamNumber ??
-        account.employee.team.teamNumber,
-      scheduleCode:
-        account.employee.currentPosition?.schedule?.scheduleCode ??
-        account.employee.position.schedule.scheduleCode,
-      role:
-        account.employee.currentPosition?.role?.name ??
-        account.employee.position.role.name,
-    };
+    return this.mapEmployee(account);
   }
 
   async checkAccessToken(req: Request, res: Response): Promise<IProfile> {
@@ -206,26 +187,7 @@ export class AuthService {
     // Console.log
     // console.log('До 10 сек');
 
-    return {
-      employeeId: account.employee.id,
-      lastName: account.employee.lastName,
-      firstName: account.employee.firstName,
-      patronymic: account.employee.patronymic,
-      personalNumber: account.employee.personalNumber,
-      profession: account.employee.position.profession.name,
-      workshopCode:
-        account.employee.currentPosition?.workshop?.workshopCode ??
-        account.employee.position.workshop.workshopCode,
-      teamNumber:
-        account.employee.currentTeam?.teamNumber ??
-        account.employee.team.teamNumber,
-      scheduleCode:
-        account.employee.currentPosition?.schedule?.scheduleCode ??
-        account.employee.position.schedule.scheduleCode,
-      role:
-        account.employee.currentPosition?.role?.name ??
-        account.employee.position.role.name,
-    };
+    return this.mapEmployee(account);
   }
 
   private async refreshAccessToken(
@@ -279,26 +241,7 @@ export class AuthService {
       // Console.log
       // console.log('10-30 сек');
 
-      return {
-        employeeId: account.employee.id,
-        lastName: account.employee.lastName,
-        firstName: account.employee.firstName,
-        patronymic: account.employee.patronymic,
-        personalNumber: account.employee.personalNumber,
-        profession: account.employee.position.profession.name,
-        workshopCode:
-          account.employee.currentPosition?.workshop?.workshopCode ??
-          account.employee.position.workshop.workshopCode,
-        teamNumber:
-          account.employee.currentTeam?.teamNumber ??
-          account.employee.team.teamNumber,
-        scheduleCode:
-          account.employee.currentPosition?.schedule?.scheduleCode ??
-          account.employee.position.schedule.scheduleCode,
-        role:
-          account.employee.currentPosition?.role?.name ??
-          account.employee.position.role.name,
-      };
+      return this.mapEmployee(account);
     } catch (error) {
       if (error instanceof UnauthorizedException) {
         // Пробрасываем ошибку дальше без изменений
@@ -308,6 +251,32 @@ export class AuthService {
       // Для любых других ошибок или неожиданных исключений
       throw new UnauthorizedException('Ошибка при обновлении токена');
     }
+  }
+
+  private mapEmployee(account: Account): IProfile {
+    const employee = account.employee;
+    const profileTeamNumber = employee.profileTeam;
+    const profilePositionCode = employee.profilePosition;
+
+    return {
+      employeeId: employee.id,
+
+      lastName: employee.lastName,
+      firstName: employee.firstName,
+      patronymic: employee.patronymic,
+      personalNumber: employee.personalNumber,
+
+      profileWorkshopCode: profilePositionCode.workshop.workshopCode,
+      profileTeamNumber: profileTeamNumber.teamNumber,
+      profilePositionCode: profilePositionCode.positionCode,
+      profileGradeCode: profilePositionCode.grade.gradeCode,
+      profileScheduleCode: profilePositionCode.schedule.scheduleCode,
+      profilePaymentCode: profilePositionCode.paymentSystem.paymentCode,
+      profileProfessionName: profilePositionCode.profession.name,
+      profileRoleName: profilePositionCode.role.name,
+
+      hasAccess: employee.hasAccess,
+    };
   }
 
   async getAccessToken(req: Request): Promise<string> {
@@ -361,7 +330,9 @@ export class AuthService {
   private clearCookies(res: Response, cookieName: string): void {
     res.cookie(cookieName, '', {
       httpOnly: true,
-      expires: new Date(0),
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      path: '/',
     });
   }
 }

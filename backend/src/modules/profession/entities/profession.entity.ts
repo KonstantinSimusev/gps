@@ -1,7 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Position } from '../../position/entities/position.entity';
-import { WorkPlace } from '../../work-place/entities/work-place.entity';
+import { Workplace } from '../../work-place/entities/work-place.entity';
 
 @Entity({
   schema: 'gps',
@@ -10,6 +10,15 @@ import { WorkPlace } from '../../work-place/entities/work-place.entity';
 export class Profession {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column({
+    name: 'profession_code',
+    type: 'varchar',
+    length: 100,
+    nullable: false,
+    unique: true,
+  })
+  professionCode: string;
 
   @Column({
     name: 'name',
@@ -25,6 +34,6 @@ export class Profession {
   positions: Position[];
 
   // Связь: одна профессия — много рабочих мест
-  @OneToMany(() => WorkPlace, (workPlace) => workPlace.profession)
-  workPlaces: WorkPlace[];
+  @OneToMany(() => Workplace, (workplace) => workplace.profession)
+  workplaces: Workplace[];
 }

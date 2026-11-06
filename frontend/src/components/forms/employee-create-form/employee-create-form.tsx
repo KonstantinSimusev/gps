@@ -4,10 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { formatDateForISO } from '../../../utils/utils';
 import {
   GRADE_CODE_OPTIONS,
+  PAYMENT_CODE_OPTIONS,
   SCHEDULE_CODE_OPTIONS,
   TEAM_CODE_OPTIONS,
-} from '../../../utils/types';
-import { ICreateEmployee } from '../../../utils/api.interface';
+} from '../../../utils/constants';
+import { ICreateEmployee } from '../../../utils/api.interfaces';
 
 import {
   validateField,
@@ -22,7 +23,6 @@ import { createEmployee } from '../../../services/slices/employee/actions';
 import {
   clearCreateEmployeeError,
   selectCreateEmployeeError,
-  selectIsCreateEmployeeLoading,
 } from '../../../services/slices/employee/slice';
 
 import { LayerContext } from '../../../contexts/layer/layerContext';
@@ -30,7 +30,6 @@ import { LayerContext } from '../../../contexts/layer/layerContext';
 import { Button } from '../../ui/buttons/button/button';
 import { Form } from '../../ui/form/form';
 import { ServerError } from '../../ui/server-error/server-error';
-import { Spinner } from '../../ui/spinner/spinner';
 import { SelectInput } from '../../ui/inputs/select-input/select-input';
 import { TextInput } from '../../ui/inputs/text-input/text-input';
 
@@ -45,6 +44,7 @@ interface IFormData extends Record<string, string> {
   positionCode: string;
   gradeCode: string;
   scheduleCode: string;
+  paymentCode: string;
   birthDay: string;
   startDate: string;
 }
@@ -59,7 +59,6 @@ export const EmployeeCreateForm = () => {
   } = useContext(LayerContext);
 
   const dispatch = useDispatch();
-  const isLoading = useSelector(selectIsCreateEmployeeLoading);
   const serverError = useSelector(selectCreateEmployeeError);
 
   // Состояние для хранения значений полей формы
@@ -72,6 +71,7 @@ export const EmployeeCreateForm = () => {
     positionCode: '',
     gradeCode: '',
     scheduleCode: '',
+    paymentCode: '',
     birthDay: '',
     startDate: '',
   });
@@ -86,6 +86,7 @@ export const EmployeeCreateForm = () => {
     positionCode: '',
     gradeCode: '',
     scheduleCode: '',
+    paymentCode: '',
     birthDay: '',
     startDate: '',
   });
@@ -120,7 +121,7 @@ export const EmployeeCreateForm = () => {
 
   // Обработчик потери фокуса для валидации
   const handleBlur = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
 
@@ -134,7 +135,7 @@ export const EmployeeCreateForm = () => {
     });
   };
 
-  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Валидируем всю форму
@@ -158,6 +159,7 @@ export const EmployeeCreateForm = () => {
       positionCode: formData.positionCode,
       gradeCode: formData.gradeCode,
       scheduleCode: formData.scheduleCode,
+      paymentCode: formData.paymentCode,
       birthDay: formatDateForISO(formData.birthDay),
       startDate: formatDateForISO(formData.startDate),
     };
@@ -179,6 +181,7 @@ export const EmployeeCreateForm = () => {
         positionCode: '',
         gradeCode: '',
         scheduleCode: '',
+        paymentCode: '',
         birthDay: '',
         startDate: '',
       });
@@ -202,7 +205,6 @@ export const EmployeeCreateForm = () => {
 
   // Определяем, заблокирована ли кнопка
   const isButtonDisabled =
-    isLoading ||
     Object.values(errors).some(Boolean) ||
     !formData.lastName ||
     !formData.firstName ||
@@ -212,6 +214,7 @@ export const EmployeeCreateForm = () => {
     !formData.positionCode ||
     !formData.gradeCode ||
     !formData.scheduleCode ||
+    !formData.paymentCode ||
     !formData.birthDay ||
     !formData.startDate;
 
@@ -222,65 +225,67 @@ export const EmployeeCreateForm = () => {
       onSubmit={handleSubmit}
     >
       <TextInput
-        // Группа 1. Стандартные HTML‑атрибуты (базовые свойства элемента)
         type='text'
         name='lastName'
-        value={formData.lastName}
-        // Группа 2. Кастомные пропсы компонента (специфичные для TextInput)
         label='Фамилия'
+        placeholder='Иванов'
+        value={formData.lastName}
         error={errors.lastName}
         className={styles.input}
-        // Группа 3. Обработчики событий (в конце)
-        onChange={handleChange}
         onBlur={handleBlur}
+        onChange={handleChange}
+        autoFocus
       />
 
       <TextInput
         type='text'
         name='firstName'
-        value={formData.firstName}
+        placeholder='Иван'
         label='Имя'
+        value={formData.firstName}
         error={errors.firstName}
-        onChange={handleChange}
         onBlur={handleBlur}
+        onChange={handleChange}
       />
 
       <TextInput
         type='text'
         name='patronymic'
         label='Отчество'
+        placeholder='Иванович'
         value={formData.patronymic}
         error={errors.patronymic}
-        onChange={handleChange}
         onBlur={handleBlur}
+        onChange={handleChange}
       />
 
       <TextInput
         type='text'
         name='personalNumber'
-        value={formData.personalNumber}
         label='Личный №'
+        placeholder='12345'
+        value={formData.personalNumber}
         error={errors.personalNumber}
-        onChange={handleChange}
         onBlur={handleBlur}
+        onChange={handleChange}
       />
 
       <SelectInput
         name='teamNumber'
-        value={formData.teamNumber}
         label='Бригада №'
-        isPlaceholder={formData.teamNumber === ''}
+        value={formData.teamNumber}
         options={TEAM_CODE_OPTIONS}
         error={errors.teamNumber}
-        onChange={handleChange}
         onBlur={handleBlur}
+        onChange={handleChange}
       />
 
       <TextInput
         type='text'
         name='positionCode'
-        value={formData.positionCode}
         label='Штатная позиция'
+        placeholder='123456'
+        value={formData.positionCode}
         error={errors.positionCode}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -288,22 +293,30 @@ export const EmployeeCreateForm = () => {
 
       <SelectInput
         name='gradeCode'
-        value={formData.gradeCode}
         label='Разряд'
-        isPlaceholder={formData.gradeCode === ''}
+        value={formData.gradeCode}
         options={GRADE_CODE_OPTIONS}
         error={errors.gradeCode}
-        onChange={handleChange}
         onBlur={handleBlur}
+        onChange={handleChange}
       />
 
       <SelectInput
         name='scheduleCode'
-        value={formData.scheduleCode}
         label='График работы'
-        isPlaceholder={formData.scheduleCode === ''}
+        value={formData.scheduleCode}
         options={SCHEDULE_CODE_OPTIONS}
         error={errors.scheduleCode}
+        onBlur={handleBlur}
+        onChange={handleChange}
+      />
+
+      <SelectInput
+        name='paymentCode'
+        label='Система оплаты'
+        value={formData.paymentCode}
+        options={PAYMENT_CODE_OPTIONS}
+        error={errors.paymentCode}
         onChange={handleChange}
         onBlur={handleBlur}
       />
@@ -311,27 +324,27 @@ export const EmployeeCreateForm = () => {
       <TextInput
         type='text'
         name='birthDay'
+        label='Дата рождения'
         placeholder='дд.мм.гггг'
         value={formData.birthDay}
-        label='Дата рождения'
         error={errors.birthDay}
-        onChange={handleChange}
         onBlur={handleBlur}
+        onChange={handleChange}
       />
 
       <TextInput
         type='text'
         name='startDate'
+        label='Дата назначения'
         placeholder='дд.мм.гггг'
         value={formData.startDate}
-        label='Дата назначения'
         error={errors.startDate}
-        onChange={handleChange}
         onBlur={handleBlur}
+        onChange={handleChange}
       />
 
       <div className={styles.message}>
-        {isLoading ? <Spinner /> : <ServerError text={serverError} />}
+        <ServerError text={serverError} />
       </div>
 
       <Button

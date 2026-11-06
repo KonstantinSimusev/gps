@@ -1,7 +1,4 @@
 import { useEffect } from 'react';
-
-import { MainLayout } from '../../../components/ui/layouts/main/main-layout';
-
 import styles from './production.module.css';
 
 export const Production = () => {
@@ -13,9 +10,5 @@ export const Production = () => {
     });
   }, []);
 
-  return (
-    <MainLayout>
-      <div className={styles.wrapper}>Hello, World!</div>
-    </MainLayout>
-  );
+  return <div className={styles.wrapper}>Hello, World!</div>;
 };

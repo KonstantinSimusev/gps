@@ -27,23 +27,7 @@ export class AccountRepository {
           isActive: true,
         },
       },
-      relations: [
-        'employee',
-        'employee.team',
-        'employee.position',
-        'employee.position.workshop',
-        'employee.position.profession',
-        'employee.position.grade',
-        'employee.position.schedule',
-        'employee.position.role',
-        'employee.currentTeam',
-        'employee.currentPosition',
-        'employee.currentPosition.workshop',
-        'employee.currentPosition.profession',
-        'employee.currentPosition.grade',
-        'employee.currentPosition.schedule',
-        'employee.currentPosition.role',
-      ],
+      relations: this.ACCOUNT_RELATIONS,
     });
   }
 
@@ -56,23 +40,7 @@ export class AccountRepository {
           isActive: true,
         },
       },
-      relations: [
-        'employee',
-        'employee.team',
-        'employee.position',
-        'employee.position.workshop',
-        'employee.position.profession',
-        'employee.position.schedule',
-        'employee.position.grade',
-        'employee.position.role',
-        'employee.currentTeam',
-        'employee.currentPosition',
-        'employee.currentPosition.workshop',
-        'employee.currentPosition.profession',
-        'employee.currentPosition.schedule',
-        'employee.currentPosition.grade',
-        'employee.currentPosition.role',
-      ],
+      relations: this.ACCOUNT_RELATIONS,
     });
   }
 
@@ -97,4 +65,24 @@ export class AccountRepository {
   async update(id: string, data: Partial<Account>): Promise<UpdateResult> {
     return this.accountRepository.update(id, data);
   }
+
+  private ACCOUNT_RELATIONS = [
+    'employee',
+    'employee.team',
+    'employee.position',
+    'employee.position.workshop',
+    'employee.position.profession',
+    'employee.position.grade',
+    'employee.position.schedule',
+    'employee.position.paymentSystem',
+    'employee.position.role',
+    'employee.profileTeam',
+    'employee.profilePosition',
+    'employee.profilePosition.workshop',
+    'employee.profilePosition.profession',
+    'employee.profilePosition.grade',
+    'employee.profilePosition.schedule',
+    'employee.profilePosition.paymentSystem',
+    'employee.profilePosition.role',
+  ];
 }

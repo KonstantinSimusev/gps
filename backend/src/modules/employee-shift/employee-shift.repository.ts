@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -18,39 +18,49 @@ export class EmployeeShiftRepository {
   }
 
   // 2. CRUD: Read (общие методы поиска)
-  async findAllByShiftId(shiftId: string): Promise<EmployeeShift[]> {
-    return this.employeeShiftRepository.find({
-      where: {
-        shift: { id: shiftId },
-      },
+  async findById(id: string): Promise<EmployeeShift | null> {
+    return this.employeeShiftRepository.findOne({
+      where: { id },
       relations: [
+        'attendanceType',
+        'workplace',
+        'shift',
+        'shift.workshop',
+        'shift.team',
+        'shift.schedule',
+        'shift.shiftSchedule',
+        'shift.shiftSchedule.shiftType',
+        'shift.shiftSchedule.workshop',
         'employee',
+        'employee.team',
         'employee.position',
+        'employee.position.workshop',
         'employee.position.profession',
         'employee.position.grade',
         'employee.position.schedule',
-        'attendanceType',
+        'employee.position.paymentSystem',
+        'employee.position.rateSystem',
+        'employee.position.role',
         'currentPosition',
-        'workPlace',
-        'shift',
-        'shift.schedule',
-        'shift.team',
+        'currentPosition.workshop',
+        'currentPosition.profession',
+        'currentPosition.grade',
+        'currentPosition.schedule',
+        'currentPosition.paymentSystem',
+        'currentPosition.rateSystem',
+        'currentPosition.role',
+        'document',
       ],
-      order: {
-        employee: {
-          position: {
-            grade: {
-              gradeCode: 'DESC', // 1. Разряд: сверху большой, внизу маленький
-            },
-            profession: {
-              name: 'ASC', // 2. Профессия: по алфавиту
-            },
-          },
-          lastName: 'ASC', // 3. Фамилия: по алфавиту
-          firstName: 'ASC', // 4. Имя: по алфавиту (если фамилии совпали)
-          patronymic: 'ASC', // 5. Отчество: по алфавиту (если фамилии совпали)
-        },
-      },
     });
+  }
+
+  // 3. CRUD: Update
+  async save(employeeShift: EmployeeShift): Promise<EmployeeShift> {
+    return this.employeeShiftRepository.save(employeeShift);
+  }
+
+  // 4. CRUD: Delete
+  async deleteById(id: string): Promise<DeleteResult> {
+    return this.employeeShiftRepository.delete(id);
   }
 }

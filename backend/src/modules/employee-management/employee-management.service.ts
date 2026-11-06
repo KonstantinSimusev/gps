@@ -1,15 +1,15 @@
 import {
   BadRequestException,
   ConflictException,
-  ForbiddenException,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
 
 import { toDateString } from '../../shared/utils/utils';
-import { ERole } from '../../shared/enums/enums';
+import { ERole, ESchedule, EWorkshop } from '../../shared/enums/enums';
 
 import { Employee } from '../employee/entities/employee.entity';
+import { Position } from '../position/entities/position.entity';
 
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreateEmployeesDto } from './dto/create-employees.dto';
@@ -27,6 +27,7 @@ import { EmployeeRepository } from '../employee/employee.repository';
 import { AccountService } from '../account/account.service';
 import { GradeService } from '../grade/grade.service';
 import { EmployeeService } from '../employee/employee.service';
+import { PaymentSystemService } from '../payment-system/payment-system.service';
 import { PositionService } from '../position/position.service';
 import { ScheduleService } from '../schedule/schedule.service';
 import { TeamService } from '../team/team.service';
@@ -39,6 +40,7 @@ export class EmployeeManagementService {
     private readonly accountService: AccountService,
     private readonly employeeService: EmployeeService,
     private readonly gradeService: GradeService,
+    private readonly paymentSystemService: PaymentSystemService,
     private readonly positionService: PositionService,
     private readonly scheduleService: ScheduleService,
     private readonly teamService: TeamService,
@@ -49,18 +51,39 @@ export class EmployeeManagementService {
     profile?: IProfile,
     isManyOperation: boolean = false,
   ): Promise<IAccountInfo> {
-    // Получаем сущности
+    // Получаем сущности нового сотрудника
     const team = await this.teamService.getTeam(dto.teamNumber);
-    const grade = await this.gradeService.getGrade(dto.gradeCode);
+    const profileTeam = await this.teamService.getTeam(dto.teamNumber);
 
-    const schedule = await this.scheduleService.getScheduleByCode(
+    const position = await this.getEmployeePosition(
+      dto.positionCode,
       dto.scheduleCode,
+      dto.gradeCode,
+      dto.paymentCode,
     );
 
-    const position = await this.positionService.getPosition(
+    const profilePosition = await this.getEmployeePosition(
       dto.positionCode,
-      grade.id,
-      schedule.id,
+      dto.scheduleCode,
+      dto.gradeCode,
+      dto.paymentCode,
+    );
+
+    // Проверяем совместимость цеха работника и цеха пользователя (только если не массовая операция)
+    if (
+      !isManyOperation &&
+      position.workshop.workshopCode !== profile.profileWorkshopCode
+    ) {
+      throw new ConflictException('Позиция из другого цеха');
+    }
+
+    // Проверяем соответствие бригады и графика по штатной позиции (КЛС)
+    await this.validateTeamScheduleCompatibility(
+      dto.teamNumber,
+      dto.positionCode,
+      dto.gradeCode,
+      dto.scheduleCode,
+      dto.paymentCode,
     );
 
     // Проверяем, не занято ли ФИО
@@ -78,26 +101,8 @@ export class EmployeeManagementService {
       throw new BadRequestException('Дата рождения в будущем');
     }
 
-    // Проверяем совместимость цеха работника и цеха пользователя (только если не массовая операция)
-    if (
-      !isManyOperation &&
-      position.workshop.workshopCode !== profile.workshopCode
-    ) {
-      throw new ConflictException('Позиция из другого цеха');
-    }
-
-    // Проверяем соответствие бригады и графика по штатной позиции
-    await this.validateBaseTeamScheduleCompatibility(dto);
-
     // Проверяем условие - руководитель в бригаде может быть только один
-    const role = position.role.name;
-
-    if (
-      role === ERole.HEAD ||
-      role === ERole.LEAD_MASTER ||
-      role === ERole.DETAIL_MASTER ||
-      role === ERole.MASTER
-    ) {
+    if (this.isManagerRole(position.role.name as ERole)) {
       await this.employeeService.existsTeamManager(
         team.id,
         position.workshop.id,
@@ -117,9 +122,11 @@ export class EmployeeManagementService {
     // Создаём сотрудника
     await this.employeeRepository.create({
       ...dto,
-      position,
-      team,
       account,
+      team,
+      position,
+      profileTeam,
+      profilePosition,
     });
 
     return {
@@ -152,40 +159,78 @@ export class EmployeeManagementService {
     dto: UpdateEmployeeDto,
     profile: IProfile,
   ): Promise<IEmployeeInfo> {
+    const { employeeId, profileWorkshopCode } = profile;
+
     // Получаем сущности
     const employee = await this.employeeService.getEmployee(dto.id);
-
     const team = await this.teamService.getTeam(dto.teamNumber);
-    const grade = await this.gradeService.getGrade(dto.gradeCode);
+    const profileTeam = await this.teamService.getTeam(dto.profileTeamNumber);
 
-    const schedule = await this.scheduleService.getScheduleByCode(
-      dto.scheduleCode,
-    );
-
-    const position = await this.positionService.getPosition(
-      dto.positionCode,
-      grade.id,
-      schedule.id,
-    );
-
-    // Проверка цехов и изменений — выполняем до всех валидаций
-    const isSameWorkshop =
-      profile.workshopCode === position.workshop.workshopCode;
     const hasKlsChanges = this.hasKlsFieldsChanged(employee, dto);
-    const hasCurrentChanges = this.hasCurrentFieldsChanged(employee, dto);
+    const hasProfileChanges = this.hasProfileFieldsChanged(employee, dto);
 
-    // Если разные цеха
+    // Проверяем условия - cотрудник не может редактировать собственные данные
+    if ((hasKlsChanges || hasProfileChanges) && employeeId === employee.id) {
+      throw new ConflictException('Нельзя редактировать себя');
+    }
+
+    const position = await this.getEmployeePosition(
+      dto.positionCode,
+      dto.scheduleCode,
+      dto.gradeCode,
+      dto.paymentCode,
+    );
+
+    const profilePosition = await this.getEmployeePosition(
+      dto.profilePositionCode,
+      dto.profileScheduleCode,
+      dto.profileGradeCode,
+      dto.profilePaymentCode,
+    );
+
+    // Проверяем совместимость цеха работника и цеха пользователя
+    // Если цехи одинаковые - можно менять все поля, но позиции только своего цеха
+    // Если цехи разные - можно менять только profile-поля, можно назначать позиции любых цехов
+    const isSameWorkshop =
+      profileWorkshopCode === position.workshop.workshopCode;
+
+    // Если разные цехи
     if (!isSameWorkshop) {
+      // Если КЛС-поля редактируются
       if (hasKlsChanges) {
         throw new ConflictException('Нельзя менять КЛС');
       }
 
-      if (!hasCurrentChanges) {
-        // Ничего не изменилось — возвращаем текущий статус
+      // Если profile-поля не менялись - ничего не делаем (ранний возврат)
+      if (!hasProfileChanges) {
         return this.getEmployeeInfo(employee.personalNumber);
       }
+    } else {
+      // Если цехи одинаковые
+      // Нельзя редактировать profile-поля другого цеха
+      if (profileWorkshopCode !== profilePosition.workshop.workshopCode) {
+        throw new ConflictException('Позиция из другого цеха');
+      }
     }
-    // Если цеха одинаковые или изменились только current-поля при разных цехах — продолжаем
+    // Если цехи одинаковые или изменились только profile-поля при разных цехах — продолжаем
+
+    // Проверяем соответствие бригады и графика по штатной позиции (КЛС)
+    await this.validateTeamScheduleCompatibility(
+      dto.teamNumber,
+      dto.positionCode,
+      dto.gradeCode,
+      dto.scheduleCode,
+      dto.paymentCode,
+    );
+
+    // Проверяем соответствие бригады и графика по штатной позиции (profile-поля)
+    await this.validateTeamScheduleCompatibility(
+      dto.profileTeamNumber,
+      dto.profilePositionCode,
+      dto.profileGradeCode,
+      dto.profileScheduleCode,
+      dto.profilePaymentCode,
+    );
 
     // Проверяем уникальность ФИО
     await this.employeeService.validateUniqueFullNameExcluding(
@@ -201,16 +246,6 @@ export class EmployeeManagementService {
       dto.personalNumber,
     );
 
-    // Проверяем дубликаты в полях
-    if (dto.teamNumber === dto.currentTeamNumber) {
-      throw new ConflictException('Бригады совпадают');
-    }
-
-    // Проверяем дубликаты в полях
-    if (dto.positionCode === dto.currentPositionCode) {
-      throw new ConflictException('Позиции совпадают');
-    }
-
     // Проверяем уволенного сотрудника и доступ в кабинет
     if (dto.endDate !== null && dto.hasAccess) {
       throw new ConflictException('Отключите доступ в кабинет');
@@ -221,13 +256,18 @@ export class EmployeeManagementService {
       throw new BadRequestException('Дата рождения в будущем');
     }
 
-    // Проверяем соответствие бригады и графика по штатной позиции
-    await this.validateTeamScheduleCompatibility(dto);
-
     // Проверяем условие - руководитель в бригаде может быть только один
-    await this.validateTeamManagerUpdate(employee, dto);
+    if (this.isManagerRole(profilePosition.role.name as ERole)) {
+      await this.employeeService.existsTeamManagerExcluding(
+        employee.id,
+        profileTeam.id,
+        profilePosition.workshop.id,
+        profilePosition.schedule.id,
+        profilePosition.role.id,
+      );
+    }
 
-    // 3. Обновление полей
+    // Обновление полей
     employee.lastName = dto.lastName;
     employee.firstName = dto.firstName;
     employee.patronymic = dto.patronymic;
@@ -238,83 +278,16 @@ export class EmployeeManagementService {
     employee.hasAccess = dto.endDate !== null ? false : dto.hasAccess;
     employee.isActive = dto.endDate === null;
 
-    // 4. Обновление связей
+    // Обновление связей
     employee.team = team;
     employee.position = position;
+    employee.profileTeam = profileTeam;
+    employee.profilePosition = profilePosition;
 
-    // Проверка прав на обновление current-полей
-    const currentPositionCode = dto.currentPositionCode ?? dto.positionCode;
-    const currentGradeCode = dto.currentGradeCode ?? dto.gradeCode;
-    const currentScheduleCode = dto.currentScheduleCode ?? dto.scheduleCode;
-
-    const currentGrade = await this.gradeService.getGrade(currentGradeCode);
-
-    const currentSchedule =
-      await this.scheduleService.getScheduleByCode(currentScheduleCode);
-
-    const currentPosition = await this.positionService.getPosition(
-      currentPositionCode,
-      currentGrade.id,
-      currentSchedule.id,
-    );
-
-    const currentRole = currentPosition.role.name;
-
-    const canUpdateCurrentFields = [
-      ERole.HEAD,
-      ERole.LEAD_MASTER,
-      ERole.DETAIL_MASTER,
-      ERole.MASTER,
-    ].includes(currentRole as ERole);
-
-    if (canUpdateCurrentFields) {
-      // Обновление currentTeam
-      if (dto.currentTeamNumber !== null) {
-        const currentTeam = await this.teamService.getTeam(
-          dto.currentTeamNumber,
-        );
-        employee.currentTeam = currentTeam;
-      } else {
-        employee.currentTeam = null;
-      }
-
-      // Обновление currentPosition
-      if (dto.currentPositionCode !== null) {
-        const currentGrade = await this.gradeService.getGrade(
-          dto.currentGradeCode,
-        );
-
-        const currentSchedule = await this.scheduleService.getScheduleByCode(
-          dto.currentScheduleCode,
-        );
-
-        const currentPosition = await this.positionService.getPosition(
-          dto.currentPositionCode,
-          currentGrade.id,
-          currentSchedule.id,
-        );
-
-        employee.currentPosition = currentPosition;
-      } else {
-        employee.currentPosition = null;
-      }
-    } else {
-      // Если роль не имеет прав на обновление current-полей, проверяем, что они не передаются
-      if (dto.currentTeamNumber !== null || dto.currentPositionCode !== null) {
-        throw new ForbiddenException(
-          'Позиция - не руководитель',
-        );
-      }
-
-      // Игнорируем current-поля, если они не переданы
-      employee.currentTeam = employee.currentTeam;
-      employee.currentPosition = employee.currentPosition;
-    }
-
-    // 5. Сохранение изменений
+    // Сохранение изменений
     await this.employeeRepository.save(employee);
 
-    // 6. Возврат результата
+    // Возврат результата
     return this.getEmployeeInfo(employee.personalNumber);
   }
 
@@ -325,33 +298,87 @@ export class EmployeeManagementService {
     return {
       id: employee.id,
 
+      profileWorkshopCode: employee.profilePosition.workshop.workshopCode,
+      profileTeamNumber: employee.profileTeam.teamNumber,
+      profilePositionCode: employee.profilePosition.positionCode,
+      profileGradeCode: employee.profilePosition.grade.gradeCode,
+      profileScheduleCode: employee.profilePosition.schedule.scheduleCode,
+      profilePaymentCode: employee.profilePosition.paymentSystem.paymentCode,
+      profileProfessionName: employee.profilePosition.profession.name,
+      profileRoleName: employee.profilePosition.role.name,
+
+      hasAccess: employee.hasAccess,
+
       lastName: employee.lastName,
       firstName: employee.firstName,
       patronymic: employee.patronymic,
-      profession: employee.position.profession.name,
+      professionName: employee.position.profession.name,
 
-      workshop: employee.position.workshop.workshopCode,
+      workshopCode: employee.position.workshop.workshopCode,
       teamNumber: employee.team.teamNumber,
       personalNumber: employee.personalNumber,
       positionCode: employee.position.positionCode,
       gradeCode: employee.position.grade.gradeCode,
       scheduleCode: employee.position.schedule.scheduleCode,
-
-      currentTeamNumber: employee.currentTeam?.teamNumber ?? null,
-      currentPositionCode: employee.currentPosition?.positionCode ?? null,
-      currentGradeCode: employee.currentPosition?.grade?.gradeCode ?? null,
-      currentScheduleCode:
-        employee.currentPosition?.schedule?.scheduleCode ?? null,
+      paymentCode: employee.position.paymentSystem.paymentCode,
 
       birthDay: employee.birthDay,
       startDate: employee.startDate,
-      endDate: employee.endDate,
+      endDate: employee.endDate ?? null,
       isActive: employee.isActive,
-
-      role: employee.currentPosition?.role.name ?? employee.position.role.name,
-
-      hasAccess: employee.hasAccess,
     };
+  }
+
+  async getEmployeesForSchedule(
+    workshopCode: string,
+    teamNumber: number,
+    scheduleCode: string,
+  ): Promise<Employee[]> {
+    if (scheduleCode === ESchedule.S_2A && workshopCode === EWorkshop.W_LPC11) {
+      const [employees2A, employees2] = await Promise.all([
+        this.employeeService.getTeamEmployees(
+          teamNumber,
+          workshopCode,
+          scheduleCode,
+        ),
+        this.employeeService.getTeamEmployees(
+          teamNumber,
+          workshopCode,
+          ESchedule.S_2,
+        ),
+      ]);
+
+      return [...employees2A, ...employees2];
+    }
+
+    return this.employeeService.getTeamEmployees(
+      teamNumber,
+      workshopCode,
+      scheduleCode,
+    );
+  }
+
+  private async getEmployeePosition(
+    positionCode: number,
+    scheduleCode: string,
+    gradeCode: number,
+    paymentCode: string,
+  ): Promise<Position> {
+    const schedule = await this.scheduleService.getScheduleByCode(scheduleCode);
+
+    const grade = await this.gradeService.getGrade(gradeCode);
+
+    const paymentSystem =
+      await this.paymentSystemService.getPaymentSystem(paymentCode);
+
+    const position = await this.positionService.getPosition(
+      positionCode,
+      grade.id,
+      schedule.id,
+      paymentSystem.id,
+    );
+
+    return position;
   }
 
   private hasKlsFieldsChanged(
@@ -367,24 +394,36 @@ export class EmployeeManagementService {
       employee.position.positionCode !== dto.positionCode ||
       employee.position.grade.gradeCode !== dto.gradeCode ||
       employee.position.schedule.scheduleCode !== dto.scheduleCode ||
+      employee.position.paymentSystem.paymentCode !== dto.paymentCode ||
       toDateString(employee.birthDay) !== toDateString(dto.birthDay) ||
       toDateString(employee.startDate) !== toDateString(dto.startDate) ||
-      toDateString(employee.endDate) !== toDateString(dto.endDate)
+      toDateString(employee.endDate) !== toDateString(dto.endDate) ||
+      employee.hasAccess !== dto.hasAccess
     );
   }
 
-  private hasCurrentFieldsChanged(
+  private hasProfileFieldsChanged(
     employee: Employee,
     dto: UpdateEmployeeDto,
   ): boolean {
     return (
-      employee.hasAccess !== dto.hasAccess ||
-      employee.currentTeam?.teamNumber !== dto.currentTeamNumber ||
-      employee.currentPosition?.positionCode !== dto.currentPositionCode ||
-      employee.currentPosition?.grade?.gradeCode !== dto.currentGradeCode ||
-      employee.currentPosition?.schedule?.scheduleCode !==
-        dto.currentScheduleCode
+      employee.profileTeam.teamNumber !== dto.profileTeamNumber ||
+      employee.profilePosition.positionCode !== dto.profilePositionCode ||
+      employee.profilePosition.grade.gradeCode !== dto.profileGradeCode ||
+      employee.profilePosition.schedule.scheduleCode !==
+        dto.profileScheduleCode ||
+      employee.profilePosition.paymentSystem.paymentCode !==
+        dto.profilePaymentCode
     );
+  }
+
+  private isManagerRole(role: ERole): boolean {
+    return [
+      ERole.HEAD,
+      ERole.LEAD_MASTER,
+      ERole.DETAIL_MASTER,
+      ERole.MASTER,
+    ].includes(role);
   }
 
   private SCHEDULE_TEAM_RULES: Record<string, number[]> = {
@@ -394,46 +433,18 @@ export class EmployeeManagementService {
     '9': [1, 2],
   };
 
-  private async validateBaseTeamScheduleCompatibility(
-    dto: CreateEmployeeDto,
-  ): Promise<void> {
-    const grade = await this.gradeService.getGrade(dto.gradeCode);
-    const schedule = await this.scheduleService.getScheduleByCode(
-      dto.scheduleCode,
-    );
-
-    const position = await this.positionService.getPosition(
-      dto.positionCode,
-      grade.id,
-      schedule.id,
-    );
-
-    // Получаем допустимые бригады для графика
-    const allowedTeams =
-      this.SCHEDULE_TEAM_RULES[position.schedule.scheduleCode];
-
-    // Проверяем, входит ли бригада в список допустимых
-    if (!allowedTeams.includes(dto.teamNumber)) {
-      throw new ConflictException('Позиция не соответствует бригаде');
-    }
-  }
-
   private async validateTeamScheduleCompatibility(
-    dto: UpdateEmployeeDto,
+    teamNumber: number,
+    positionCode: number,
+    gradeCode: number,
+    scheduleCode: string,
+    paymentCode: string,
   ): Promise<void> {
-    const teamNumber = dto.currentTeamNumber ?? dto.teamNumber;
-    const dtoPositionCode = dto.currentPositionCode ?? dto.positionCode;
-    const dtoGradeCode = dto.currentGradeCode ?? dto.gradeCode;
-    const dtoScheduleCode = dto.currentScheduleCode ?? dto.scheduleCode;
-
-    const grade = await this.gradeService.getGrade(dtoGradeCode);
-    const schedule =
-      await this.scheduleService.getScheduleByCode(dtoScheduleCode);
-
-    const position = await this.positionService.getPosition(
-      dtoPositionCode,
-      grade.id,
-      schedule.id,
+    const position = await this.getEmployeePosition(
+      positionCode,
+      scheduleCode,
+      gradeCode,
+      paymentCode,
     );
 
     // Получаем допустимые бригады для графика
@@ -443,47 +454,6 @@ export class EmployeeManagementService {
     // Проверяем, входит ли бригада в список допустимых
     if (!allowedTeams.includes(teamNumber)) {
       throw new ConflictException('Позиция не соответствует бригаде');
-    }
-  }
-
-  private async validateTeamManagerUpdate(
-    employee: Employee,
-    dto: UpdateEmployeeDto,
-  ): Promise<void> {
-    const currentPositionCode = dto.currentPositionCode ?? dto.positionCode;
-    const currentGradeCode = dto.currentGradeCode ?? dto.gradeCode;
-    const currentScheduleCode = dto.currentScheduleCode ?? dto.scheduleCode;
-
-    const currentGrade = await this.gradeService.getGrade(currentGradeCode);
-
-    const currentSchedule =
-      await this.scheduleService.getScheduleByCode(currentScheduleCode);
-
-    const currentPosition = await this.positionService.getPosition(
-      currentPositionCode,
-      currentGrade.id,
-      currentSchedule.id,
-    );
-
-    const currentRole = currentPosition.role.name;
-
-    if (
-      (currentRole === ERole.HEAD ||
-        currentRole === ERole.LEAD_MASTER ||
-        currentRole === ERole.DETAIL_MASTER ||
-        currentRole === ERole.MASTER) &&
-      dto.hasAccess === true
-    ) {
-      const currentTeamNumber = dto.currentTeamNumber ?? dto.teamNumber;
-      const currentTeam = await this.teamService.getTeam(currentTeamNumber);
-
-      await this.employeeService.existsTeamManagerExcluding(
-        employee.id,
-        currentTeam.id,
-        currentPosition.workshop.id,
-        currentPosition.schedule.id,
-        currentPosition.role.id,
-      );
     }
   }
 }

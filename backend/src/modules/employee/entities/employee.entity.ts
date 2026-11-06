@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 
 import { Account } from '../../account/entities/account.entity';
+import { Document } from '../../document/entities/document.entity';
 import { EmployeeShift } from '../../employee-shift/entities/employee-shift.entity';
 import { Position } from '../../position/entities/position.entity';
 import { Team } from '../../team/entities/team.entity';
@@ -107,17 +108,23 @@ export class Employee {
   @JoinColumn({ name: 'position_id' })
   position: Position;
 
-  // Связь: много сотрудников — одна текущая бригада
-  @ManyToOne(() => Team, { nullable: true })
-  @JoinColumn({ name: 'current_team_id' })
-  currentTeam: Team | null;
+  // Связь: много сотрудников — одна бригада для руководителя
+  // Это связь нужна для профиля, чтобы зайти в личный кабинет руководителя
+  @ManyToOne(() => Team, (team) => team.profileEmployees)
+  @JoinColumn({ name: 'profile_team_id' })
+  profileTeam: Team;
 
-  // Связь: много сотрудников — одна текущая штатная позиция
-  @ManyToOne(() => Position, { nullable: true })
-  @JoinColumn({ name: 'current_position_id' })
-  currentPosition: Position | null;
+  // Связь: много сотрудников — одна штатная позиция для руководителя
+  // Это связь нужна для профиля, чтобы зайти в личный кабинет руковдителя
+  @ManyToOne(() => Position, (position) => position.profileEmployees)
+  @JoinColumn({ name: 'profile_position_id' })
+  profilePosition: Position;
 
   // Связь: один сотрудник — много смен сотрудника
   @OneToMany(() => EmployeeShift, (employeeShift) => employeeShift.employee)
   employeeShifts: EmployeeShift[];
+
+  // Связь: один отсутствующий сотрудник — много документов
+  @OneToMany(() => Document, (document) => document.absentEmployee)
+  documents: EmployeeShift[];
 }

@@ -8,64 +8,64 @@ import {
 } from '@nestjs/common';
 
 import {
-  calcShiftDuration,
+  getScheduleConfigsToNitice,
   getShiftFor2A,
   getShiftFor5B1,
   getShiftFor9,
-  getUTC,
-  getUTCDateString,
-  getUTCToday,
-  getUTCTomorrow,
-  getUTCYesterday,
+  isCondition_2A,
+  isCondition_2A_9,
+  isCondition_5B1,
+  isCondition_5B1_9,
+  isRelevantShift,
+  normalizeScheduleCode,
 } from '../../shared/utils/utils';
 
 import { ShiftDateDto } from './dto/shift-date.dto';
 
 import {
   EAttendanceCode,
-  ENoticeActionLabel,
-  ENoticeStatus,
   ESchedule,
   EWorkshop,
 } from '../../shared/enums/enums';
 
 import {
-  IMessage,
   IProfile,
   IShift,
   ISuccess,
   IShiftInfo,
+  IEmployeeShift,
+  IEmployee,
 } from '../../shared/interfaces/api.interface';
 
 import { AttendanceType } from '../attendance-type/entities/attendance-type.entity';
 import { Employee } from '../employee/entities/employee.entity';
-import { Notice } from '../notice/entities/notice.entity';
+import { EmployeeShift } from '../employee-shift/entities/employee-shift.entity';
 import { Schedule } from '../schedule/entities/schedule.entity';
 import { Shift } from '../shift/entities/shift.entity';
 import { Team } from '../team/entities/team.entity';
 import { Workshop } from '../workshop/entities/workshop.entity';
 
-import { EmployeeShiftRepository } from '../employee-shift/employee-shift.repository';
 import { ShiftRepository } from '../shift/shift.repository';
 
 import { AttendanceTypeService } from '../attendance-type/attendance-type.service';
-import { EmployeeService } from '../employee/employee.service';
-import { NoticeService } from '../notice/notice.service';
+import { DocumentService } from '../document/document.service';
+import { EmployeeShiftManagementService } from '../employee-shift-management/employee-shift-management.service';
 import { ScheduleService } from '../schedule/schedule.service';
 import { ShiftScheduleService } from '../shift-schedule/shift-schedule.service';
 import { ShiftService } from '../shift/shift.service';
 import { TeamService } from '../team/team.service';
 import { WorkshopService } from '../workshop/workshop.service';
 import { ShiftIdDto } from './dto/shift-id.dto';
+import { EmployeeManagementService } from '../employee-management/employee-management.service';
 
 @Injectable()
 export class ShiftManagementService {
   constructor(
-    private readonly employeeShiftRepository: EmployeeShiftRepository,
     private readonly shiftRepository: ShiftRepository,
     private readonly attendanceTypeService: AttendanceTypeService,
-    private readonly employeeService: EmployeeService,
-    private readonly noticeService: NoticeService,
+    private readonly documentService: DocumentService,
+    private readonly employeeManagementService: EmployeeManagementService,
+    private readonly employeeShiftManagementService: EmployeeShiftManagementService,
     private readonly scheduleService: ScheduleService,
     private readonly shiftScheduleService: ShiftScheduleService,
     private readonly shiftService: ShiftService,
@@ -73,11 +73,19 @@ export class ShiftManagementService {
     private readonly workshopService: WorkshopService,
   ) {}
 
-  async createShifts(
-    profile: IProfile,
-    baseDate: Date | null = null,
-  ): Promise<ISuccess> {
-    const strategies = this.getShiftStrategies(profile, baseDate);
+  async getShiftsWithAutoCreate(profile: IProfile): Promise<IShift[]> {
+    let shifts = await this.getShifts(profile);
+
+    if (shifts.length === 0) {
+      await this.createShifts(profile);
+      shifts = await this.getShifts(profile);
+    }
+
+    return shifts;
+  }
+
+  async createShifts(profile: IProfile): Promise<ISuccess> {
+    const strategies = this.getShiftStrategies(profile);
 
     if (strategies.length === 0) {
       return {
@@ -95,28 +103,39 @@ export class ShiftManagementService {
   }
 
   async getShifts(profile: IProfile): Promise<IShift[]> {
-    const { workshopCode, teamNumber, scheduleCode } = profile;
+    const { profileWorkshopCode, profileTeamNumber, profileScheduleCode } =
+      profile;
 
     // Получаем сущности
-    const workshop = await this.workshopService.getWorkshop(workshopCode);
-    const team = await this.teamService.getTeam(teamNumber);
-    const schedule = await this.scheduleService.getScheduleByCode(scheduleCode);
+    const workshop =
+      await this.workshopService.getWorkshop(profileWorkshopCode);
+    const team = await this.teamService.getTeam(profileTeamNumber);
+    const schedule =
+      await this.scheduleService.getScheduleByCode(profileScheduleCode);
 
-    // Даты в UTC
-    const today = getUTCToday();
-    const tomorrow = getUTCTomorrow();
-    const yesterday = getUTCYesterday();
+    // Сегодня в UTC 00:00
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+
+    // Завтра = сегодня + 1 день
+    const tomorrow = new Date(today);
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+
+    // Вчера = сегодня - 1 день
+    const yesterday = new Date(today);
+    yesterday.setUTCDate(yesterday.getUTCDate() - 1);
 
     const allShifts: Shift[] = [];
 
     // График: 2-A, все цехи
-    if (this.isCondition_2A(workshopCode, scheduleCode)) {
-      const currentShift = getShiftFor2A(teamNumber);
+    if (isCondition_2A(profileWorkshopCode, profileScheduleCode)) {
+      const currentShift = getShiftFor2A(profileTeamNumber);
 
       // Если смена 1 завтра
       if (
         currentShift.shiftCode === 1 &&
-        getUTCDateString(currentShift.date) === getUTCDateString(tomorrow)
+        this.getUTCDateString(currentShift.date) ===
+          this.getUTCDateString(tomorrow)
       ) {
         const [workShft, holidayShft] = await Promise.all([
           this.shiftService.getShiftByDate(
@@ -139,7 +158,8 @@ export class ShiftManagementService {
       // Если смена 1 сегодня
       if (
         currentShift.shiftCode === 1 &&
-        getUTCDateString(currentShift.date) === getUTCDateString(today)
+        this.getUTCDateString(currentShift.date) ===
+          this.getUTCDateString(today)
       ) {
         const [workShft, holidayShft] = await Promise.all([
           this.shiftService.getShiftByDate(
@@ -160,7 +180,11 @@ export class ShiftManagementService {
       }
 
       // Если смена 2 сегодня
-      if (currentShift.shiftCode === 2) {
+      if (
+        currentShift.shiftCode === 2 &&
+        this.getUTCDateString(currentShift.date) ===
+          this.getUTCDateString(today)
+      ) {
         const [workShft, holidayShft] = await Promise.all([
           this.shiftService.getShiftByDate(
             today,
@@ -181,7 +205,7 @@ export class ShiftManagementService {
     }
 
     // График: 5-Б-1, все цехи
-    if (this.isCondition_5B1(workshopCode, scheduleCode)) {
+    if (isCondition_5B1(profileWorkshopCode, profileScheduleCode)) {
       const shift = await this.shiftService.getShiftByDate(
         today,
         workshop.id,
@@ -193,7 +217,7 @@ export class ShiftManagementService {
     }
 
     // График 9 отображаем в графике 5-Б-1
-    if (this.isCondition_5B1_9(workshopCode, scheduleCode)) {
+    if (isCondition_5B1_9(profileWorkshopCode, profileScheduleCode)) {
       const schedule9 = await this.scheduleService.getScheduleByCode(
         ESchedule.S_9,
       );
@@ -222,18 +246,19 @@ export class ShiftManagementService {
     }
 
     // График 9 отображаем в графике 2-А
-    if (this.isCondition_2A_9(workshopCode, scheduleCode)) {
-      // Даты в UTC
-      const today = getUTCToday();
-      const tomorrow = getUTCTomorrow();
+    if (isCondition_2A_9(profileWorkshopCode, profileScheduleCode)) {
+      // Сегодня в UTC 00:00
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+
+      // Завтра = сегодня + 1 день
+      const tomorrow = new Date(today);
+      tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
 
       // Получаем текущую смену
-      const currentShift = getShiftFor2A(teamNumber);
+      const currentShift = getShiftFor2A(profileTeamNumber);
 
-      if (
-        this.isRelevantShift(currentShift, today, tomorrow) &&
-        currentShift.shiftCode === 2
-      ) {
+      if (isRelevantShift(currentShift) && currentShift.shiftCode === 2) {
         const schedule9 = await this.scheduleService.getScheduleByCode(
           ESchedule.S_9,
         );
@@ -270,26 +295,29 @@ export class ShiftManagementService {
       return [];
     }
 
-    return this.mapShiftsList(validShifts);
+    return this.mapShifts(validShifts);
   }
 
   async getShiftsByDay(
     dto: ShiftDateDto,
     profile: IProfile,
   ): Promise<IShift[]> {
-    const { workshopCode, teamNumber, scheduleCode } = profile;
-    const targetDate = getUTC(dto.shiftDate);
+    const { profileWorkshopCode, profileTeamNumber, profileScheduleCode } =
+      profile;
+
+    const targetDate = new Date(dto.shiftDate);
+    targetDate.setUTCHours(0, 0, 0, 0);
 
     const [workshop, team, schedule] = await Promise.all([
-      this.workshopService.getWorkshop(workshopCode),
-      this.teamService.getTeam(teamNumber),
-      this.scheduleService.getScheduleByCode(scheduleCode),
+      this.workshopService.getWorkshop(profileWorkshopCode),
+      this.teamService.getTeam(profileTeamNumber),
+      this.scheduleService.getScheduleByCode(profileScheduleCode),
     ]);
 
     const allShifts: Shift[] = [];
 
     // 2-A
-    if (this.isCondition_2A(workshopCode, scheduleCode)) {
+    if (isCondition_2A(profileWorkshopCode, profileScheduleCode)) {
       const shifts = await this.shiftService.getAllShiftByDate(
         targetDate,
         workshop.id,
@@ -301,7 +329,7 @@ export class ShiftManagementService {
     }
 
     // 5-Б-1
-    if (this.isCondition_5B1(workshopCode, scheduleCode)) {
+    if (isCondition_5B1(profileWorkshopCode, profileScheduleCode)) {
       const shifts = await this.shiftService.getAllShiftByDate(
         targetDate,
         workshop.id,
@@ -313,7 +341,7 @@ export class ShiftManagementService {
     }
 
     // 9 в 5-Б-1
-    if (this.isCondition_5B1_9(workshopCode, scheduleCode)) {
+    if (isCondition_5B1_9(profileWorkshopCode, profileScheduleCode)) {
       const schedule9 = await this.scheduleService.getScheduleByCode(
         ESchedule.S_9,
       );
@@ -342,7 +370,7 @@ export class ShiftManagementService {
     }
 
     // 9 в 2-А
-    if (this.isCondition_2A_9(workshopCode, scheduleCode)) {
+    if (isCondition_2A_9(profileWorkshopCode, profileScheduleCode)) {
       const schedule9 = await this.scheduleService.getScheduleByCode(
         ESchedule.S_9,
       );
@@ -374,429 +402,144 @@ export class ShiftManagementService {
       throw new NotFoundException('Смены не найдены');
     }
 
-    return this.mapShiftsList(allShifts);
+    return this.mapShifts(allShifts);
   }
 
-  async getShiftById(dto: ShiftIdDto): Promise<IShift> {
-    const shift = await this.shiftService.getShiftById(dto);
-    const mapped = this.mapShiftsList([shift]);
-
-    return mapped[0];
+  async getShiftById(id: string): Promise<IShift> {
+    const shift = await this.shiftService.getShiftById(id);
+    return this.mapShift(shift);
   }
 
-  /*
-  // --- МЕТОД АДАПТИРОВАТЬ ПОД СОЗДАНИЕ СМЕНЫ С ПАРАМЕТРОМ НА ВХОДЕ (date: Date()) ---
-  async createMissingShifts(profile: IProfile): Promise<ISuccess> {
-    const { workshopCode, teamNumber, scheduleCode } = profile;
+  // async getMissingShiftsDates(profile: IProfile): Promise<string[]> {
+  //   // Получаем конфигурации графиков/бригад, подходящие профилю
+  //   const configs = getScheduleConfigsToNitice(
+  //     profile.profileWorkshopCode,
+  //     profile.profileTeamNumber,
+  //     profile.profileScheduleCode,
+  //   );
 
-    const workshop = await this.workshopService.getWorkshop(workshopCode);
-    const workType = await this.attendanceTypeService.getAttendanceType(
-      EAttendanceCode.Y,
+  //   // Если подходящих конфигураций нет — возвращаем пустой массив
+  //   if (configs.length === 0) {
+  //     return [];
+  //   }
+
+  //   // Единственный источник диапазона дат
+  //   const allDateKeys = this.calculateReportRange(profile);
+
+  //   if (allDateKeys.length === 0) {
+  //     return [];
+  //   }
+
+  //   const workshop = await this.workshopService.getWorkshop(
+  //     profile.profileWorkshopCode,
+  //   );
+
+  //   const missing = new Set<string>();
+
+  //   for (const config of configs) {
+  //     const team = await this.teamService.getTeam(config.teamNumber);
+  //     const schedule = await this.scheduleService.getScheduleByCode(
+  //       config.scheduleCode,
+  //     );
+
+  //     const shifts = await this.shiftService.getAllInCurrentAndPreviousMonth(
+  //       workshop.id,
+  //       team.id,
+  //       schedule.id,
+  //     );
+
+  //     const shiftKeys = new Set(
+  //       shifts.map((s) => this.dateToKey(new Date(s.date))),
+  //     );
+
+  //     allDateKeys
+  //       .filter((key) => !shiftKeys.has(key))
+  //       .forEach((key) => missing.add(key));
+  //   }
+
+  //   return Array.from(missing);
+  // }
+
+  async getPendingShiftsIds(profile: IProfile, ): Promise<string[]> {
+    const { profileWorkshopCode, profileTeamNumber, profileScheduleCode } =
+      profile;
+
+    // Получаем конфигурации графиков/бригад для профиля
+    const configs = getScheduleConfigsToNitice(
+      profileWorkshopCode,
+      profileTeamNumber,
+      profileScheduleCode,
     );
 
-    const holidayType = await this.attendanceTypeService.getAttendanceType(
-      EAttendanceCode.V,
-    );
-
-    const currentShifts = await this.getShifts(profile);
-    let monthDates: Date[] = [];
-
-    // Получаем все дни с начала месяца
-    if (currentShifts.length > 0) {
-      monthDates = this.getDatesUntilYesterday();
-    } else {
-      monthDates = this.getDatesUntilDayBeforeYesterday();
+    // Выходим, если конфигураций нет
+    if (configs.length === 0) {
+      return [];
     }
 
-    // 1. Определяем какие графики принадлежат профилю
-    const configs: { scheduleCode: string; teamNumber: number }[] = [];
+    // Получаем цех по коду из профиля
+    const workshop =
+      await this.workshopService.getWorkshop(profileWorkshopCode);
 
-    if (this.isCondition_2A(workshopCode, scheduleCode)) {
-      configs.push({ scheduleCode: ESchedule.S_2A, teamNumber });
-    }
-
-    if (this.isCondition_5B1(workshopCode, scheduleCode)) {
-      configs.push({ scheduleCode: ESchedule.S_5B1, teamNumber });
-    }
-
-    if (
-      this.isCondition_5B1_9(workshopCode, scheduleCode) ||
-      this.isCondition_2A_9(workshopCode, scheduleCode)
-    ) {
-      configs.push(
-        { scheduleCode: ESchedule.S_9, teamNumber: 1 },
-        { scheduleCode: ESchedule.S_9, teamNumber: 2 },
-      );
-    }
-
-    // 2. Собираем пропущенные даты по всем графикам
-    const missingByConfig: {
-      team: Team;
-      schedule: Schedule;
-      config: { scheduleCode: string; teamNumber: number };
-      dates: Date[];
-    }[] = [];
+    // Собираем сюда ID проблемных смен
+    const ids: string[] = [];
 
     for (const config of configs) {
+      // Получаем бригаду по номеру из конфигурации
       const team = await this.teamService.getTeam(config.teamNumber);
+
+      // Получаем график по коду из конфигурации
       const schedule = await this.scheduleService.getScheduleByCode(
         config.scheduleCode,
       );
 
-      let existingShifts: Shift[] = [];
+      // Получаем готовый диапазон дат: с 1-го числа прошлого месяца по сегодня (или завтра для 2А/см1)
+      const dateRange = this.calculateReportRange(profile);
 
-      existingShifts =
-        await this.shiftService.getAllShiftsInCurrentMonthUntilToday(
-          workshop.id,
-          team.id,
-          schedule.id,
-        );
+      // Берём первую дату диапазона — начало периода
+      const startDate = new Date(dateRange[0]);
 
-      const missingDates = this.getMissingDays(monthDates, existingShifts);
+      // Берём последнюю дату диапазона — конец периода
+      const endDate = new Date(dateRange[dateRange.length - 1]);
 
-      if (missingDates.length > 0) {
-        missingByConfig.push({ team, schedule, config, dates: missingDates });
-      }
-    }
-
-    // Если пропущенных дат нет — смены создавать не нужно
-    if (missingByConfig.length === 0) {
-      return { message: 'Смены создавать не нужно' };
-    }
-
-    // 3. Создаём смены для каждой пропущенной даты
-    for (const { team, schedule, config, dates } of missingByConfig) {
-      const employees = await this.getEmployeesForSchedule(
-        workshopCode,
-        config.teamNumber,
-        config.scheduleCode,
-      );
-
-      for (const date of dates) {
-        const shiftInfo = this.getShiftInfo(
-          config.scheduleCode,
-          config.teamNumber,
-          date,
-        );
-
-        try {
-          if (this.isWorkDay(config.scheduleCode, shiftInfo, date)) {
-            await this.createShiftForWork(
-              shiftInfo.dayOfWeek,
-              workshopCode,
-              config.scheduleCode,
-              shiftInfo.shiftCode!,
-              date,
-              team,
-              workshop,
-              schedule,
-              employees,
-              workType,
-            );
-          } else {
-            await this.createShiftForHoliday(
-              date,
-              team,
-              workshop,
-              schedule,
-              employees,
-              holidayType,
-            );
-          }
-        } catch (error) {
-          if (
-            error instanceof QueryFailedError &&
-            error.driverError?.code === '23505'
-          ) {
-            // Дубликат — нормально, пропускаем
-            continue;
-          }
-          throw error;
-        }
-      }
-    }
-
-    return { message: 'Смены созданы успешно' };
-  }
-    */
-
-  async checkMissingShifts(profile: IProfile): Promise<ISuccess> {
-    const { workshopCode, teamNumber, scheduleCode } = profile;
-
-    const workshop = await this.workshopService.getWorkshop(workshopCode);
-
-    // 1. Определяем графики профиля
-    const configs: { scheduleCode: string; teamNumber: number }[] = [];
-
-    if (this.isCondition_2A(workshopCode, scheduleCode)) {
-      configs.push({ scheduleCode: ESchedule.S_2A, teamNumber });
-    }
-
-    if (this.isCondition_5B1(workshopCode, scheduleCode)) {
-      configs.push({ scheduleCode: ESchedule.S_5B1, teamNumber });
-    }
-
-    if (
-      this.isCondition_5B1_9(workshopCode, scheduleCode) ||
-      this.isCondition_2A_9(workshopCode, scheduleCode)
-    ) {
-      configs.push(
-        { scheduleCode: ESchedule.S_9, teamNumber: 1 },
-        { scheduleCode: ESchedule.S_9, teamNumber: 2 },
-      );
-    }
-
-    // 2. Определяем период проверки
-    const currentShifts = await this.getShifts(profile);
-    const monthDates =
-      currentShifts.length > 0
-        ? this.getDatesUntilYesterday()
-        : this.getDatesUntilDayBeforeYesterday();
-
-    // 3. Проверяем каждый график на пропущенные даты
-    let hasMissing = false;
-
-    for (const config of configs) {
-      const team = await this.teamService.getTeam(config.teamNumber);
-      const schedule = await this.scheduleService.getScheduleByCode(
-        config.scheduleCode,
-      );
-
-      // const existingShifts =
-      //   await this.shiftService.getAllShiftsInCurrentMonthUntilToday(
-      //     workshop.id,
-      //     team.id,
-      //     schedule.id,
-      //   );
-
-      // const missingDates = this.getMissingDays(monthDates, existingShifts);
-
-      // if (missingDates.length > 0) {
-      //   hasMissing = true;
-      //   break;
-      // }
-    }
-
-    // 4. Пропущенных смен нет — уведомление не нужно
-    if (!hasMissing) {
-      return { message: 'Пропущенных смен нет' };
-    }
-
-    // 5. Создаём уведомление
-    // await this.noticeService.createMissingShiftNotice(profile);
-
-    return { message: 'Уведомление о пропущенных сменах создано' };
-  }
-
-  async getUncheckedShifts(profile: IProfile): Promise<IShift[]> {
-    const { workshopCode, teamNumber, scheduleCode } = profile;
-
-    const workshop = await this.workshopService.getWorkshop(workshopCode);
-
-    // 1. Определяем какие графики принадлежат профилю
-    const configs: { scheduleCode: string; teamNumber: number }[] = [];
-
-    if (this.isCondition_2A(workshopCode, scheduleCode)) {
-      configs.push({ scheduleCode: ESchedule.S_2A, teamNumber });
-    }
-
-    if (this.isCondition_5B1(workshopCode, scheduleCode)) {
-      configs.push({ scheduleCode: ESchedule.S_5B1, teamNumber });
-    }
-
-    if (
-      this.isCondition_5B1_9(workshopCode, scheduleCode) ||
-      this.isCondition_2A_9(workshopCode, scheduleCode)
-    ) {
-      configs.push(
-        { scheduleCode: ESchedule.S_9, teamNumber: 1 },
-        { scheduleCode: ESchedule.S_9, teamNumber: 2 },
-      );
-    }
-
-    // 2. Для каждого графика получаем непроверенные смены
-    const allUncheckedShifts: Shift[] = [];
-
-    for (const config of configs) {
-      const team = await this.teamService.getTeam(config.teamNumber);
-      const schedule = await this.scheduleService.getScheduleByCode(
-        config.scheduleCode,
-      );
-
-      const result = await this.shiftService.getAllInCurrentAndPreviousMonth(
+      // Загружаем все смены бригады за период одним запросом
+      const shifts = await this.shiftRepository.findAllInRange(
         workshop.id,
         team.id,
         schedule.id,
+        startDate,
+        endDate,
       );
 
-      allUncheckedShifts.push(...result);
+      // Фильтруем смены, где хотя бы один сотрудник без рабочего места, и собираем их ID
+      const pendingIds = shifts
+        .filter((shift) =>
+          shift.employeeShifts.some((es) => es.workplace === null),
+        )
+        .map((shift) => shift.id);
+
+      // УДАЛИТЬ!!! ПОСЛЕ СОЗДАНИЯ ЛОГИКИ ПО РАБОЧЕМУ МЕСТУ В СЕРВИСЕ СМЕНЫ МЕТОД CHEK
+      // const pendingIds = shifts
+      //   .filter((shift) => {
+      //     // Выходной день (нет расписания смены)
+      //     const isDayOff = !shift.shiftSchedule;
+
+      //     if (isDayOff) {
+      //       // Выходной + чекнутый → не возвращаем (всё ок)
+      //       // Выходной + не чекнутый → возвращаем (проблемная)
+      //       return !shift.isChecked;
+      //     }
+
+      //     // Рабочий день — возвращаем, если хотя бы один сотрудник без рабочего места
+      //     return shift.employeeShifts.some((es) => es.workplace === null);
+      //   })
+      //   .map((shift) => shift.id);
+
+      // Добавляем найденные ID в общий накопитель
+      ids.push(...pendingIds);
     }
 
-    const mapped = this.mapShiftsList(allUncheckedShifts);
-
-    // Оставляем только те, где хотя бы одно из условий false
-    return mapped.filter(
-      (shift) => !shift.isChecked || !shift.isAssignmentComplete,
-    );
-  }
-
-  private getShiftStrategies(
-    profile: IProfile,
-    baseDate: Date | null = null,
-  ): ((p: IProfile) => Promise<void>)[] {
-    const { workshopCode, teamNumber, scheduleCode } = profile;
-    const strategies: ((p: IProfile) => Promise<void>)[] = [];
-
-    // Даты в UTC
-    const today = getUTCToday(baseDate);
-    const tomorrow = getUTCTomorrow(baseDate);
-
-    // График 2-A, все цехи
-    if (this.isCondition_2A(workshopCode, scheduleCode)) {
-      // Получаем текущую смену по графику 2-А
-      const currentShift = getShiftFor2A(teamNumber, baseDate);
-
-      // Добавляем стратегию только, если смена релевантна
-      if (this.isRelevantShift(currentShift, today, tomorrow)) {
-        strategies.push((p) => this.createShift_2A(p, baseDate));
-      }
-    }
-
-    // График 5-Б-1, все цехи
-    if (this.isCondition_5B1(workshopCode, scheduleCode)) {
-      strategies.push((p) => this.createShift_5B1(p, baseDate));
-    }
-
-    // График 91 создается графиком 5-Б-1
-    if (this.isCondition_5B1_9(workshopCode, scheduleCode)) {
-      strategies.push((p) => this.createShift_91(p, baseDate));
-    }
-
-    // График 92 создается графиком 5-Б-1
-    if (this.isCondition_5B1_9(workshopCode, scheduleCode)) {
-      strategies.push((p) => this.createShift_92(p, baseDate));
-    }
-
-    // График 91 создается графиком 2‑A
-    if (this.isCondition_2A_9(workshopCode, scheduleCode)) {
-      // Получаем текущую смену по графику 2-А
-      const currentShift = getShiftFor2A(teamNumber, baseDate);
-
-      // Добавляем стратегию только, если смена 2 и релевантна
-      if (
-        this.isRelevantShift(currentShift, today, tomorrow) &&
-        currentShift.shiftCode === 2
-      ) {
-        strategies.push((p) => this.createShift_91(p, baseDate));
-      }
-    }
-
-    // График 92 создается графиком 2‑A
-    if (this.isCondition_2A_9(workshopCode, scheduleCode)) {
-      // Получаем текущую смену по графику 2-А
-      const currentShift = getShiftFor2A(teamNumber, baseDate);
-
-      // Добавляем стратегию только, если смена 2 и релевантна
-      if (
-        this.isRelevantShift(currentShift, today, tomorrow) &&
-        currentShift.shiftCode === 2
-      ) {
-        strategies.push((p) => this.createShift_92(p, baseDate));
-      }
-    }
-
-    return strategies;
-  }
-
-  private mapShiftsList(shifts: Shift[]): IShift[] {
-    return shifts.map((shift) => {
-      const isAssignmentComplete = shift.employeeShifts.every(
-        (employeeShift) => {
-          if (employeeShift.workPlace !== null) {
-            return true;
-          }
-
-          if (!employeeShift.attendanceType) {
-            return false;
-          }
-
-          return (
-            employeeShift.attendanceType.attendanceCode === EAttendanceCode.V
-          );
-        },
-      );
-
-      return {
-        id: shift.id,
-        date: shift.date,
-        schedule: shift.schedule,
-        shiftSchedule: shift.shiftSchedule,
-        team: shift.team,
-        workshop: shift.workshop,
-        isChecked: shift.isChecked,
-        isAssignmentComplete,
-      };
-    });
-  }
-
-  private async createShift_2A(
-    profile: IProfile,
-    baseDate: Date | null = null,
-  ): Promise<void> {
-    const { workshopCode, teamNumber, scheduleCode } = profile;
-
-    return this.createShiftForSchedule(
-      workshopCode,
-      teamNumber,
-      scheduleCode,
-      () => getShiftFor2A(teamNumber, baseDate),
-      baseDate,
-    );
-  }
-
-  private createShift_5B1(
-    profile: IProfile,
-    baseDate: Date | null = null,
-  ): Promise<void> {
-    const { workshopCode, teamNumber, scheduleCode } = profile;
-
-    return this.createShiftForSchedule(
-      workshopCode,
-      teamNumber,
-      scheduleCode,
-      () => getShiftFor5B1(teamNumber, baseDate),
-      baseDate,
-    );
-  }
-
-  private createShift_91(
-    profile: IProfile,
-    baseDate: Date | null = null,
-  ): Promise<void> {
-    const { workshopCode } = profile;
-
-    return this.createShiftForSchedule(
-      workshopCode,
-      1,
-      ESchedule.S_9,
-      () => getShiftFor9(1, baseDate),
-      baseDate,
-    );
-  }
-
-  private createShift_92(
-    profile: IProfile,
-    baseDate: Date | null = null,
-  ): Promise<void> {
-    const { workshopCode } = profile;
-
-    return this.createShiftForSchedule(
-      workshopCode,
-      2,
-      ESchedule.S_9,
-      () => getShiftFor9(2, baseDate),
-      baseDate,
-    );
+    // Возвращаем итоговый список ID
+    return ids;
   }
 
   private async createShiftForSchedule(
@@ -804,25 +547,38 @@ export class ShiftManagementService {
     teamNumber: number,
     scheduleCode: string,
     shiftGetter: (teamNumber: number) => IShiftInfo,
-    baseDate: Date | null = null,
   ): Promise<void> {
     // Получаем сущности
     const workshop = await this.workshopService.getWorkshop(workshopCode);
     const team = await this.teamService.getTeam(teamNumber);
     const schedule = await this.scheduleService.getScheduleByCode(scheduleCode);
+
     const workType = await this.attendanceTypeService.getAttendanceType(
       EAttendanceCode.Y,
     );
+
     const holidayType = await this.attendanceTypeService.getAttendanceType(
       EAttendanceCode.V,
     );
 
-    // Формируем список сотрудников
-    const employees = await this.getEmployeesForSchedule(
+    // ВАЖНО!!! Получаем список распоряжений
+    const documents = await this.documentService.getAllDocuments(
       workshopCode,
       teamNumber,
       scheduleCode,
+      new Date('2026-10-12'),
     );
+
+    // ВАЖНО!!! console.log
+    console.log(documents);
+
+    // Формируем список сотрудников
+    const employees =
+      await this.employeeManagementService.getEmployeesForSchedule(
+        workshopCode,
+        teamNumber,
+        scheduleCode,
+      );
 
     // Получаем текущую смену
     const currentShift = shiftGetter(teamNumber);
@@ -830,20 +586,28 @@ export class ShiftManagementService {
     try {
       // График 2-A
       if (scheduleCode === ESchedule.S_2A) {
-        // Получаем даты в UTC
-        const today = getUTCToday(baseDate);
-        const tomorrow = getUTCTomorrow(baseDate);
-        const yesterday = getUTCYesterday(baseDate);
+        // Сегодня в UTC 00:00
+        const today = new Date();
+        today.setUTCHours(0, 0, 0, 0);
+
+        // Завтра = сегодня + 1 день
+        const tomorrow = new Date(today);
+        tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+
+        // Вчера = сегодня - 1 день
+        const yesterday = new Date(today);
+        yesterday.setUTCDate(yesterday.getUTCDate() - 1);
 
         // Проверяем релевантность смены
-        if (!this.isRelevantShift(currentShift, today, tomorrow)) {
+        if (!isRelevantShift(currentShift)) {
           return;
         }
 
         // Если смена 1 завтра
         if (
           currentShift.shiftCode === 1 &&
-          getUTCDateString(currentShift.date) === getUTCDateString(tomorrow)
+          this.getUTCDateString(currentShift.date) ===
+            this.getUTCDateString(tomorrow)
         ) {
           // Создаем рабочую смену
           await this.createShiftForWork(
@@ -873,7 +637,8 @@ export class ShiftManagementService {
         // Если смена 1 сегодня
         if (
           currentShift.shiftCode === 1 &&
-          getUTCDateString(currentShift.date) === getUTCDateString(today)
+          this.getUTCDateString(currentShift.date) ===
+            this.getUTCDateString(today)
         ) {
           // Создаем рабочую смену
           await this.createShiftForWork(
@@ -997,7 +762,7 @@ export class ShiftManagementService {
       });
 
       // Создаем рабочие смены сотрудников с типом посещаемости 'Я'
-      await this.createEmployeeShiftsForWork(
+      await this.employeeShiftManagementService.createEmployeeShiftsForWork(
         dayOfWeek,
         shiftCode,
         shift,
@@ -1034,7 +799,7 @@ export class ShiftManagementService {
       });
 
       // Создаем смены выходного дня сотрудников с типом посещаемости 'В'
-      await this.createEmployeeShiftsForHoliday(
+      await this.employeeShiftManagementService.createEmployeeShiftsForHoliday(
         shift,
         employees,
         attendanceType,
@@ -1042,92 +807,242 @@ export class ShiftManagementService {
     }
   }
 
-  private async createEmployeeShiftsForWork(
-    dayOfWeek: number,
-    shiftCode: number,
-    shift: Shift,
-    employees: Employee[],
-    attendanceType: AttendanceType,
-  ): Promise<void> {
-    for (const employee of employees) {
-      const workshopCode = employee.position?.workshop?.workshopCode;
-      const scheduleCode = employee.position?.schedule?.scheduleCode;
+  private getShiftStrategies(
+    profile: IProfile,
+  ): ((p: IProfile) => Promise<void>)[] {
+    const { profileWorkshopCode, profileTeamNumber, profileScheduleCode } =
+      profile;
 
-      // ВАЖНО!!! Логику дописать в будущем
-      // Позиция должна вычисляться
-      // Либо распоряжение, либо штатная позиция
-      const currentPosition = employee.position;
+    const strategies: ((p: IProfile) => Promise<void>)[] = [];
 
-      const shiftSchedule = await this.shiftScheduleService.getShiftSchedule(
-        dayOfWeek,
-        workshopCode,
-        scheduleCode,
-        shiftCode,
-      );
+    // Сегодня и завтра в UTC 00:00 — от текущего момента
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
 
-      const minutes = calcShiftDuration(shiftSchedule);
+    const tomorrow = new Date(today);
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
 
-      await this.employeeShiftRepository.create({
-        minutes,
-        employee,
-        shift,
-        attendanceType,
-        currentPosition,
-        workPlace: null,
-      });
+    // График 2-A, все цехи
+    if (isCondition_2A(profileWorkshopCode, profileScheduleCode)) {
+      // Получаем текущую смену по графику 2-А
+      const currentShift = getShiftFor2A(profileTeamNumber);
+
+      // Добавляем стратегию только, если смена релевантна
+      if (isRelevantShift(currentShift)) {
+        strategies.push((p) => this.createShift_2A(p));
+      }
     }
+
+    // График 5-Б-1, все цехи
+    if (isCondition_5B1(profileWorkshopCode, profileScheduleCode)) {
+      strategies.push((p) => this.createShift_5B1(p));
+    }
+
+    // График 91 создается графиком 5-Б-1
+    if (isCondition_5B1_9(profileWorkshopCode, profileScheduleCode)) {
+      strategies.push((p) => this.createShift_91(p));
+    }
+
+    // График 92 создается графиком 5-Б-1
+    if (isCondition_5B1_9(profileWorkshopCode, profileScheduleCode)) {
+      strategies.push((p) => this.createShift_92(p));
+    }
+
+    // График 91 создается графиком 2‑A
+    if (isCondition_2A_9(profileWorkshopCode, profileScheduleCode)) {
+      // Получаем текущую смену по графику 2-А
+      const currentShift = getShiftFor2A(profileTeamNumber);
+
+      // Добавляем стратегию только, если смена 2 и релевантна
+      if (isRelevantShift(currentShift) && currentShift.shiftCode === 2) {
+        strategies.push((p) => this.createShift_91(p));
+      }
+    }
+
+    // График 92 создается графиком 2‑A
+    if (isCondition_2A_9(profileWorkshopCode, profileScheduleCode)) {
+      // Получаем текущую смену по графику 2-А
+      const currentShift = getShiftFor2A(profileTeamNumber);
+
+      // Добавляем стратегию только, если смена 2 и релевантна
+      if (isRelevantShift(currentShift) && currentShift.shiftCode === 2) {
+        strategies.push((p) => this.createShift_92(p));
+      }
+    }
+
+    return strategies;
   }
 
-  private async createEmployeeShiftsForHoliday(
-    shift: Shift,
-    employees: Employee[],
-    attendanceType: AttendanceType,
-  ): Promise<void> {
-    for (const employee of employees) {
-      // ВАЖНО!!! Логику дописать в будущем
-      // Позиция должна вычисляться
-      // Либо распоряжение, либо штатная позиция
-      const currentPosition = employee.position;
+  private createShift_2A(profile: IProfile): Promise<void> {
+    const { profileWorkshopCode, profileTeamNumber, profileScheduleCode } =
+      profile;
 
-      await this.employeeShiftRepository.create({
-        minutes: 0,
-        isPresent: null,
-        employee,
-        shift,
-        attendanceType,
-        currentPosition,
-        workPlace: null,
-      });
-    }
-  }
-
-  private async getEmployeesForSchedule(
-    workshopCode: string,
-    teamNumber: number,
-    scheduleCode: string,
-  ): Promise<Employee[]> {
-    if (scheduleCode === ESchedule.S_2A && workshopCode === EWorkshop.W_LPC11) {
-      const [employees2A, employees2] = await Promise.all([
-        this.employeeService.getTeamEmployees(
-          teamNumber,
-          workshopCode,
-          scheduleCode,
-        ),
-        this.employeeService.getTeamEmployees(
-          teamNumber,
-          workshopCode,
-          ESchedule.S_2,
-        ),
-      ]);
-
-      return [...employees2A, ...employees2];
-    }
-
-    return this.employeeService.getTeamEmployees(
-      teamNumber,
-      workshopCode,
-      scheduleCode,
+    return this.createShiftForSchedule(
+      profileWorkshopCode,
+      profileTeamNumber,
+      profileScheduleCode,
+      () => getShiftFor2A(profileTeamNumber),
     );
+  }
+
+  private createShift_5B1(profile: IProfile): Promise<void> {
+    const { profileWorkshopCode, profileTeamNumber, profileScheduleCode } =
+      profile;
+
+    return this.createShiftForSchedule(
+      profileWorkshopCode,
+      profileTeamNumber,
+      profileScheduleCode,
+      () => getShiftFor5B1(profileTeamNumber),
+    );
+  }
+
+  private createShift_91(profile: IProfile): Promise<void> {
+    const { profileWorkshopCode } = profile;
+
+    return this.createShiftForSchedule(
+      profileWorkshopCode,
+      1,
+      ESchedule.S_9,
+      () => getShiftFor9(1),
+    );
+  }
+
+  private createShift_92(profile: IProfile): Promise<void> {
+    const { profileWorkshopCode } = profile;
+
+    return this.createShiftForSchedule(
+      profileWorkshopCode,
+      2,
+      ESchedule.S_9,
+      () => getShiftFor9(2),
+    );
+  }
+
+  private mapShifts(shifts: Shift[]): IShift[] {
+    return shifts.map((shift) => this.mapShift(shift));
+  }
+
+  private mapShift(shift: Shift): IShift {
+    return {
+      id: shift.id,
+      date: shift.date,
+      workshopCode: shift.workshop.workshopCode,
+      teamNumber: shift.team.teamNumber,
+      scheduleCode: shift.schedule.scheduleCode,
+      dayOfWeek: shift.shiftSchedule?.dayOfWeek ?? 0,
+      shiftCode: shift.shiftSchedule?.shiftType?.shiftCode ?? null,
+      employeeShifts: shift.employeeShifts.map((employeeShift: EmployeeShift) =>
+        this.mapEmployeeShift(
+          shift.workshop.workshopCode,
+          shift.team.teamNumber,
+          shift.schedule.scheduleCode,
+          employeeShift,
+        ),
+      ),
+    };
+  }
+
+  private mapEmployeeShift(
+    shiftWorkshopCode: string,
+    shiftTeamNumber: number,
+    shiftScheduleCode: string,
+    employeeShift: EmployeeShift,
+  ): IEmployeeShift {
+    return {
+      id: employeeShift.id,
+
+      // ВАЖНО!!! Текущая профессия загружается в приоритете из таблицы распоряжений - если нет, то из КЛС
+      // Сейчас таблицы распоряжений нет, поэтому взяли из КЛС
+      currentPositionCode: employeeShift.currentPosition.positionCode,
+
+      // ВАЖНО!!! Текущая профессия загружается в приоритете из таблицы распоряжений - если нет, то из КЛС
+      // Сейчас таблицы распоряжений нет, поэтому взяли из КЛС
+      currentProfessionName: employeeShift.currentPosition.profession.name,
+
+      // ВАЖНО!!! Текущая система оплаты труда загружается в приоритете из таблицы распоряжений - если нет, то из КЛС
+      // Сейчас таблицы распоряжений нет, поэтому взяли из КЛС
+      currentPaymentCode:
+        employeeShift.currentPosition.paymentSystem.paymentCode,
+
+      attendanceCode: employeeShift.attendanceType.attendanceCode,
+      minutes: employeeShift.minutes,
+      isPresent: employeeShift?.isPresent ?? null,
+      workplaceName: employeeShift.workplace?.name ?? null,
+
+      // Можно удалить смену сотрудника, если:
+      // 1) Табель НЕ готов (isReady === false)
+      // И
+      // 2) Сотрудник НЕ является «родным» для этой смены
+      canDelete: this.calculateCanDelete(
+        shiftWorkshopCode,
+        shiftTeamNumber,
+        shiftScheduleCode,
+        employeeShift,
+      ),
+
+      // ВАЖНО!!! Логика не готова
+      isReady: employeeShift.isReady,
+
+      employee: this.mapEmployee(employeeShift.employee),
+    };
+  }
+
+  private mapEmployee(employee: Employee): IEmployee {
+    return {
+      id: employee.id,
+      lastName: employee.lastName,
+      firstName: employee.firstName,
+      patronymic: employee.patronymic,
+      personalNumber: employee.personalNumber,
+      workshopCode: employee.position.workshop.workshopCode,
+      teamNumber: employee.team.teamNumber,
+      positionCode: employee.position.positionCode,
+      professionCode: employee.position.profession.professionCode,
+      professionName: employee.position.profession.name,
+      gradeCode: employee.position.grade.gradeCode,
+      scheduleCode: employee.position.schedule.scheduleCode,
+      paymentCode: employee.position.paymentSystem.paymentCode,
+    };
+  }
+
+  private calculateCanDelete(
+    shiftWorkshopCode: string,
+    shiftTeamNumber: number,
+    shiftScheduleCode: string,
+    employeeShift: EmployeeShift,
+  ): boolean {
+    // Спецправило для ЛПЦ-11: нельзя удалять при графике 2 или 2‑А
+    // Нормализуем график сотрудника для ЛПЦ‑11: 2 → 2‑А
+    const normalizedEmployeeScheduleCode = normalizeScheduleCode(
+      employeeShift.employee.position.workshop.workshopCode,
+      employeeShift.employee.position.schedule.scheduleCode,
+    );
+
+    // Базовое правило «сотрудник по КЛС» — нельзя удалять, если все параметры совпадают
+    const isNative =
+      shiftWorkshopCode ===
+        employeeShift.employee.position.workshop.workshopCode &&
+      shiftTeamNumber === employeeShift.employee.team.teamNumber &&
+      shiftScheduleCode === normalizedEmployeeScheduleCode;
+
+    const canDelete = !employeeShift.isReady && !isNative;
+
+    return canDelete;
+  }
+
+  private isAssignmentComplete(shift: Shift): boolean {
+    return shift.employeeShifts.every((employeeShift) => {
+      if (employeeShift.workplace !== null) {
+        return true;
+      }
+
+      if (!employeeShift.attendanceType) {
+        return false;
+      }
+
+      return employeeShift.attendanceType.attendanceCode === EAttendanceCode.V;
+    });
   }
 
   private handleShiftCreationError(error: unknown): never {
@@ -1153,241 +1068,91 @@ export class ShiftManagementService {
     );
   }
 
-  private isCondition_2A(workshopCode: string, scheduleCode: string): boolean {
-    return (
-      scheduleCode === ESchedule.S_2A &&
-      [
-        EWorkshop.W_LPC4,
-        EWorkshop.W_LPC5,
-        EWorkshop.W_LPC8_UGP,
-        EWorkshop.W_LPC8_UL,
-        EWorkshop.W_LPC10,
-        EWorkshop.W_LPC11,
-        EWorkshop.W_PMP_North,
-        EWorkshop.W_PMP_South,
-      ].includes(workshopCode as EWorkshop)
-    );
+  private getUTCDateString(date: Date): string {
+    return date.toISOString().slice(0, 10); // 'YYYY-MM-DD'
   }
 
-  private isCondition_5B1(workshopCode: string, scheduleCode: string): boolean {
-    return (
-      scheduleCode === ESchedule.S_5B1 &&
-      [
-        EWorkshop.W_LPC4,
-        EWorkshop.W_LPC5,
-        EWorkshop.W_LPC8_UGP,
-        EWorkshop.W_LPC8_UL,
-        EWorkshop.W_LPC10,
-        EWorkshop.W_LPC11,
-        EWorkshop.W_PMP_North,
-        EWorkshop.W_PMP_South,
-      ].includes(workshopCode as EWorkshop)
-    );
+  private isDifferentDay(dateA: Date, dateB: Date): boolean {
+    return this.getUTCDateString(dateA) !== this.getUTCDateString(dateB);
   }
 
-  private isCondition_5B1_9(
-    workshopCode: string,
-    scheduleCode: string,
-  ): boolean {
-    return (
-      scheduleCode === ESchedule.S_5B1 &&
-      [
-        // EWorkshop.W_LPC5,
-        // EWorkshop.W_LPC8_UGP,
-        EWorkshop.W_LPC8_UL,
-        EWorkshop.W_LPC10,
-        EWorkshop.W_PMP_North,
-      ].includes(workshopCode as EWorkshop)
-    );
+  private dateToKey(date: Date): string {
+    const y = date.getUTCFullYear();
+    const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const d = String(date.getUTCDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`; // формат YYYY-MM-DD
   }
 
-  private isCondition_2A_9(
-    workshopCode: string,
-    scheduleCode: string,
-  ): boolean {
-    return (
-      scheduleCode === ESchedule.S_2A &&
-      [EWorkshop.W_LPC8_UGP].includes(workshopCode as EWorkshop)
-    );
-  }
+  private calculateReportRange(profile: IProfile): string[] {
+    const { profileTeamNumber, profileScheduleCode } = profile;
 
-  private isRelevantShift(
-    currentShift: {
-      date: Date;
-      shiftCode: number;
-    },
-    today: Date,
-    tomorrow: Date,
-  ): boolean {
-    const isFirstShiftTomorrow =
-      currentShift.shiftCode === 1 &&
-      currentShift.date.getTime() === tomorrow.getTime();
+    // Сегодня в UTC 00:00
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
 
-    const isFirstShiftToday =
-      currentShift.shiftCode === 1 &&
-      currentShift.date.getTime() === today.getTime();
+    if (profileScheduleCode === ESchedule.S_2A) {
+      const shift = getShiftFor2A(profileTeamNumber);
 
-    const isSecondShiftToday =
-      currentShift.shiftCode === 2 &&
-      currentShift.date.getTime() === today.getTime();
-
-    return isFirstShiftTomorrow || isFirstShiftToday || isSecondShiftToday;
-  }
-
-  private getShiftInfo(
-    scheduleCode: string,
-    teamNumber: number,
-    date: Date,
-  ): IShiftInfo {
-    if (scheduleCode === ESchedule.S_2A) {
-      return getShiftFor2A(teamNumber, date);
+      if (shift.shiftCode === 1 && this.isDifferentDay(today, shift.date)) {
+        return this.getRangeToTomorrow();
+      }
     }
 
-    if (scheduleCode === ESchedule.S_5B1) {
-      return getShiftFor5B1(teamNumber, date);
+    return this.getRangeToToday();
+  }
+
+  private getRangeToToday(): string[] {
+    return this.getRangeWithOffset(0);
+  }
+
+  private getRangeToTomorrow(): string[] {
+    return this.getRangeWithOffset(1);
+  }
+
+  private getRangeWithOffset(offset: number = 0): string[] {
+    // Сегодня в UTC 00:00
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+
+    // Конец диапазона = сегодня + offset дней
+    const end = new Date(today);
+    end.setUTCDate(end.getUTCDate() + offset);
+
+    // 1-е число предыдущего месяца (с учётом перехода через год)
+    const y = today.getUTCFullYear();
+    const m = today.getUTCMonth();
+    const start =
+      m === 0
+        ? new Date(Date.UTC(y - 1, 11, 1)) // январь → декабрь прошлого года
+        : new Date(Date.UTC(y, m - 1, 1));
+
+    return this.getDateRange(start, end);
+  }
+
+  private getDateRange(start: Date, end: Date): string[] {
+    // Клонируем и нормализуем обе даты в UTC 00:00:00:000, чтобы убрать время и часовой пояс
+    const startUtc = new Date(start);
+    startUtc.setUTCHours(0, 0, 0, 0);
+
+    const endUtc = new Date(end);
+    endUtc.setUTCHours(0, 0, 0, 0);
+
+    // Если старт позже конца — возвращаем пустой массив (защита от ошибок)
+    if (startUtc > endUtc) {
+      return [];
     }
 
-    return getShiftFor9(teamNumber, date);
-  }
+    const result: string[] = [];
+    const cursor = new Date(startUtc); // всегда работаем с копией, не мутируя оригинал
 
-  private isWorkDay(
-    scheduleCode: string,
-    shiftInfo: IShiftInfo,
-    date: Date,
-  ): boolean {
-    if (scheduleCode === ESchedule.S_2A) {
-      // Для 2-A: если дата начала смены совпадает с целевой датой — рабочий день.
-      // Если не совпадает — значит целевая дата это выходной внутри цикла.
-      return getUTCDateString(shiftInfo.date) === getUTCDateString(date);
+    // Ключ конца диапазона для сравнения
+    const endKey = this.dateToKey(endUtc);
+
+    while (this.dateToKey(cursor) <= endKey) {
+      result.push(this.dateToKey(cursor));
+      cursor.setUTCDate(cursor.getUTCDate() + 1); // автоматически перейдёт на следующий месяц/год
     }
 
-    // Для 5-Б-1 и 9: shiftCode !== null — рабочий день
-    return shiftInfo.shiftCode !== null;
-  }
-
-  // До вчерашнего дня включительно
-  private getDatesUntilYesterday(): Date[] {
-    return this.getDatesUntil(1);
-  }
-
-  // До позавчера включительно
-  private getDatesUntilDayBeforeYesterday(): Date[] {
-    return this.getDatesUntil(2);
-  }
-
-  private getDatesUntil(offset: number): Date[] {
-    const now = new Date();
-    const limitDay = now.getUTCDate() - offset;
-    const year = now.getUTCFullYear();
-    const month = now.getUTCMonth();
-
-    const dates: Date[] = [];
-
-    for (let day = 1; day <= limitDay; day++) {
-      dates.push(new Date(Date.UTC(year, month, day)));
-    }
-
-    return dates;
-  }
-
-  private getMissingDays = (monthDates: Date[], shifts: Shift[]): Date[] => {
-    // 1. Создаём Set из дат смен (нормализованных на 00:00)
-    const shiftDateKeys = new Set<number>(
-      shifts.map((shift) => {
-        const d = new Date(shift.date);
-        d.setUTCHours(0, 0, 0, 0);
-        return d.getTime();
-      }),
-    );
-
-    // 2. Фильтруем полный список месяца: оставляем только те даты, которых нет в сменах
-    return monthDates.filter((date) => {
-      const d = new Date(date);
-      d.setUTCHours(0, 0, 0, 0);
-      return !shiftDateKeys.has(d.getTime());
-    });
-  };
-
-  // 'НУЖНА ЛОГИКА!!!'
-  private mapToIMessage(notice: Notice): IMessage {
-    let itemId = '';
-    let title = '';
-
-    // 'НУЖНА ЛОГИКА!!!'
-    // if (notice.categoryCode === 'shift' && notice.shift) {
-    //   itemId = notice.shift.id;
-    //   title = `${ENoticeTitle.TIMESHEET} от ${new Date(notice.shift.date).toLocaleDateString('ru-RU')}`;
-    // }
-    // else if (notice.category.code === 'document' && notice.documentId) {
-    //   itemId = notice.documentId;
-    //   title = 'Документ';
-    // }
-
-    return {
-      id: notice.id,
-      category: notice.category.categoryCode,
-      title: notice.category.titleText,
-      statusText: this.getNoticeStatus(
-        notice.category.categoryCode,
-        notice.category.actionCode,
-      ),
-      itemId,
-      actionLabel: this.getNoticeActionLabel(
-        notice.category.categoryCode,
-        notice.category.actionCode,
-      ),
-      isUnread: notice.isUnread,
-      isResolved: notice.isResolved,
-      createdAt: notice.createdAt.toISOString(), // гарантирует ISO 8601
-    };
-  }
-
-  // Helper для получения статуса
-  private getNoticeStatus(categoryCode: string, actionCode: string): string {
-    const NOTICE_STATUS_MAP: Record<string, string> = {
-      'shift:create': ENoticeStatus.SHIFT_NOT_CREATED,
-      'shift:fill': ENoticeStatus.SHIFT_NOT_FILLED,
-      'document:sign': ENoticeStatus.DOCUMENT_NOT_SIGNED,
-    };
-
-    const key = `${categoryCode}:${actionCode}`;
-    const status = NOTICE_STATUS_MAP[key];
-
-    if (!status) {
-      throw new Error(`Неизвестный статус для комбинации: ${key}`);
-    }
-    return status;
-  }
-
-  private getNoticeActionLabel(
-    categoryCode: string,
-    actionCode: string,
-  ): string {
-    const NOTICE_ACTION_LABEL_MAP: Record<string, string> = {
-      'shift:create': ENoticeActionLabel.CREATE_SHIFT,
-      'shift:fill': ENoticeActionLabel.FILL_SHIFT,
-      'document:sign': ENoticeActionLabel.SIGN_DOCUMENT,
-    };
-
-    const key = `${categoryCode}:${actionCode}`;
-    const label = NOTICE_ACTION_LABEL_MAP[key];
-
-    if (!label) {
-      throw new Error(`Неизвестный actionLabel для комбинации: ${key}`);
-    }
-    return label;
+    return result;
   }
 }
-
-// console.log(shift);
-// console.log(
-//   'Смены работников:',
-//   employeeShifts.map((es) => ({
-//     id: es.id,
-//     employeeId: es.employee.id,
-//     employeeName: `${es.employee.lastName} ${es.employee.firstName}`,
-//     hours: es.minutes,
-//     attendanceCode: es.attendanceType.attendanceCode,
-//     profession: es.currentProfession?.name,
-//   })),
-// );

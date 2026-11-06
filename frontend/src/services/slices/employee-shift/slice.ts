@@ -1,73 +1,128 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { IEmployeeShift } from '../../../utils/api.interface';
-import { getEmployeeShiftsByShiftId } from './actions';
+import {
+  createEmployeeShift,
+  deleteEmployeeShift,
+  updateEmployeeShift,
+} from './actions';
 
 interface IEmployeeShiftState {
-  employeeShifts: IEmployeeShift[] | null;
-  isAssignmentComplete: boolean | null;
+  isCreateEmployeeShiftLoading: boolean;
+  createEmployeeShiftError: string | null;
 
-  isEmployeeShiftsLoading: boolean;
-  employeeShiftsError: string | null;
+  isUpdateEmployeeShiftLoading: boolean;
+  updateEmployeeShiftError: string | null;
+
+  isDeleteEmployeeShiftLoading: boolean;
+  deleteEmployeeShiftError: string | null;
 }
 
 const initialState: IEmployeeShiftState = {
-  employeeShifts: null,
-  isAssignmentComplete: null,
+  isCreateEmployeeShiftLoading: false,
+  createEmployeeShiftError: null,
 
-  isEmployeeShiftsLoading: false,
-  employeeShiftsError: null,
+  isUpdateEmployeeShiftLoading: false,
+  updateEmployeeShiftError: null,
+
+  isDeleteEmployeeShiftLoading: false,
+  deleteEmployeeShiftError: null,
 };
 
 export const employeeShiftSlice = createSlice({
   name: 'employeeShift',
   initialState,
   reducers: {
-    clearEmployeeShifts: (state) => {
-      state.employeeShifts = null;
-      state.isAssignmentComplete = null;
+    clearCreateEmployeeShift: (state) => {
+      state.isCreateEmployeeShiftLoading = false;
+      state.createEmployeeShiftError = null;
+    },
+    clearUpdateEmployeeShift: (state) => {
+      state.isUpdateEmployeeShiftLoading = false;
+      state.updateEmployeeShiftError = null;
+    },
+    clearDeleteEmployeeShift: (state) => {
+      state.isDeleteEmployeeShiftLoading = false;
+      state.deleteEmployeeShiftError = null;
     },
   },
   selectors: {
-    selectEmployeeShifts: (state: IEmployeeShiftState) => state.employeeShifts,
-    selectIsAssignmentComplete: (state: IEmployeeShiftState) =>
-      state.isAssignmentComplete,
+    selectIsCreateEmployeeShiftLoading: (state: IEmployeeShiftState) =>
+      state.isCreateEmployeeShiftLoading,
+    selectCreateEmployeeShiftError: (state: IEmployeeShiftState) =>
+      state.createEmployeeShiftError,
 
-    selectIsEmployeeShiftsLoading: (state: IEmployeeShiftState) =>
-      state.isEmployeeShiftsLoading,
-    selectEmployeeShiftsError: (state: IEmployeeShiftState) =>
-      state.employeeShiftsError,
+    selectIsUpdateEmployeeShiftLoading: (state: IEmployeeShiftState) =>
+      state.isUpdateEmployeeShiftLoading,
+    selectUpdateEmployeeShiftError: (state: IEmployeeShiftState) =>
+      state.updateEmployeeShiftError,
+
+    selectIsDeleteEmployeeShiftLoading: (state: IEmployeeShiftState) =>
+      state.isDeleteEmployeeShiftLoading,
+    selectDeleteEmployeeShiftError: (state: IEmployeeShiftState) =>
+      state.deleteEmployeeShiftError,
   },
   extraReducers: (builder) => {
-    // Обработчики getEmployeeShiftsByShiftId
     builder
-      .addCase(getEmployeeShiftsByShiftId.pending, (state) => {
-        state.isEmployeeShiftsLoading = true;
-        state.employeeShiftsError = null;
-        state.isAssignmentComplete = null;
+      // Обработчики createEmployeeShift
+      .addCase(createEmployeeShift.pending, (state) => {
+        state.isCreateEmployeeShiftLoading = true;
+        state.createEmployeeShiftError = null;
       })
-      .addCase(getEmployeeShiftsByShiftId.fulfilled, (state, action) => {
-        state.isEmployeeShiftsLoading = false;
-        state.employeeShiftsError = null;
-        state.employeeShifts = action.payload.items;
-        state.isAssignmentComplete = action.payload.isAssignmentComplete;
+      .addCase(createEmployeeShift.fulfilled, (state) => {
+        state.isCreateEmployeeShiftLoading = false;
+        state.createEmployeeShiftError = null;
       })
-      .addCase(getEmployeeShiftsByShiftId.rejected, (state, action) => {
-        state.isEmployeeShiftsLoading = false;
-        state.employeeShiftsError =
-          action.error.message ?? 'Не удалось загрузить смены';
-        state.isAssignmentComplete = null;
+      .addCase(createEmployeeShift.rejected, (state, action) => {
+        state.isCreateEmployeeShiftLoading = false;
+        state.createEmployeeShiftError =
+          action.error.message ?? 'Не удалось создать смену сотрудника';
+      })
+
+      // Обработчики updateEmployeeShift — по аналогии
+      .addCase(updateEmployeeShift.pending, (state) => {
+        state.isUpdateEmployeeShiftLoading = true;
+        state.updateEmployeeShiftError = null;
+      })
+      .addCase(updateEmployeeShift.fulfilled, (state) => {
+        state.isUpdateEmployeeShiftLoading = false;
+        state.updateEmployeeShiftError = null;
+      })
+      .addCase(updateEmployeeShift.rejected, (state, action) => {
+        state.isUpdateEmployeeShiftLoading = false;
+        state.updateEmployeeShiftError =
+          action.error.message ?? 'Не удалось обновить смену сотрудника';
+      })
+
+      // Обработчики deleteEmployeeShift
+      .addCase(deleteEmployeeShift.pending, (state) => {
+        state.isDeleteEmployeeShiftLoading = true;
+        state.deleteEmployeeShiftError = null;
+      })
+      .addCase(deleteEmployeeShift.fulfilled, (state) => {
+        state.isDeleteEmployeeShiftLoading = false;
+        state.deleteEmployeeShiftError = null;
+      })
+      .addCase(deleteEmployeeShift.rejected, (state, action) => {
+        state.isDeleteEmployeeShiftLoading = false;
+        state.deleteEmployeeShiftError =
+          action.error.message ?? 'Не удалось удалить смену сотрудника';
       });
   },
 });
 
 // Экспорт действий
-export const { clearEmployeeShifts } = employeeShiftSlice.actions;
+export const {
+  clearCreateEmployeeShift,
+  clearUpdateEmployeeShift,
+  clearDeleteEmployeeShift,
+} = employeeShiftSlice.actions;
 
 // Экспорт селекторов
 export const {
-  selectEmployeeShifts,
-  selectIsAssignmentComplete,
-  selectIsEmployeeShiftsLoading,
-  selectEmployeeShiftsError,
+  selectIsCreateEmployeeShiftLoading,
+  selectCreateEmployeeShiftError,
+  selectIsUpdateEmployeeShiftLoading,
+  selectUpdateEmployeeShiftError,
+  selectIsDeleteEmployeeShiftLoading,
+  selectDeleteEmployeeShiftError,
 } = employeeShiftSlice.selectors;

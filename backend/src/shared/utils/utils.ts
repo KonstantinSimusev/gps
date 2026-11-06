@@ -1,43 +1,57 @@
-import { ShiftSchedule } from '../../modules/shift-schedule/entities/shift-schedule.entity';
+import { INotice } from '../interfaces/api.interface';
+import { ESchedule, EWorkshop } from '../enums/enums';
+import { Notice } from '../../modules/notice/entities/notice.entity';
 
-export const toNumber = (value: unknown): number | null => {
-  // 1. Обработка null/undefined — возвращаем null
-  if (value == null) return null;
+export const toNumber = (value: unknown): number => {
+  // 1. Ловим отсутствие данных сразу
+  if (value == null) return 0;
 
-  // 2. Обработка строк
+  // 2. Работаем со строками
   if (typeof value === 'string') {
     const trimmed = value.trim();
-    // Пустая строка после обрезки → null
-    if (trimmed === '') return null;
-    // Преобразование в число и проверка на NaN
+    if (trimmed === '') return 0; // Пустая строка = 0
+
     const num = Number(trimmed);
-    return isNaN(num) ? null : num;
+    // isFinite ловит NaN, Infinity. Если не число → 0
+    return Number.isFinite(num) ? num : 0;
   }
 
-  // 3. Обработка уже чисел
+  // 3. Работаем с числами
   if (typeof value === 'number') {
-    // Проверяем, что число конечное (исключаем Infinity, -Infinity)
-    return Number.isFinite(value) ? value : null;
+    // Если число бесконечное или NaN → 0
+    return Number.isFinite(value) ? value : 0;
   }
 
-  // 4. Все остальные типы → null
+  // 4. Всё остальное (boolean, object) → 0
+  return 0;
+};
+
+export const toOptionalNumber = (value: unknown): number | null => {
+  // 1. null/undefined сразу → null
+  if (value == null) return null;
+
+  // 2. Строки: убираем пробелы, проверяем на пустоту, пытаемся превратить в число
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (trimmed === '') return null; // пустая строка → нет значения
+    const num = Number(trimmed); // пытаемся сделать число
+    return Number.isNaN(num) ? null : num; // если не получилось (NaN) → null
+  }
+
+  // 3. Числа: оставляем только конечные числа
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : null; // Infinity, -Infinity, NaN → null
+  }
+
+  // 4. Всё остальное (булевы, объекты и т.д.) → null
   return null;
 };
 
-export const toString = (value: unknown): string | null => {
-  // 1. Обработка null/undefined — возвращаем null
-  if (value == null) return null;
-
-  // 2. Обработка строк
-  if (typeof value === 'string') {
-    const trimmed = value.trim();
-    // Пустая строка после обрезки → null
-    if (trimmed === '') return null;
-    return trimmed;
+export const toString = (value: unknown): string => {
+  if (typeof value !== 'string') {
+    return '';
   }
-
-  // 3. Все остальные типы → null
-  return null;
+  return value.trim();
 };
 
 export const toDateString = (
@@ -84,53 +98,35 @@ export const toBoolean = (value: unknown): boolean => {
   return false;
 };
 
-export const getUTC = (date: Date): Date => {
-  const result = new Date(date);
-  result.setUTCHours(0, 0, 0, 0); // Устанавливаем время на 00:00 UTC
-  return result;
-};
+export const toOptionalBoolean = (value: unknown): boolean | null => {
+  if (value == null) return null; // <-- важно: null остаётся null
 
-// Получаем и нормализуем текущую дату в фомате UTC
-export const getUTCToday = (date: Date | null = null): Date => {
-  const result = date ?? new Date();
-  result.setUTCHours(0, 0, 0, 0);
-  return result;
-};
+  if (typeof value === 'boolean') return value;
 
-// Получаем и нормализуем завтра дату в фомате UTC
-export const getUTCTomorrow = (date: Date | null = null): Date => {
-  const result = date ?? new Date();
-  result.setUTCHours(0, 0, 0, 0); // Устанавливаем время на 00:00 UTC
-  result.setUTCDate(result.getUTCDate() + 1); // Сдвигаем на +1 день
-  return result;
-};
+  if (typeof value === 'string') {
+    const trimmed = value.trim().toLowerCase();
+    if (trimmed === 'true') return true;
+    if (trimmed === 'false') return false;
+  }
 
-// Получаем и нормализуем завтра дату в фомате UTC
-export const getUTCYesterday = (date: Date | null = null): Date => {
-  const result = date ?? new Date();
-  result.setUTCHours(0, 0, 0, 0); // Устанавливаем время на 00:00 UTC
-  result.setUTCDate(result.getUTCDate() - 1); // Сдвигаем на -1 день
-  return result;
-};
-
-// Получаем строку только с датой
-export const getUTCDateString = (date: Date): string => {
-  return date.toISOString().slice(0, 10); // 'YYYY-MM-DD'
+  return null; // или false — зависит от того, как трактуешь «мусор»
 };
 
 export const getShiftFor2A = (
   teamNumber: number,
-  baseDate: Date | null = null,
 ): {
   dayOfWeek: number;
   date: Date;
   shiftCode: number | null; // null - выходной
   teamNumber: number;
 } => {
-  // Берём завтрашнюю дату в UTC
-  const now = baseDate ?? new Date();
-  const normalizedDate = new Date(now);
-  const tomorrow = getUTCTomorrow(normalizedDate);
+  // Сегодня в UTC 00:00
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+
+  // Завтра = сегодня + 1 день
+  const tomorrow = new Date(today);
+  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
 
   // Расписание стартовых дат и смен для бригад в UTC
   const shiftSchedules = [
@@ -187,7 +183,6 @@ export const getShiftFor2A = (
 
 export const getShiftFor5B1 = (
   teamNumber: number,
-  baseDate: Date | null = null,
 ): {
   dayOfWeek: number;
   date: Date;
@@ -218,12 +213,9 @@ export const getShiftFor5B1 = (
     '2026-12-31', // перенос с 4 января (вс)
   ]);
 
-  // Берём текущую дату
-  const now = baseDate ?? new Date();
-
-  // Нормализуем до полуночи UTC — это и будет «дата дня»
-  const normalizedDate = new Date(now);
-  normalizedDate.setUTCHours(0, 0, 0, 0);
+  // Сегодня в UTC 00:00
+  const now = new Date();
+  now.setUTCHours(0, 0, 0, 0);
 
   const utcYear = now.getUTCFullYear();
   const utcMonth = String(now.getUTCMonth() + 1).padStart(2, '0');
@@ -242,7 +234,7 @@ export const getShiftFor5B1 = (
 
   return {
     dayOfWeek: utcDayOfWeek,
-    date: normalizedDate,
+    date: now,
     shiftCode,
     teamNumber,
   };
@@ -250,7 +242,6 @@ export const getShiftFor5B1 = (
 
 export const getShiftFor9 = (
   teamNumber: number,
-  baseDate: Date | null = null,
 ): {
   dayOfWeek: number;
   date: Date;
@@ -280,10 +271,9 @@ export const getShiftFor9 = (
     },
   ];
 
-  // Нормализуем входную дату до 00:00 UTC
-  const now = baseDate ?? new Date();
-  const normalizedDate = new Date(now);
-  normalizedDate.setUTCHours(0, 0, 0, 0);
+  // Сегодня в UTC 00:00
+  const now = new Date();
+  now.setUTCHours(0, 0, 0, 0);
 
   for (const schedule of schedules) {
     if (schedule.teamNumber !== teamNumber) {
@@ -294,14 +284,14 @@ export const getShiftFor9 = (
     startDate.setUTCHours(0, 0, 0, 0);
 
     // Разница в днях от старта до целевой даты
-    const diffMs = normalizedDate.getTime() - startDate.getTime();
+    const diffMs = now.getTime() - startDate.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
     // Если остаток от деления на 4 равен 0 — значит, сегодня как раз начало смены по этому циклу
     if (diffDays >= 0 && diffDays % 4 === 0) {
       return {
         dayOfWeek: 0, // график 9 (универсальный, день - 0)
-        date: normalizedDate, // возвращаем нормализованную входную дату
+        date: now, // возвращаем нормализованную входную дату
         shiftCode: schedule.shiftNumber,
         teamNumber: schedule.teamNumber,
       };
@@ -310,94 +300,179 @@ export const getShiftFor9 = (
 
   return {
     dayOfWeek: 0, // график 9 (универсальный, день - 0)
-    date: normalizedDate,
+    date: now,
     shiftCode: null, // выходной
     teamNumber,
   };
 };
 
-export const calcShiftDuration = (schedule: ShiftSchedule | null): number => {
-  if (!schedule) {
-    return 0;
+export const isCondition_2A = (
+  workshopCode: string,
+  scheduleCode: string,
+): boolean => {
+  return (
+    scheduleCode === ESchedule.S_2A &&
+    [
+      EWorkshop.W_LPC4,
+      EWorkshop.W_LPC5,
+      EWorkshop.W_LPC8_UGP,
+      EWorkshop.W_LPC8_UL,
+      EWorkshop.W_LPC10,
+      EWorkshop.W_LPC11,
+      EWorkshop.W_PMP_NORTH,
+      EWorkshop.W_PMP_SOUTH,
+    ].includes(workshopCode as EWorkshop)
+  );
+};
+
+export const isCondition_5B1 = (
+  workshopCode: string,
+  scheduleCode: string,
+): boolean => {
+  return (
+    scheduleCode === ESchedule.S_5B1 &&
+    [
+      EWorkshop.W_LPC4,
+      EWorkshop.W_LPC5,
+      EWorkshop.W_LPC8_UGP,
+      EWorkshop.W_LPC8_UL,
+      EWorkshop.W_LPC10,
+      EWorkshop.W_LPC11,
+      EWorkshop.W_PMP_NORTH,
+      EWorkshop.W_PMP_SOUTH,
+    ].includes(workshopCode as EWorkshop)
+  );
+};
+
+export const isCondition_5B1_9 = (
+  workshopCode: string,
+  scheduleCode: string,
+): boolean => {
+  return (
+    scheduleCode === ESchedule.S_5B1 &&
+    [
+      // EWorkshop.W_LPC5,
+      // EWorkshop.W_LPC8_UGP,
+      EWorkshop.W_LPC8_UL,
+      EWorkshop.W_LPC10,
+      EWorkshop.W_PMP_NORTH,
+    ].includes(workshopCode as EWorkshop)
+  );
+};
+
+export const isCondition_2A_9 = (
+  workshopCode: string,
+  scheduleCode: string,
+): boolean => {
+  return (
+    scheduleCode === ESchedule.S_2A &&
+    [EWorkshop.W_LPC8_UGP].includes(workshopCode as EWorkshop)
+  );
+};
+
+export const isCondition_2A_2 = (
+  workshopCode: string,
+  scheduleCode: string,
+): boolean => {
+  return (
+    (scheduleCode === ESchedule.S_2A || scheduleCode === ESchedule.S_2) &&
+    [EWorkshop.W_LPC11].includes(workshopCode as EWorkshop)
+  );
+};
+
+export const getScheduleConfigsToNitice = (
+  workshopCode: string,
+  teamNumber: number,
+  scheduleCode: string,
+): { scheduleCode: string; teamNumber: number }[] => {
+  const result: { scheduleCode: string; teamNumber: number }[] = [];
+
+  // 2-А основная смена
+  if (isCondition_2A(workshopCode, scheduleCode)) {
+    result.push({ scheduleCode: ESchedule.S_2A, teamNumber });
   }
 
-  const toMin = (t: string | null): number => {
-    if (!t) return 0;
-    // Безопасный парсинг времени ЧЧ:ММ
-    const [hStr, mStr] = t.split(':');
-    const h = Number(hStr ?? 0);
-    const m = mStr ? Number(mStr) : 0;
+  // 5-Б-1 основная смена
+  if (isCondition_5B1(workshopCode, scheduleCode)) {
+    result.push({ scheduleCode: ESchedule.S_5B1, teamNumber });
+  }
 
-    // Защита от некорректных данных
-    if (isNaN(h) || isNaN(m)) return 0;
+  // 9 в 5-Б-1: бригады 1 и 2
+  if (isCondition_5B1_9(workshopCode, scheduleCode)) {
+    result.push({ scheduleCode: ESchedule.S_9, teamNumber: 1 });
+    result.push({ scheduleCode: ESchedule.S_9, teamNumber: 2 });
+  }
 
-    return h * 60 + m;
+  // 9 в 2-А: бригады 1 и 2
+  if (isCondition_2A_9(workshopCode, scheduleCode)) {
+    result.push({ scheduleCode: ESchedule.S_9, teamNumber: 1 });
+    result.push({ scheduleCode: ESchedule.S_9, teamNumber: 2 });
+  }
+
+  return result;
+};
+
+export const isRelevantShift = (currentShift: {
+  date: Date;
+  shiftCode: number;
+}): boolean => {
+  // Вспомогательная функция: гарантированно возвращает дату в формате YYYY-MM-DD в UTC
+  const getDateStr = (d: Date) => {
+    return d.toISOString().slice(0, 10); // 'YYYY-MM-DD'
   };
 
-  const start = toMin(schedule.startTime);
-  let end = toMin(schedule.endTime);
+  // Сегодня в UTC 00:00
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
 
-  // Если конец раньше начала — смена пересекает полночь
-  if (end < start) {
-    end += 24 * 60; // +1440 минут
-  }
+  // Завтра = сегодня + 1 день
+  const tomorrow = new Date(today);
+  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
 
-  let lunchDuration = 0;
-  if (schedule.lunchStart && schedule.lunchEnd) {
-    const ls = toMin(schedule.lunchStart);
-    const le = toMin(schedule.lunchEnd);
+  const isFirstShiftTomorrow =
+    currentShift.shiftCode === 1 &&
+    getDateStr(currentShift.date) === getDateStr(tomorrow);
 
-    lunchDuration = le - ls;
+  const isFirstShiftToday =
+    currentShift.shiftCode === 1 &&
+    getDateStr(currentShift.date) === getDateStr(today);
 
-    // Обед тоже может пересекать полночь (редко, но бывает)
-    if (lunchDuration < 0) {
-      lunchDuration += 24 * 60;
-    }
-  }
+  const isSecondShiftToday =
+    currentShift.shiftCode === 2 &&
+    getDateStr(currentShift.date) === getDateStr(today);
 
-  const totalMinutes = Math.max(0, end - start - lunchDuration);
-
-  // ✅ Возвращаем сразу минуты (целое число), без округления до четверти часа
-  return Math.round(totalMinutes);
+  return isFirstShiftTomorrow || isFirstShiftToday || isSecondShiftToday;
 };
 
-export const formatDateToYYYYMMDD = (date: Date): string => {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
+export const normalizeScheduleCode = (
+  workshopCode: string,
+  scheduleCode: string,
+): string => {
+  return workshopCode === EWorkshop.W_LPC11 && scheduleCode === ESchedule.S_2
+    ? ESchedule.S_2A
+    : scheduleCode;
 };
 
-// export const getCurrentMonthDatesUntilToday = (): Date[] => {
-//   const now = new Date();
-//   const year = now.getUTCFullYear();
-//   const month = now.getUTCMonth();
-//   const todayDay = now.getUTCDate();
+export const mapNotice = (notice: Notice): INotice => {
+  // sourceDate — это просто день события. Нам нужна только дата.
+  const formattedSourceDate = notice.sourceDate
+    ? new Date(notice.sourceDate).toISOString().split('T')[0] // "2026-09-25"
+    : null;
 
-//   const dates: Date[] = [];
-
-//   for (let day = 1; day <= todayDay; day++) {
-//     const date = new Date(Date.UTC(year, month, day));
-//     dates.push(date);
-//   }
-
-//   return dates;
-// };
-
-// export const getMissingDays = (monthDates: Date[], shifts: any[]): Date[] => {
-//   // 1. Создаём Set из дат смен (нормализованных на 00:00)
-//   const shiftDateKeys = new Set<number>(
-//     shifts.map((shift) => {
-//       const d = new Date(shift.date);
-//       d.setUTCHours(0, 0, 0, 0);
-//       return d.getTime();
-//     }),
-//   );
-
-//   // 2. Фильтруем полный список месяца: оставляем только те даты, которых нет в сменах
-//   return monthDates.filter((date) => {
-//     const d = new Date(date);
-//     d.setUTCHours(0, 0, 0, 0);
-//     return !shiftDateKeys.has(d.getTime());
-//   });
-// };
+  return {
+    id: notice.id,
+    sourceId: notice.sourceId,
+    sourceDate: formattedSourceDate, // Только дата
+    categoryCode: notice.title?.category?.categoryCode ?? '',
+    titleText: notice.title?.titleText ?? '',
+    statusLabel: notice.title?.status?.statusLabel ?? '',
+    actionCode: notice.title?.action?.actionCode ?? '',
+    actionLabel: notice.title?.action?.actionLabel ?? '',
+    isUnread: notice.isUnread,
+    isResolved: notice.isResolved,
+    createdAt: notice.createdAt.toISOString(),
+    workshopCode: notice.workshop?.workshopCode ?? '',
+    teamNumber: notice.team?.teamNumber ?? 0,
+    scheduleCode: notice.schedule?.scheduleCode ?? '',
+  };
+};

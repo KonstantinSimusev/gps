@@ -4,42 +4,15 @@ import {
   IAccountInfo,
   ICreateEmployee,
   IEmployeeInfo,
-  // ISuccess,
   IUpdateEmployee,
-} from '../../../utils/api.interface';
-
-import { delay } from '../../../utils/utils';
+} from '../../../utils/api.interfaces';
 
 import {
   createEmployeeApi,
-  // deleteEmployeeApi,
   searchEmployeeApi,
   updateEmployeeApi,
 } from '../../../utils/api/employee.api';
-
-export const searchEmployee = createAsyncThunk(
-  'employees/personalNumber',
-  async (personalNumber: string): Promise<IEmployeeInfo> => {
-    try {
-      // Вызываем API функцию
-      const response = await searchEmployeeApi(personalNumber);
-
-      // Добавляем задержку кода
-      await delay();
-
-      return response;
-    } catch (error) {
-      // Добавляем задержку кода
-      await delay();
-
-      if (error instanceof Error) {
-        throw error; // передаём точное сообщение от бэкенда
-      }
-
-      throw new Error('Что-то пошло не так');
-    }
-  },
-);
+import { delay } from '../../../utils/utils';
 
 export const createEmployee = createAsyncThunk(
   'employee/create',
@@ -47,15 +20,10 @@ export const createEmployee = createAsyncThunk(
     try {
       // Вызываем API функцию
       const response = await createEmployeeApi(data);
-
-      // Добавляем задержку кода
-      await delay();
-
+await delay(1000);
       return response;
     } catch (error) {
-      // Добавляем задержку кода
-      await delay();
-
+await delay(1000);
       if (error instanceof Error) {
         throw error; // передаём точное сообщение от бэкенда
       }
@@ -71,15 +39,29 @@ export const updateEmployee = createAsyncThunk(
     try {
       // Вызываем API функцию
       const response = await updateEmployeeApi(data);
-
-      // Добавляем задержку кода
-      await delay();
-
+await delay(1000);
       return response;
     } catch (error) {
-      // Добавляем задержку кода
-      await delay();
+      if (error instanceof Error) {
+await delay(1000);
+        throw error; // передаём точное сообщение от бэкенда
+      }
 
+      throw new Error('Что-то пошло не так');
+    }
+  },
+);
+
+export const searchEmployee = createAsyncThunk(
+  'employees/personalNumber',
+  async (personalNumber: string): Promise<IEmployeeInfo> => {
+    try {
+      // Вызываем API функцию
+      const response = await searchEmployeeApi(personalNumber);
+await delay(1000);
+      return response;
+    } catch (error) {
+await delay(1000);
       if (error instanceof Error) {
         throw error; // передаём точное сообщение от бэкенда
       }
@@ -89,26 +71,5 @@ export const updateEmployee = createAsyncThunk(
   },
 );
 
-// export const deleteEmployee = createAsyncThunk(
-//   'employee/delete',
-//   async (id: string): Promise<ISuccess> => {
-//     try {
-//       // Вызываем API функцию
-//       const response = await deleteEmployeeApi(id);
-
-//       // Добавляем задержку кода
-//       await delay();
-
-//       return response;
-//     } catch (error) {
-//       // Добавляем задержку кода
-//       await delay();
-
-//       if (error instanceof Error) {
-//         throw error; // передаём точное сообщение от бэкенда
-//       }
-
-//       throw new Error('Что-то пошло не так');
-//     }
-//   },
-// );
+// Добавляем задержку кода
+// await delay(1000);

@@ -1,37 +1,36 @@
-.container {
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  min-height: 60px;
-  padding: 46px var(--horizontal-margin) 0;
+  gap: 20px;
+  padding: 46px 30px 30px;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .logo {
   display: flex;
   align-items: center;
-  justify-content: center;
-}
-
-.logo:active {
-  transition: transform 0.2s ease;
-  transform: scale(0.9);
+  transition: opacity 0.3s ease;
 }
 
 .title {
   font-family: var(--font-family-logo);
   display: flex;
-  margin-left: 10px;
-  margin-right: auto;
   font-size: 16px;
   font-weight: 400;
   letter-spacing: 0.4px;
 }
 
-.buttons {
+.actions {
   display: flex;
   gap: 18px;
 }
 
-.icon__white {
-  stroke: rgba(255 255 255 / 0.8);
+.logo:hover {
+  opacity: 0.8;
 }

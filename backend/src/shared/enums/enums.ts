@@ -12,40 +12,21 @@ export enum ERole {
   PACKER = 'PACKER',
 }
 
-// ── categoryCode ──
 export enum ENoticeCategory {
-  DOCUMENT = 'document',
   SHIFT = 'shift',
+  DOCUMENT = 'document',
 }
 
-// ── actionCode ──
 export enum ENoticeAction {
   CREATE = 'create',
   FILL = 'fill',
   SIGN = 'sign',
 }
 
-// ── titleText ──
-export enum ENoticeTitle {
-  TIMESHEET = 'Табель',
-  ORDER = 'Приказ',
-  INSTRUCTION = 'Распоряжение',
-  STATEMENT = 'Заявление',
-  ACT = 'Акт',
-}
-
-// ── actionLabel ──
-export enum ENoticeActionLabel {
-  CREATE_SHIFT = 'Создать смену',
-  FILL_SHIFT = 'Заполнить смену',
-  SIGN_DOCUMENT = 'Подписать документ',
-}
-
-// ── statusText (не в БД, генерируется динамически) ──
 export enum ENoticeStatus {
-  SHIFT_NOT_CREATED = 'Смена не создана',
-  SHIFT_NOT_FILLED = 'Смена не заполнена',
-  DOCUMENT_NOT_SIGNED = 'Документ не подписан',
+  NOT_CREATED = 'Смена не создана',
+  NOT_FILLED = 'Смена не заполнена',
+  NOT_SIGNED = 'Документ не подписан',
 }
 
 export enum EWorkshop {
@@ -56,8 +37,8 @@ export enum EWorkshop {
   W_LPC8_UL = 'ЛПЦ-8 (участок ленты)',
   W_LPC10 = 'ЛПЦ-10',
   W_LPC11 = 'ЛПЦ-11',
-  W_PMP_North = 'ПМП (северный блок)',
-  W_PMP_South = 'ПМП (южный блок)',
+  W_PMP_NORTH = 'ПМП (северный блок)',
+  W_PMP_SOUTH = 'ПМП (южный блок)',
   W_UVS_LPC4 = 'УВС ЛПЦ-4',
   W_CentralWarehouse = 'Центральный склад',
 }
@@ -67,6 +48,12 @@ export enum ESchedule {
   S_2A = '2-А',
   S_9 = '9',
   S_2 = '2',
+}
+
+export enum EPaymentCode {
+  DSR = 'ДСР',
+  OSR = 'ОСР',
+  RV = 'РВ',
 }
 
 export enum EAttendanceCode {

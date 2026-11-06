@@ -11,9 +11,9 @@ import { ShiftService } from './shift.service';
 export class ShiftController {
   constructor(private readonly shiftService: ShiftService) {}
 
-  @Post(':id/check')
-  @UseGuards(AuthGuard)
-  async setChecked(@Param() dto: ShiftIdDto): Promise<ISuccess> {
-    return this.shiftService.setCheckedByShiftId(dto);
-  }
+  // @Post(':id/check')
+  // @UseGuards(AuthGuard)
+  // async setChecked(@Param() dto: ShiftIdDto): Promise<ISuccess> {
+  //   return this.shiftService.setCheckedByShiftId(dto);
+  // }
 }

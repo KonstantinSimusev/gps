@@ -21,14 +21,21 @@ export class EmployeeAccountService {
   ) {}
 
   async updateLoginAndPassword(
-    employeeId: string,
+    id: string,
     profile: IProfile,
   ): Promise<IAccountInfo> {
+    const { employeeId, profileWorkshopCode } = profile;
+
     // Находим работника по ID
-    const employee = await this.employeeService.getActiveEmployee(employeeId);
+    const employee = await this.employeeService.getActiveEmployee(id);
+
+    // Проверяем условия - cотрудник не может редактировать собственные данные
+    if (employeeId === employee.id) {
+      throw new ConflictException('Нельзя редактировать себя');
+    }
 
     // Проверяем совместимость цехов сотрудника и администратора
-    if (employee.position.workshop.workshopCode !== profile.workshopCode) {
+    if (employee.position.workshop.workshopCode !== profileWorkshopCode) {
       throw new ConflictException('Сотрудник из другого цеха');
     }
 

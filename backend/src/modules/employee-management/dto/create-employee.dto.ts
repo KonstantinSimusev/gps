@@ -1,15 +1,5 @@
 import { Transform, Type } from 'class-transformer';
-
-import {
-  IsDate,
-  IsInt,
-  IsOptional,
-  Max,
-  MaxLength,
-  Min,
-  MinLength,
-} from 'class-validator';
-
+import { IsDate, IsInt, Max, MaxLength, Min, MinLength } from 'class-validator';
 import { toNumber, toString } from '../../../shared/utils/utils';
 
 export class CreateEmployeeDto {
@@ -56,6 +46,11 @@ export class CreateEmployeeDto {
   @MinLength(1, { message: 'Код графика не может быть пустым' })
   @MaxLength(20, { message: 'Код графика не должен превышать 20 символов' })
   scheduleCode: string;
+
+  @Transform(({ value }) => toString(value))
+  @MinLength(1, { message: 'Код системы оплаты не может быть пустым' })
+  @MaxLength(10, { message: 'Код оплаты не должен превышать 10 символов' })
+  paymentCode: string;
 
   @Type(() => Date)
   @IsDate({ message: 'Дата рождения должна быть валидной датой' })

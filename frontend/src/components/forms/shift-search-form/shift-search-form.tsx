@@ -13,7 +13,6 @@ import { getShiftsByDate } from '../../../services/slices/shift/actions';
 
 import {
   clearSearchShiftsError,
-  selectIsSearchShiftsLoading,
   selectSearchShiftsError,
 } from '../../../services/slices/shift/slice';
 
@@ -23,7 +22,6 @@ import { Button } from '../../ui/buttons/button/button';
 import { Form } from '../../ui/form/form';
 import { TextInput } from '../../ui/inputs/text-input/text-input';
 import { ServerError } from '../../ui/server-error/server-error';
-import { Spinner } from '../../ui/spinner/spinner';
 
 import styles from './shift-search-form.module.css';
 
@@ -33,7 +31,6 @@ interface IFormData extends Record<string, string> {
 
 export const ShiftSearchForm = () => {
   const dispatch = useDispatch();
-  const isLoading = useSelector(selectIsSearchShiftsLoading);
   const serverError = useSelector(selectSearchShiftsError);
 
   const {
@@ -80,7 +77,7 @@ export const ShiftSearchForm = () => {
   };
 
   // Обработчик потери фокуса для валидации
-  const handleBlur = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
     // Получаем ошибку валидации для поля
@@ -93,7 +90,7 @@ export const ShiftSearchForm = () => {
     });
   };
 
-  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Валидируем всю форму
@@ -126,7 +123,7 @@ export const ShiftSearchForm = () => {
 
   // Определяем, заблокирована ли кнопка
   const isButtonDisabled =
-    isLoading || Object.values(errors).some(Boolean) || !formData.shiftDate;
+    Object.values(errors).some(Boolean) || !formData.shiftDate;
 
   return (
     <Form
@@ -141,13 +138,14 @@ export const ShiftSearchForm = () => {
         value={formData.shiftDate}
         label='Дата'
         error={errors.shiftDate}
+        className={styles.input}
         onChange={handleChange}
         onBlur={handleBlur}
-        className={styles.input}
+        autoFocus
       />
 
       <div className={styles.message}>
-        {isLoading ? <Spinner /> : <ServerError text={serverError} />}
+        <ServerError text={serverError} />
       </div>
 
       <Button
