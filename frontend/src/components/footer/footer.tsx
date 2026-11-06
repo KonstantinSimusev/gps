@@ -16,7 +16,7 @@ export const Footer = () => {
       {isAuthenticated && isAgreed && (
         <footer className={styles.container}>
           <a className={styles.copyright} href='#'>
-            © Steel Pack Studio
+            © Pack Studio
           </a>
         </footer>
       )}

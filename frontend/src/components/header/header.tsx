@@ -80,7 +80,7 @@ export const Header = () => {
             <a className={styles.logo} href='/home'>
               <LogoIcon />
             </a>
-            <h1 className={styles.title}>Steel Pack Studio</h1>
+            <h1 className={styles.title}>Pack Studio</h1>
           </div>
 
           <div className={styles.actions}>
