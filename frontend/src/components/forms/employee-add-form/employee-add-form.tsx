@@ -146,7 +146,6 @@ export const EmployeeAddForm = () => {
         className={styles.input}
         onBlur={handleBlur}
         onChange={handleChange}
-        autoFocus
       />
 
       <div className={styles.message}>

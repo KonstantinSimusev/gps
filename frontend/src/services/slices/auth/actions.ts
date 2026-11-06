@@ -7,7 +7,7 @@ import {
   loginEmployeeApi,
   logoutEmployeeApi,
 } from '../../../utils/api/auth.api';
-import { delay } from '../../../utils/utils';
+// import { delay } from '../../../utils/utils';
 
 export const loginEmployee = createAsyncThunk(
   'auth/login',
@@ -15,10 +15,10 @@ export const loginEmployee = createAsyncThunk(
     try {
       // Вызываем API функцию
       const response = await loginEmployeeApi(data);
-await delay(1000);
+// await delay(1000);
       return response;
     } catch (error) {
-await delay(1000);
+// await delay(1000);
       if (error instanceof Error) {
         throw error; // передаём точное сообщение от бэкенда
       }
@@ -50,11 +50,11 @@ export const logoutEmployee = createAsyncThunk(
   async (): Promise<ISuccess> => {
     try {
       const response = await logoutEmployeeApi();
-await delay(1000);
+// await delay(1000);
       return response;
     } catch (error) {
       if (error instanceof Error) {
-await delay(1000);
+// await delay(1000);
         throw error; // передаём точное сообщение от бэкенда
       }
 

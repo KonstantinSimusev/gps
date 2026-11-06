@@ -12,7 +12,7 @@ import {
   deleteEmployeeShiftApi,
   updateEmployeeShiftApi,
 } from '../../../utils/api/employee-shift.api';
-import { delay } from '../../../utils/utils';
+// import { delay } from '../../../utils/utils';
 
 export const createEmployeeShift = createAsyncThunk<
   ISuccess,
@@ -22,10 +22,10 @@ export const createEmployeeShift = createAsyncThunk<
   async (data: ICreateEmployeeShift): Promise<ISuccess> => {
     try {
       const response = await createEmployeeShiftApi(data);
-      await delay(1000);
+      // await delay(1000);
       return response;
     } catch (error) {
-      await delay(1000);
+      // await delay(1000);
       if (error instanceof Error) {
         throw error;
       }
@@ -43,10 +43,10 @@ export const updateEmployeeShift = createAsyncThunk<
   async (data: IUpdateEmployeeShift): Promise<ISuccess> => {
     try {
       const response = await updateEmployeeShiftApi(data);
-      await delay(1000); // задержка для теста лоадера
+      // await delay(1000);
       return response;
     } catch (error) {
-      await delay(1000); // задержка и при ошибке — чтобы лоадер успел отрисоваться
+      // await delay(1000);
       if (error instanceof Error) {
         throw error;
       }
@@ -64,10 +64,10 @@ export const deleteEmployeeShift = createAsyncThunk<
   async (data: IDeleteEmployeeShift): Promise<ISuccess> => {
     try {
       const response = await deleteEmployeeShiftApi(data);
-      await delay(1000); // задержка для теста лоадера
+      // await delay(1000); 
       return response;
     } catch (error) {
-      await delay(1000); // задержка и при ошибке — чтобы лоадер успел отрисоваться
+      // await delay(1000); 
       if (error instanceof Error) {
         throw error;
       }

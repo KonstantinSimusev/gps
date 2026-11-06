@@ -141,7 +141,6 @@ export const ShiftSearchForm = () => {
         className={styles.input}
         onChange={handleChange}
         onBlur={handleBlur}
-        autoFocus
       />
 
       <div className={styles.message}>

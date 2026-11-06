@@ -9,7 +9,7 @@ import {
   getNoticesApi,
   markNoticeAsReadApi,
 } from '../../../utils/api/notice.api';
-import { delay } from '../../../utils/utils';
+// import { delay } from '../../../utils/utils';
 
 export const createMissingShiftsNotices = createAsyncThunk<ISuccess, void>(
   'notices/createMissingShifts',
@@ -52,10 +52,10 @@ export const getNotices = createAsyncThunk<INotice[], void>(
   async (): Promise<INotice[]> => {
     try {
       const response = await getNoticesApi();
-await delay(1000);
+// await delay(1000);
       return response;
     } catch (error) {
-await delay(1000);
+// await delay(1000);
       if (error instanceof Error) {
         throw error;
       }
@@ -70,10 +70,10 @@ export const getNoticeById = createAsyncThunk<INotice, string>(
   async (id: string): Promise<INotice> => {
     try {
       const response = await getNoticeByIdApi(id);
-await delay(1000);
+// await delay(1000);
       return response;
     } catch (error) {
-await delay(1000);
+// await delay(1000);
       if (error instanceof Error) {
         throw error;
       }
@@ -88,10 +88,10 @@ export const markNoticeAsRead = createAsyncThunk<ISuccess, string>(
   async (id: string): Promise<ISuccess> => {
     try {
       const response = await markNoticeAsReadApi(id);
-await delay(1000);
+// await delay(1000);
       return response;
     } catch (error) {
-await delay(1000);
+// await delay(1000);
       if (error instanceof Error) {
         throw error;
       }

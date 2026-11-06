@@ -137,7 +137,6 @@ export const LoginForm = () => {
         onChange={handleChange}
         onBlur={handleBlur}
         className={styles.input}
-        autoFocus
       />
 
       <TextInput

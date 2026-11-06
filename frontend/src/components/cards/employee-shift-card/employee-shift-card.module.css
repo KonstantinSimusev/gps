@@ -47,7 +47,7 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: end;
-  gap: 30px;
+  /* gap: 40px; */
   min-width: 0;
 }
 
@@ -58,11 +58,12 @@
 
 .profession {
   max-width: 100%;
+  /* width: 300px; */
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: end;
   white-space: nowrap;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .bottomContainer {

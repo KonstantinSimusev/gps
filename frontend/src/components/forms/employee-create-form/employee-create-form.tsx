@@ -234,7 +234,6 @@ export const EmployeeCreateForm = () => {
         className={styles.input}
         onBlur={handleBlur}
         onChange={handleChange}
-        autoFocus
       />
 
       <TextInput

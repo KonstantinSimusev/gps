@@ -117,7 +117,7 @@ const App = () => {
     isDeleteEmployeeShiftLoading;
 
   // Применяем задержку ТОЛЬКО к показу блокирующего слоя
-  const showBlocker = useLoaderWithDelay(isLoading, 0, 1000);
+  const showBlocker = useLoaderWithDelay(isLoading, 300, 300);
 
   const lastScrollY = useRef(0);
 

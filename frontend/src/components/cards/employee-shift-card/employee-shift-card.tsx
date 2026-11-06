@@ -1,6 +1,6 @@
-import { useState } from 'react';
+// import { useState } from 'react';
+// import { formatDurationForUI } from '../../../utils/utils';
 
-import { formatDurationForUI } from '../../../utils/utils';
 import { IEmployeeShift } from '../../../utils/api.interfaces';
 import { useSelector } from '../../../services/store';
 import { selectShift } from '../../../services/slices/shift/slice';
@@ -23,21 +23,21 @@ export const EmployeeShiftCard = ({
   onClick,
   onDelete,
 }: IProps) => {
-  const [isShow, setIsShow] = useState(false);
+  // const [isShow, setIsShow] = useState(false);
 
   const shift = useSelector(selectShift);
   const employee = employeeShift.employee;
-  const attendanceCode = employeeShift.attendanceCode;
-  const workTime = formatDurationForUI(employeeShift.minutes);
+  // const attendanceCode = employeeShift.attendanceCode;
+  // const workTime = formatDurationForUI(employeeShift.minutes);
   const isReady = employeeShift.isReady;
   const isShowDeleteButton = employeeShift.canDelete;
 
-  const isPresent =
-    employeeShift.isPresent === true
-      ? '+'
-      : employeeShift.isPresent === false
-        ? '-'
-        : 'Не выбрано';
+  // const isPresent =
+  //   employeeShift.isPresent === true
+  //     ? '+'
+  //     : employeeShift.isPresent === false
+  //       ? '-'
+  //       : 'Не выбрано';
 
   if (!shift) {
     return null;
@@ -80,7 +80,7 @@ export const EmployeeShiftCard = ({
         </div>
       </div>
 
-      <div className={styles.bottomContainer}>
+      {/* <div className={styles.bottomContainer}>
         <div className={styles.status}>
           <span className={styles.attendance}>{attendanceCode}</span>
           <span className={styles.workTime}>{workTime}</span>
@@ -93,9 +93,9 @@ export const EmployeeShiftCard = ({
         >
           {!isShow ? 'Подробнее...' : 'Скрыть'}
         </button>
-      </div>
+      </div> */}
 
-      {isShow && (
+      {/* {isShow && (
         <>
           <div className={styles.info}>
             <span className={styles.title}>Сменно-встречное собрание</span>
@@ -118,7 +118,7 @@ export const EmployeeShiftCard = ({
             </span>
           </div>
         </>
-      )}
+      )} */}
 
       {/* <TableBlock
           title='Причина перевода'

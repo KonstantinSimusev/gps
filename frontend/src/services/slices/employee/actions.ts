@@ -12,7 +12,7 @@ import {
   searchEmployeeApi,
   updateEmployeeApi,
 } from '../../../utils/api/employee.api';
-import { delay } from '../../../utils/utils';
+// import { delay } from '../../../utils/utils';
 
 export const createEmployee = createAsyncThunk(
   'employee/create',
@@ -20,10 +20,10 @@ export const createEmployee = createAsyncThunk(
     try {
       // Вызываем API функцию
       const response = await createEmployeeApi(data);
-await delay(1000);
+// await delay(1000);
       return response;
     } catch (error) {
-await delay(1000);
+// await delay(1000);
       if (error instanceof Error) {
         throw error; // передаём точное сообщение от бэкенда
       }
@@ -39,11 +39,11 @@ export const updateEmployee = createAsyncThunk(
     try {
       // Вызываем API функцию
       const response = await updateEmployeeApi(data);
-await delay(1000);
+// await delay(1000);
       return response;
     } catch (error) {
       if (error instanceof Error) {
-await delay(1000);
+// await delay(1000);
         throw error; // передаём точное сообщение от бэкенда
       }
 
@@ -58,10 +58,10 @@ export const searchEmployee = createAsyncThunk(
     try {
       // Вызываем API функцию
       const response = await searchEmployeeApi(personalNumber);
-await delay(1000);
+// await delay(1000);
       return response;
     } catch (error) {
-await delay(1000);
+// await delay(1000);
       if (error instanceof Error) {
         throw error; // передаём точное сообщение от бэкенда
       }
