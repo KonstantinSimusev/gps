@@ -1,17 +1,17 @@
 import { useContext } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import { LayerContext } from '../../contexts/layer/layerContext';
 
 import { useSelector } from '../../services/store';
 import { selectIsAuthenticated } from '../../services/slices/auth/slice';
-import { selectNotices } from '../../services/slices/notice/slice';
+// import { selectNotices } from '../../services/slices/notice/slice';
 
 import { IconButton } from '../ui/buttons/icon-button/icon-button';
 import { Sidebar } from '../sidebar/sidebar';
 
 import { AddIcon } from '../ui/icons/add/add';
-import { BellIcon } from '../ui/icons/bell/bell';
+// import { BellIcon } from '../ui/icons/bell/bell';
 import { BurgerIcon } from '../ui/icons/burger/burger';
 import { LogoIcon } from '../ui/icons/logo/logo';
 import { SearchIcon } from '../ui/icons/search/search';
@@ -29,21 +29,21 @@ export const Header = () => {
   } = useContext(LayerContext);
 
   const location = useLocation();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
-  const notices = useSelector(selectNotices) ?? [];
-  const isUnread = notices.some((n) => n.isUnread);
+  // const notices = useSelector(selectNotices) ?? [];
+  // const isUnread = notices.some((n) => n.isUnread);
 
   const handleBurgerClick = () => {
     setIsMenuOpen(true);
     setIsOverlayOpen(true);
   };
 
-  const handleBellClick = () => {
-    navigate('/notices');
-  };
+  // const handleBellClick = () => {
+  //   navigate('/notices');
+  // };
 
   const openCreateModal = () => {
     setIsOverlayOpen(true);
@@ -96,9 +96,9 @@ export const Header = () => {
               </IconButton>
             )}
 
-            <IconButton type='button' onClick={handleBellClick}>
+            {/* <IconButton type='button' onClick={handleBellClick}>
               <BellIcon isUnread={isUnread} badgeColor='red' />
-            </IconButton>
+            </IconButton> */}
 
             <IconButton type='button' onClick={handleBurgerClick}>
               <BurgerIcon />
