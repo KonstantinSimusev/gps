@@ -1,6 +1,6 @@
 services:
   database:
-    image: postgres:latest
+    image: postgres:18
     container_name: gps-database
     restart: always
     environment:
@@ -36,8 +36,6 @@ services:
       REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
       ACCESS_TOKEN_EXPIRATION: ${ACCESS_TOKEN_EXPIRATION}
       REFRESH_TOKEN_EXPIRATION: ${REFRESH_TOKEN_EXPIRATION}
-    # volumes:
-    #   - backend_dist:/app/dist
     ports:
       - 3001:3000
     networks:
@@ -53,12 +51,6 @@ services:
     image: 'ghcr.io/${OWNER}/gps/gps-server:latest'
     container_name: gps-server
     restart: always
-    environment:
-      VITE_API_URL: ${VITE_API_URL}
-      VITE_CDN_URL: ${VITE_CDN_URL}
-    # volumes:
-    #   - frontend_dist:/usr/share/nginx/html
-    #   - backend_dist:/var/www/backend
     ports:
       - 81:80
     networks:
@@ -72,8 +64,6 @@ services:
 
 volumes:
   db_data:
-  # backend_dist:
-  # frontend_dist:
 
 networks:
   backend-network:

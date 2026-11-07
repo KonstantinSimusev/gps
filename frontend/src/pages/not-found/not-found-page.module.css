@@ -1,10 +1,5 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin: 0 clamp(0rem, -6.375rem + 31.875vw, 31.875rem);
-  flex-grow: 1;
-  color: var(--color-not-found);
-  text-align: center;
-  font-size: 16px;
+  padding: 0 30px;
+  color: rgba(255 255 255 / 0.5);
+  font-size: 14px;
 }

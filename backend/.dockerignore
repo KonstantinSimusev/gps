@@ -1,0 +1,79 @@
+# Для запуска локального докера создать этот файл
+# Для продакшена не применять
+
+# Compiled output — рекурсивно во всех папках
+**/dist/
+**/build/
+**/out/
+
+# Dependencies
+**/node_modules/
+
+# Lock files — не копируем, Docker сам установит зависимости
+# package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Logs — все логи во всех папках
+**/*.log
+logs/
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Environment variables
+.env
+.env.example
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# OS
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# Tests
+**/coverage/
+/.nyc_output/
+
+# IDEs and editors
+/.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# temp directory — рекурсивно
+**/.temp/
+**/.tmp/
+
+# Runtime data
+pids/
+**/*.pid
+**/*.seed
+**/*.pid.lock
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Source maps (если не нужны в продакшене)
+**/*.map
+
+# Docker files (не нужны в образе бэкенда)
+Dockerfile
+.dockerignore

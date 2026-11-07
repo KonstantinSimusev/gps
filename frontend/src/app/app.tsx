@@ -33,15 +33,11 @@ import {
 } from '../services/slices/employee-shift/slice';
 
 import { DefaultPage } from '../pages/default/default-page';
-import { DocumentItemPage } from '../pages/master/documents/document-item/document-item-page';
-import { DocumentListPage } from '../pages/master/documents/document-list-page/document-list-page';
 import { HomePage } from '../pages/home/home-page';
 import { EmployeePage } from '../pages/employee/employee-page';
 import { NotFoundPage } from '../pages/not-found/not-found-page';
-import { NoticeItemPage } from '../pages/notice/notice-item/notice-item-page';
-import { NoticeListPage } from '../pages/notice/notice-list/notice-list-page';
+import { ProductionPage } from '../pages/master/production/production-page';
 import { ShiftPage } from '../pages/master/shift/shift-page';
-import { ShiftSearchPage } from '../pages/master/shift-search/shift-search-page';
 import { TimesheetPage } from '../pages/master/timesheet/timesheet-page';
 
 import { BlockingLoader } from '../components/ui/blocking-loader/blocking-loader';
@@ -148,14 +144,7 @@ const App = () => {
               <Route path='/employee' element={<EmployeePage />} />
               <Route path='/timesheet' element={<TimesheetPage />} />
               <Route path='/timesheet/:shiftId' element={<ShiftPage />} />
-              <Route path='/shift-search' element={<ShiftSearchPage />} />
-              <Route path='/documents' element={<DocumentListPage />} />
-              <Route
-                path='/documents/:documentId'
-                element={<DocumentItemPage />}
-              />
-              <Route path='/notices' element={<NoticeListPage />} />
-              <Route path='/notices/:noticeId' element={<NoticeItemPage />} />
+               <Route path='/production' element={<ProductionPage />} />
               <Route path='*' element={<NotFoundPage />} />
             </Route>
           </Routes>

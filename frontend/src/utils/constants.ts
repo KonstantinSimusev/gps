@@ -37,12 +37,7 @@ export const ATTENDANCE_TYPE = {
 };
 
 // Динамичсекие пути
-export const DYNAMIC_PATHS = [
-  '/notices',
-  '/timesheet',
-  '/shift-search',
-  '/documents',
-];
+export const DYNAMIC_PATHS = ['/timesheet'];
 
 // Конфигурация меню: путь, текст, роли и цеха, которым доступен пункт
 export const MENU_ITEMS = [
@@ -193,66 +188,7 @@ export const MENU_ITEMS = [
       },
     ],
   },
-  {
-    path: '/scan',
-    label: 'Сканирование',
-    accessRules: [
-      {
-        roles: [ROLE.PACKER],
-        workshops: [
-          WORKSHOP.W_LPC4,
-          WORKSHOP.W_LPC5,
-          WORKSHOP.W_LPC8_UGP,
-          WORKSHOP.W_LPC8_UL,
-          WORKSHOP.W_PMP_SOUTH,
-          WORKSHOP.W_PMP_NORTH,
-          WORKSHOP.W_LPC10,
-          WORKSHOP.W_LPC11,
-        ],
-      },
-    ],
-  },
-  {
-    path: '/documents',
-    label: 'Документы',
-    accessRules: [
-      {
-        roles: [ROLE.HEAD, ROLE.LEAD_MASTER, ROLE.MASTER, ROLE.DETAIL_MASTER],
-        workshops: [
-          WORKSHOP.W_LPC4,
-          WORKSHOP.W_LPC5,
-          WORKSHOP.W_LPC8_UGP,
-          WORKSHOP.W_LPC8_UL,
-          WORKSHOP.W_PMP_SOUTH,
-          WORKSHOP.W_PMP_NORTH,
-          WORKSHOP.W_LPC10,
-          WORKSHOP.W_LPC11,
-        ],
-      },
-    ],
-  },
-  {
-    path: '/shift-search',
-    label: 'Найти смену',
-    accessRules: [
-      {
-        roles: [ROLE.HEAD, ROLE.LEAD_MASTER, ROLE.MASTER, ROLE.DETAIL_MASTER],
-        workshops: [
-          WORKSHOP.W_LPC4,
-          WORKSHOP.W_LPC5,
-          WORKSHOP.W_LPC8_UGP,
-          WORKSHOP.W_LPC8_UL,
-          WORKSHOP.W_PMP_SOUTH,
-          WORKSHOP.W_PMP_NORTH,
-          WORKSHOP.W_LPC10,
-        ],
-      },
-      {
-        roles: [ROLE.MASTER, ROLE.DETAIL_MASTER],
-        workshops: [WORKSHOP.W_LPC11],
-      },
-    ],
-  },
+
   {
     path: '/employee',
     label: 'Персонал',
@@ -264,36 +200,6 @@ export const MENU_ITEMS = [
       {
         roles: [ROLE.HEAD, ROLE.PRODUCTION_FOREMAN],
         workshops: [WORKSHOP.W_LPC8_UGP, WORKSHOP.W_LPC8_UL, WORKSHOP.W_LPC11],
-      },
-    ],
-  },
-  {
-    path: '/notices',
-    label: 'Уведомления',
-    accessRules: [
-      {
-        roles: [
-          ROLE.EXECUTIVE,
-          ROLE.HEAD_PRODUCTION,
-          ROLE.SENIOR_MANAGER,
-          ROLE.HEAD,
-          ROLE.LEAD_MASTER,
-          ROLE.MASTER,
-          ROLE.DETAIL_MASTER,
-          ROLE.PRODUCTION_FOREMAN,
-          ROLE.PACKER,
-        ],
-        workshops: [
-          WORKSHOP.W_MANAGEMENT,
-          WORKSHOP.W_LPC4,
-          WORKSHOP.W_LPC5,
-          WORKSHOP.W_LPC8_UGP,
-          WORKSHOP.W_LPC8_UL,
-          WORKSHOP.W_PMP_SOUTH,
-          WORKSHOP.W_PMP_NORTH,
-          WORKSHOP.W_LPC10,
-          WORKSHOP.W_LPC11,
-        ],
       },
     ],
   },

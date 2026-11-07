@@ -8,7 +8,6 @@ import { LayerContext } from '../../contexts/layer/layerContext';
 
 import { useSelector } from '../../services/store';
 import { selectProfile } from '../../services/slices/auth/slice';
-import { selectNotices } from '../../services/slices/notice/slice';
 
 import { CloseButton } from '../ui/buttons/close-button/close-button';
 
@@ -25,7 +24,6 @@ export const Sidebar = () => {
 
   const employee = useSelector(selectProfile);
   const location = useLocation(); // Получаем текущий путь
-  const notices = useSelector(selectNotices) ?? [];
 
   const handleMenuItemClick = () => {
     setSelectedDate(null); // Сбрасываем дату при переходе
@@ -100,9 +98,6 @@ export const Sidebar = () => {
             return null;
           }
 
-          // Сюда потом подставишь реальный счётчик из Redux, пока заглушка
-          const noticeCount = path === '/notices' ? notices.length : 0;
-
           return (
             <li key={path}>
               <Link
@@ -111,10 +106,6 @@ export const Sidebar = () => {
                 onClick={handleMenuItemClick}
               >
                 <span className={styles.label}>{label}</span>
-
-                {noticeCount > 0 && (
-                  <span className={styles.badge}>{noticeCount}</span>
-                )}
               </Link>
             </li>
           );
